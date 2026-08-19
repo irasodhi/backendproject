@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Campus Lost & Found</title>
+  <meta name="description" content="Sign in to Campus Lost and Found to manage your lost or found item reports and claims.">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Sora + Inter Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <span class="brand-icon"><i class="bi bi-search-heart"></i></span>
+        <span>CampusLost<span style="color:var(--emerald-primary);">&</span>Found</span>
+      </a>
+      <div class="ms-auto">
+        <a href="index.html" class="btn btn-sm btn-outline-light rounded-pill px-3">
+          <i class="bi bi-arrow-left me-1"></i>Back to Home
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Section -->
+  <div class="container py-5 my-auto">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-6 col-md-9">
+
+        <div class="card auth-card shadow-lg border-0 overflow-hidden fade-in-up">
+          <!-- Header Banner -->
+          <div class="auth-header text-center text-white p-4">
+            <div class="auth-avatar-icon mx-auto mb-3">
+              <i class="bi bi-person-lock fs-2"></i>
+            </div>
+            <h3 class="fw-bold mb-1">Welcome to Campus Lost & Found</h3>
+            <p class="mb-0 opacity-75 small">Sign in with an existing account or enter new credentials to auto-register</p>
+          </div>
+
+          <div class="card-body p-4 p-md-5">
+
+            <!-- Saved Accounts Quick Fill -->
+            <div class="mb-4 p-3 rounded-3 border" style="background:var(--bg-elevated);">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="small fw-bold text-uppercase text-muted" style="letter-spacing:0.04em;">
+                  <i class="bi bi-people-fill me-1" style="color:var(--primary-color)"></i>Saved Accounts
+                </span>
+                <span class="badge rounded-pill" style="background:var(--primary-light);color:var(--primary-color);">1-Click Fill</span>
+              </div>
+              <div class="row g-2" id="saved-accounts-grid">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Main Login Form -->
+            <form id="loginForm" onsubmit="handleSubmit(event)" novalidate>
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label fw-semibold text-dark small mb-1">Email Address</label>
+                <div class="input-group">
+                  <span class="input-group-text border-end-0 text-muted" style="background:var(--bg-elevated);"><i class="bi bi-envelope"></i></span>
+                  <input type="email" id="email" class="form-control border-start-0 ps-0"
+                    placeholder="e.g. user@example.com" required>
+                </div>
+                <div class="invalid-feedback d-block" id="email-error" style="display:none!important;"></div>
+                <div class="form-text extra-small text-muted mt-1">
+                  <i class="bi bi-info-circle me-1"></i>New email addresses are auto-registered on first sign-in.
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label for="password" class="form-label fw-semibold text-dark small mb-0">Password</label>
+                  <a href="#" class="text-decoration-none small" style="color:var(--primary-color);" onclick="showCredentialsHint()">Password Hint</a>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-text border-end-0 text-muted" style="background:var(--bg-elevated);"><i class="bi bi-lock"></i></span>
+                  <input type="password" id="password" class="form-control border-start-0 border-end-0 ps-0"
+                    placeholder="••••••••" required>
+                  <button type="button" class="input-group-text border-start-0 text-muted" style="background:var(--bg-elevated);" onclick="togglePasswordVisibility('password', this)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+                <div class="invalid-feedback d-block" id="password-error" style="display:none!important;"></div>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe" checked>
+                  <label class="form-check-label small text-muted" for="rememberMe">Remember me on this browser</label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-auth w-100 fw-bold py-2 mb-3">
+                Sign In / Register & Save <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+
+              <div class="text-center pt-2">
+                <p class="text-muted small mb-0">
+                  Prefer full registration? <a href="signup.html" class="fw-bold text-decoration-none" style="color:var(--primary-color);">Create an account</a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    function renderSavedAccounts() {
+      const container = document.getElementById("saved-accounts-grid");
+      if (!container) return;
+      const users = getUsers();
+      container.innerHTML = "";
+      const colors = ["var(--primary-color)","var(--found-color)","#6366f1","#f59e0b","var(--lost-color)","#8b5cf6"];
+      users.forEach((u, idx) => {
+        const initials = u.username ? u.username.split(" ").map(w => w[0]).join("").substring(0,2).toUpperCase() : "U";
+        const color    = colors[idx % colors.length];
+        const pass     = u.userpassword || "Pass@2026!";
+        container.innerHTML += `
+          <div class="col-sm-6 col-12">
+            <button type="button" class="btn btn-demo-user w-100 text-start p-2 rounded-3 border" onclick="fillDemoUser('${u.useremail}','${pass}')">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle text-white fw-bold me-2 flex-shrink-0 d-flex align-items-center justify-content-center"
+                     style="width:32px;height:32px;font-size:0.72rem;background:${color};">${initials}</div>
+                <div class="text-truncate">
+                  <strong class="d-block text-dark small">${u.username}</strong>
+                  <span class="text-muted extra-small d-block text-truncate">${u.useremail}</span>
+                </div>
+              </div>
+            </button>
+          </div>`;
+      });
+    }
+
+    function fillDemoUser(email, pass) {
+      document.getElementById("email").value    = email;
+      document.getElementById("password").value = pass;
+      showToast(`Filled credentials for <strong>${email}</strong>. Click Sign In!`, 'info');
+    }
+
+    function showCredentialsHint() {
+      const users = getUsers();
+      let msg = users.map(u => `<strong>${u.username}</strong><br>${u.useremail}<br><code>${u.userpassword || 'Pass@2026!'}</code>`).join('<hr class="my-2">');
+      showToast(msg || 'No saved accounts found.', 'info', 6000);
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon  = btn.querySelector("i");
+      if (input.type === "password") { input.type = "text"; icon.className = "bi bi-eye-slash"; }
+      else                           { input.type = "password"; icon.className = "bi bi-eye"; }
+    }
+
+    function formatNameFromEmail(email) {
+      try {
+        return email.split('@')[0].replace(/[._-]/g, ' ').split(' ')
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      } catch(e) { return "Student User"; }
+    }
+
+    // Live validation
+    document.getElementById("email").addEventListener("blur", function() {
+      const errEl = document.getElementById("email-error");
+      if (this.value.trim() && !ValidationModule.isValidEmail(this.value.trim())) {
+        this.classList.add("is-invalid");
+        errEl.textContent = "Please enter a valid email address.";
+        errEl.style.display = "block";
+      } else {
+        this.classList.remove("is-invalid");
+        errEl.style.display = "none";
+        if (this.value.trim()) this.classList.add("is-valid");
+      }
+    });
+
+    document.getElementById("password").addEventListener("input", function() {
+      const errEl = document.getElementById("password-error");
+      if (this.value.length > 0 && this.value.length < 4) {
+        this.classList.add("is-invalid");
+        errEl.textContent = "Password seems too short.";
+        errEl.style.display = "block";
+      } else {
+        this.classList.remove("is-invalid");
+        errEl.style.display = "none";
+      }
+    });
+
+    let handleSubmit = (event) => {
+      event.preventDefault();
+      let email = document.getElementById("email").value.trim();
+      let pass  = document.getElementById("password").value.trim();
+
+      if (!email || !pass) {
+        showToast("Please enter both email address and password.", "error");
+        return;
+      }
+      if (!ValidationModule.isValidEmail(email)) {
+        showToast("Please enter a valid email address.", "error");
+        return;
+      }
+
+      let users         = getUsers();
+      let verified_user = users.find(el => el.useremail?.toLowerCase() === email.toLowerCase());
+
+      if (verified_user) {
+        if (verified_user.userpassword && verified_user.userpassword !== pass) {
+          showToast(`Incorrect password for <strong>${verified_user.username}</strong>. Click "Password Hint" for help.`, "error");
+          return;
+        }
+        localStorage.setItem("current_user", JSON.stringify(verified_user));
+        localStorage.setItem("isLoggedIn", "true");
+        showToast(`Welcome back, <strong>${verified_user.username}</strong>! Redirecting…`, "success");
+        setTimeout(() => { window.location.href = "index.html"; }, 900);
+      } else {
+        let derivedName = formatNameFromEmail(email);
+        let newUser = {
+          username: derivedName, useremail: email, userpassword: pass,
+          contactPhone: "+91 98" + Math.floor(10000000 + Math.random() * 90000000)
+        };
+        saveUser(newUser);
+        localStorage.setItem("current_user", JSON.stringify(newUser));
+        localStorage.setItem("isLoggedIn", "true");
+        showToast(`New account for <strong>${derivedName}</strong> saved! Redirecting…`, "success");
+        setTimeout(() => { window.location.href = "index.html"; }, 900);
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", renderSavedAccounts);
+  </script>
+</body>
+</html>
