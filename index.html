@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Lost & Found — Next Gen AI Recovery System</title>
+    <meta name="description" content="Next generation AI-powered campus lost and found management platform with 5-factor multi-attribute similarity matching algorithm.">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Sora + Inter Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top" id="main-nav">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="brand-icon"><i class="bi bi-search-heart"></i></span>
+                <span>CampusLost<span style="color:var(--emerald-primary);">&</span>Found</span>
+            </a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="bi bi-list fs-2 text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html"><i class="bi bi-house-door me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="report.html"><i class="bi bi-plus-circle me-1"></i>Report Item</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="matches.html"><i class="bi bi-cpu me-1"></i>Match Engine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                    </li>
+
+                    <!-- Notification Bell -->
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="nav-bell-link" href="dashboard.html" title="Notifications">
+                            <i class="bi bi-bell-fill"></i>
+                            <span id="nav-notif-badge" class="notif-badge d-none">0</span>
+                        </a>
+                    </li>
+
+                    <!-- Dynamic User Account Display / CTA -->
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
+                        <a class="btn btn-emerald-pill btn-arrow-slide py-2 px-3 fs-6" href="login.html">
+                            <span>Sign In</span> <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section (TenFore Emerald Dark Theme) -->
+        <section class="hero-emerald" id="hero-section">
+            <!-- Ambient Glowing Orbs -->
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+            <div class="hero-grid-pattern"></div>
+
+            <div class="container hero-content">
+                <div class="row align-items-center g-5">
+                    
+                    <!-- Left Hero Content -->
+                    <div class="col-lg-6">
+                        <div class="hero-preheading fade-in-up">
+                            <span class="badge-dot"></span> NEXT GENERATION AI INTELLIGENCE
+                        </div>
+                        <h1 class="hero-display-title fade-in-up delay-1">
+                            NEXT GENERATION<br>
+                            <span class="text-emerald-glow">CAMPUS RECOVERY</span><br>
+                            MANAGEMENT
+                        </h1>
+                        <p class="hero-description fade-in-up delay-2">
+                            The next-generation intelligence platform engineered to reunite campus communities with lost items instantly. Simple, fast, cloud-based, and powered by 5-factor similarity algorithms.
+                        </p>
+                        
+                        <!-- CTA Actions -->
+                        <div class="d-flex flex-wrap gap-3 mb-5 fade-in-up delay-3">
+                            <a href="report.html?type=lost" class="btn btn-emerald-pill btn-arrow-slide">
+                                <span>SCHEDULE A REPORT</span> <i class="bi bi-arrow-right"></i>
+                            </a>
+                            <a href="matches.html" class="btn btn-glass-pill btn-arrow-slide">
+                                <span>EXPLORE MATCHES</span> <i class="bi bi-lightning-charge"></i>
+                            </a>
+                        </div>
+
+                        <!-- Live Stats Bar (Dark Glass) -->
+                        <div class="row g-3 fade-in-up delay-4">
+                            <div class="col-4">
+                                <div class="hero-stat-box">
+                                    <div class="stat-num" id="stat-total">0</div>
+                                    <div class="stat-label">Total Reports</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="hero-stat-box">
+                                    <div class="stat-num" id="stat-lost" style="color:#f43f5e;text-shadow:0 0 16px rgba(244,63,94,0.4);">0</div>
+                                    <div class="stat-label">Lost Reports</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="hero-stat-box">
+                                    <div class="stat-num" id="stat-found" style="color:var(--emerald-primary);">0</div>
+                                    <div class="stat-label">Found Reports</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Hero 3D Floating Mockup Suite (Directly Matching Reference Image) -->
+                    <div class="col-lg-6">
+                        <div class="hero-mockup-wrapper" id="hero-mockup-container">
+                            <div class="hero-mockup-3d" id="hero-mockup-element">
+                                
+                                <!-- Floating Real-Time Alert Pill -->
+                                <div class="mockup-alert-pill">
+                                    <span class="radar-pulse"></span>
+                                    <span>✨ Match Found: <strong>Black Nike Backpack (96%)</strong></span>
+                                </div>
+
+                                <!-- Main SaaS Dashboard Mockup -->
+                                <div class="mockup-main-card">
+                                    <!-- Animated Radar Scanning Beam -->
+                                    <div class="mockup-radar-beam"></div>
+
+                                    <div class="mockup-header">
+                                        <div class="mockup-dots">
+                                            <span class="mockup-dot dot-red"></span>
+                                            <span class="mockup-dot dot-yellow"></span>
+                                            <span class="mockup-dot dot-green"></span>
+                                        </div>
+                                        <div class="small fw-semibold text-white opacity-75" style="font-family:'Sora',sans-serif;font-size:0.75rem;">
+                                            <i class="bi bi-cpu text-success me-1"></i>Campus Neural Engine — Live Stream
+                                        </div>
+                                        <span class="badge rounded-pill" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);font-size:0.65rem;border:1px solid rgba(0,230,118,0.4);">
+                                            Online
+                                        </span>
+                                    </div>
+
+                                    <div class="mockup-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="small fw-bold text-white" style="font-family:'Sora',sans-serif;">
+                                                <i class="bi bi-table text-success me-1"></i>Active Campus Reports
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <span class="badge bg-dark border border-secondary text-white" style="font-size:0.65rem;">Zone: All</span>
+                                                <span class="badge bg-dark border border-secondary text-white" style="font-size:0.65rem;">Weight: 100%</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mini Live Mockup Table -->
+                                        <table class="mockup-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Item Name</th>
+                                                    <th>Zone</th>
+                                                    <th>Status</th>
+                                                    <th>Confidence</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <i class="bi bi-backpack text-success"></i>
+                                                            <span class="fw-semibold">Nike Backpack</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>Library 2F</td>
+                                                    <td><span class="mockup-badge mockup-badge-match">Match Found</span></td>
+                                                    <td class="text-success fw-bold">96.0%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <i class="bi bi-phone text-info"></i>
+                                                            <span class="fw-semibold">iPhone 14 Pro</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>Cafeteria</td>
+                                                    <td><span class="mockup-badge mockup-badge-active">Scanning</span></td>
+                                                    <td class="text-info fw-bold">88.5%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <i class="bi bi-laptop text-warning"></i>
+                                                            <span class="fw-semibold">MacBook Air M2</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>Library</td>
+                                                    <td><span class="mockup-badge mockup-badge-match">Reunited</span></td>
+                                                    <td class="text-success fw-bold">99.2%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <i class="bi bi-key text-white"></i>
+                                                            <span class="fw-semibold">Dorm Keys #402</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>Sports Complex</td>
+                                                    <td><span class="mockup-badge mockup-badge-active">Analyzing</span></td>
+                                                    <td class="text-white-50 fw-bold">75.0%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Floating Match Curve Analytics Card (Matching Reference Image) -->
+                                <div class="mockup-curve-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-bold text-muted text-uppercase" style="font-size:0.7rem;letter-spacing:0.04em;">Match Probability Curve</span>
+                                        <span class="badge rounded-pill" style="background:#e8f5e9;color:#059669;font-size:0.68rem;font-weight:700;">+24.8%</span>
+                                    </div>
+                                    <div class="curve-val mb-2">99.4% <span class="fs-6 text-muted fw-normal">Accuracy</span></div>
+                                    
+                                    <!-- Glowing SVG Area Curve Graph -->
+                                    <svg viewBox="0 0 200 65" style="width:100%;height:55px;overflow:visible;">
+                                        <defs>
+                                            <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#00e676" stop-opacity="0.55"/>
+                                                <stop offset="100%" stop-color="#00e676" stop-opacity="0.0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <!-- Shaded Area -->
+                                        <path d="M0,55 Q40,48 80,32 T160,12 T200,6 L200,65 L0,65 Z" fill="url(#curveGradient)"/>
+                                        <!-- Line -->
+                                        <path d="M0,55 Q40,48 80,32 T160,12 T200,6" fill="none" stroke="#00e676" stroke-width="3.5" stroke-linecap="round"/>
+                                        <!-- Glowing Pulse Point -->
+                                        <circle cx="200" cy="6" r="4" fill="#00e676" stroke="#ffffff" stroke-width="2"/>
+                                    </svg>
+                                    <div class="d-flex justify-content-between small text-muted mt-1" style="font-size:0.65rem;">
+                                        <span>Reported</span>
+                                        <span>Extracted</span>
+                                        <span>Confidence Peak</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Wave Divider (Curved Organic Split from Dark Hero to Clean White Section) -->
+        <div class="wave-divider-wrap">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+                <path fill="#ffffff" d="M0,32 C240,75 480,85 720,50 C960,15 1200,5 1440,32 L1440,80 L0,80 Z"></path>
+            </svg>
+        </div>
+
+        <!-- Live Recovery Activity Ticker -->
+        <div class="recovery-ticker-wrap">
+            <div class="recovery-ticker-track">
+                <div class="ticker-item">
+                    <span class="ticker-badge">LIVE RECOVERY</span>
+                    <span>🎉 Sophia S. verified & recovered <strong>MacBook Air M2</strong> from Library</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-badge">AI MATCH</span>
+                    <span>⚡ 96.0% similarity match for <strong>Black Nike Backpack</strong> in Zone 2</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-badge">NEW REPORT</span>
+                    <span>📍 Alex reported found <strong>AirPods Pro Case</strong> at Cafeteria</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-badge">HANDOVER</span>
+                    <span>🤝 Verified handover scheduled for <strong>Casio Calculator</strong> at Admin Block</span>
+                </div>
+                <!-- Duplicate items for seamless infinite marquee loop -->
+                <div class="ticker-item">
+                    <span class="ticker-badge">LIVE RECOVERY</span>
+                    <span>🎉 Sophia S. verified & recovered <strong>MacBook Air M2</strong> from Library</span>
+                </div>
+                <div class="ticker-item">
+                    <span class="ticker-badge">AI MATCH</span>
+                    <span>⚡ 96.0% similarity match for <strong>Black Nike Backpack</strong> in Zone 2</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- "Delivering The Future" Section (Matching Reference Image) -->
+        <section class="section-future">
+            <div class="container">
+                <div class="text-center max-w-700 mx-auto mb-5 reveal-item">
+                    <span class="future-preheading">DELIVERING THE</span>
+                    <h2 class="future-main-heading">FUTURE OF CAMPUS RECOVERY</h2>
+                    <p class="text-muted fs-5">
+                        We are the next generation platform engineered to eliminate lost items on campus with autonomous multi-attribute similarity matching, instant owner alerts, and zero-knowledge verification.
+                    </p>
+                </div>
+
+                <!-- 4-Step Pipeline Flow Visualizer -->
+                <div class="pipeline-flow-grid mb-5">
+                    <div class="pipeline-card reveal-item delay-1">
+                        <span class="step-number">01</span>
+                        <div class="pipeline-icon-box"><i class="bi bi-file-earmark-plus"></i></div>
+                        <h5 class="fw-bold mb-2" style="font-family:'Sora',sans-serif;">Instant Report</h5>
+                        <p class="small text-muted mb-0">Submit item details, category, color, campus zone, and photos in under 30 seconds.</p>
+                    </div>
+
+                    <div class="pipeline-card reveal-item delay-2">
+                        <span class="step-number">02</span>
+                        <div class="pipeline-icon-box"><i class="bi bi-cpu"></i></div>
+                        <h5 class="fw-bold mb-2" style="font-family:'Sora',sans-serif;">AI Vectorization</h5>
+                        <p class="small text-muted mb-0">Engine extracts metadata tokens, zone proximity indices, and description keywords.</p>
+                    </div>
+
+                    <div class="pipeline-card reveal-item delay-3">
+                        <span class="step-number">03</span>
+                        <div class="pipeline-icon-box"><i class="bi bi-calculator"></i></div>
+                        <h5 class="fw-bold mb-2" style="font-family:'Sora',sans-serif;">5-Factor Scoring</h5>
+                        <p class="small text-muted mb-0">Calculates mathematical similarity weights across category, zone, color, date, and text.</p>
+                    </div>
+
+                    <div class="pipeline-card reveal-item delay-4">
+                        <span class="step-number">04</span>
+                        <div class="pipeline-icon-box"><i class="bi bi-shield-check"></i></div>
+                        <h5 class="fw-bold mb-2" style="font-family:'Sora',sans-serif;">Secure Handover</h5>
+                        <p class="small text-muted mb-0">Verify hidden details securely, approve claims, and coordinate safe campus handovers.</p>
+                    </div>
+                </div>
+
+                <!-- Interactive 6-Factor Similarity Simulator -->
+                <div class="simulator-container reveal-item mt-5">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-5 text-center text-lg-start">
+                            <span class="badge rounded-pill px-3 py-2 mb-2" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);font-size:0.75rem;border:1px solid rgba(0,230,118,0.4);">
+                                <i class="bi bi-sliders me-1"></i>Interactive AI Simulator
+                            </span>
+                            <h3 class="fw-bold text-white mb-2" style="font-family:'Sora',sans-serif;">Test the Matching Engine</h3>
+                            <p class="small text-light opacity-75 mb-4">
+                                Select sample scenarios below to see how our 6-factor weighted algorithm computes real-time confidence scores.
+                            </p>
+
+                            <!-- Scenario Selector -->
+                            <div class="mb-4">
+                                <label class="small fw-semibold text-light opacity-75 mb-1 d-block">Choose Demo Comparison:</label>
+                                <select id="sim-scenario-select" class="form-select bg-dark text-white border-secondary" onchange="updateSimulatorScenario(this.value)">
+                                    <option value="high">Scenario A: Nike Backpack (High Confidence Match - 96%)</option>
+                                    <option value="med">Scenario B: iPhone 14 Pro (Partial Color/Zone Match - 74%)</option>
+                                    <option value="low">Scenario C: Casio Watch vs Water Bottle (Zero Match - 12%)</option>
+                                </select>
+                            </div>
+
+                            <!-- Animated Score Display Ring -->
+                            <div class="sim-score-ring">
+                                <div class="sim-num" id="sim-score-num">96%</div>
+                                <span class="small text-white-50 fw-bold" style="font-size:0.7rem;">CONFIDENCE</span>
+                            </div>
+                        </div>
+
+                        <!-- 6-Factor Weight Breakdown Bars -->
+                        <div class="col-lg-7">
+                            <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
+                                <h6 class="fw-bold text-white mb-3" style="font-family:'Sora',sans-serif;">
+                                    <i class="bi bi-pie-chart text-success me-2"></i>Multi-Attribute Mathematical Weights (100% Total)
+                                </h6>
+
+                                <!-- Brand / Name -->
+                                <div class="sim-weight-bar-item">
+                                    <div class="sim-weight-header">
+                                        <span><i class="bi bi-award text-success me-1"></i>Brand & Name NLP (25% max)</span>
+                                        <span id="sim-val-brand" class="fw-bold text-success">25.0 pts (Exact Brand)</span>
+                                    </div>
+                                    <div class="sim-progress-track">
+                                        <div id="sim-bar-brand" class="sim-progress-fill" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Campus Zone -->
+                                <div class="sim-weight-bar-item">
+                                    <div class="sim-weight-header">
+                                        <span><i class="bi bi-geo-alt text-success me-1"></i>Campus Zone Proximity (20% max)</span>
+                                        <span id="sim-val-zone" class="fw-bold text-success">20.0 pts (Exact Zone)</span>
+                                    </div>
+                                    <div class="sim-progress-track">
+                                        <div id="sim-bar-zone" class="sim-progress-fill" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="sim-weight-bar-item">
+                                    <div class="sim-weight-header">
+                                        <span><i class="bi bi-tag text-success me-1"></i>Category & Device (20% max)</span>
+                                        <span id="sim-val-cat" class="fw-bold text-success">20.0 pts (100% Match)</span>
+                                    </div>
+                                    <div class="sim-progress-track">
+                                        <div id="sim-bar-cat" class="sim-progress-fill" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Color -->
+                                <div class="sim-weight-bar-item">
+                                    <div class="sim-weight-header">
+                                        <span><i class="bi bi-palette text-success me-1"></i>Color Similarity (15% max)</span>
+                                        <span id="sim-val-color" class="fw-bold text-success">15.0 pts (Identical)</span>
+                                    </div>
+                                    <div class="sim-progress-track">
+                                        <div id="sim-bar-color" class="sim-progress-fill" style="width: 100%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Date Interval -->
+                                <div class="sim-weight-bar-item">
+                                    <div class="sim-weight-header">
+                                        <span><i class="bi bi-calendar-event text-success me-1"></i>Date Interval (10% max)</span>
+                                        <span id="sim-val-date" class="fw-bold text-success">8.8 pts (1 Day Apart)</span>
+                                    </div>
+                                    <div class="sim-progress-track">
+                                        <div id="sim-bar-date" class="sim-progress-fill" style="width: 88%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Description Semantic NLP -->
+                                <div class="sim-weight-bar-item mb-0">
+                                    <div class="sim-weight-header">
+                                        <span><i class="bi bi-body-text text-success me-1"></i>Semantic Description NLP (10% max)</span>
+                                        <span id="sim-val-desc" class="fw-bold text-success">9.2 pts (Keywords Overlap)</span>
+                                    </div>
+                                    <div class="sim-progress-track">
+                                        <div id="sim-bar-desc" class="sim-progress-fill" style="width: 92%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Quick Items Search & Recent Feed -->
+        <section class="py-5" style="background-color:var(--bg-main);">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 gap-3 reveal-item">
+                    <div>
+                        <span class="badge rounded-pill mb-1" style="background:var(--mint-light);color:#059669;font-weight:700;">LIVE INVENTORY</span>
+                        <h2 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Recent Campus Reports</h2>
+                        <p class="text-muted mb-0">Browse real-time lost and found submissions across all campus zones</p>
+                    </div>
+                    <a href="matches.html" class="btn btn-emerald-pill btn-arrow-slide py-2 px-3">
+                        <span>Open Match Engine</span> <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Filters Bar -->
+                <div class="row g-3 mb-4 p-3 bg-white rounded-3 border shadow-sm reveal-item delay-1">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" id="home-search-input" class="form-control border-start-0 ps-0" placeholder="Search item name, keyword, brand…">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="home-type-filter" class="form-select">
+                            <option value="all">All Types (Lost & Found)</option>
+                            <option value="lost">Lost Items Only</option>
+                            <option value="found">Found Items Only</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="home-category-filter" class="form-select">
+                            <option value="all">All Categories</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Bags">Bags</option>
+                            <option value="Wallets">Wallets</option>
+                            <option value="ID Cards">ID Cards</option>
+                            <option value="Keys">Keys</option>
+                            <option value="Books">Books</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Reports Grid -->
+                <div class="row g-4" id="recent-reports-grid">
+                    <!-- Dynamic rendering via app.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Trust Ecosystem -->
+        <section class="py-5 bg-white border-top border-bottom">
+            <div class="container">
+                <div class="row g-4 text-center">
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <div class="fs-1 text-success mb-2"><i class="bi bi-shield-lock"></i></div>
+                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Zero-Knowledge Claims</h6>
+                            <p class="small text-muted mb-0">Hidden verification marks keep student belongings safe from false claims.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <div class="fs-1 text-success mb-2"><i class="bi bi-pin-map"></i></div>
+                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Campus Zone Proximity</h6>
+                            <p class="small text-muted mb-0">Algorithms factor campus topology to find adjacent zone drops accurately.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <div class="fs-1 text-success mb-2"><i class="bi bi-bell"></i></div>
+                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Instant Notifications</h6>
+                            <p class="small text-muted mb-0">Automatic notifications trigger the instant a matching probability score passes threshold.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <div class="fs-1 text-success mb-2"><i class="bi bi-calendar-check"></i></div>
+                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Handover Scheduler</h6>
+                            <p class="small text-muted mb-0">Coordinate meeting locations and times on campus with safety confirmation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 align-items-center justify-content-between mb-4">
+                <div class="col-md-6 text-center text-md-start">
+                    <div class="d-flex align-items-center gap-2 justify-content-center justify-content-md-start mb-2">
+                        <span class="brand-icon" style="width:30px;height:30px;font-size:0.95rem;"><i class="bi bi-search-heart"></i></span>
+                        <strong class="text-white fs-5" style="font-family:'Sora',sans-serif;">CampusLost<span style="color:var(--emerald-primary);">&</span>Found</strong>
+                    </div>
+                    <p class="small text-muted mb-0">
+                        Next generation intelligent matching platform. Built with modular client architecture, local storage, and multi-attribute similarity scoring.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill" style="background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);">
+                        <span class="badge-dot" style="width:8px;height:8px;background:var(--emerald-primary);border-radius:50%;box-shadow:0 0 8px var(--emerald-primary);"></span>
+                        <span class="small fw-semibold text-white">All Matching Systems Operational</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center pt-3 border-top border-secondary opacity-75 small">
+                © 2026 Campus Lost & Found System. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/matching.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
