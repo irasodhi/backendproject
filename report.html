@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Item — Campus Lost & Found</title>
+    <meta name="description"
+        content="Submit a lost or found item report with detailed attributes for intelligent matching.">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Sora + Inter Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body data-page="report">
+
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="brand-icon"><i class="bi bi-search-heart"></i></span>
+                <span>CampusLost<span style="color:var(--emerald-primary);">&</span>Found</span>
+            </a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent">
+                <i class="bi bi-list fs-2 text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="bi bi-house-door me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="report.html"><i class="bi bi-plus-circle me-1"></i>Report
+                            Item</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="matches.html"><i class="bi bi-cpu me-1"></i>Match Engine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="nav-bell-link" href="dashboard.html" title="Notifications">
+                            <i class="bi bi-bell-fill"></i>
+                            <span id="nav-notif-badge" class="notif-badge d-none">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
+                        <a class="btn btn-sm btn-outline-light rounded-pill px-3" href="login.html">
+                            <i class="bi bi-person me-1"></i>Sign In
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Subpage Banner (TenFore Emerald Dark) -->
+    <section class="subpage-banner text-center">
+        <div class="container">
+            <div class="subpage-badge fade-in-up">
+                <i class="bi bi-shield-check"></i> Instant AI Vector Indexing
+            </div>
+            <h1 class="subpage-title fade-in-up delay-1">Submit Campus Item Report</h1>
+            <p class="subpage-subtitle mx-auto fade-in-up delay-2">
+                Provide accurate characteristics & optional photos so our 5-factor matching algorithm can pair your item
+                in real-time.
+            </p>
+        </div>
+    </section>
+
+    <main class="py-5" style="background-color:var(--bg-main);">
+        <div class="container">
+            <div style="max-width:760px;margin:0 auto;">
+
+                <div class="card form-card-emerald p-4 p-md-5 fade-in-up delay-3 shadow-lg">
+                    <form id="report-form" novalidate>
+
+                        <!-- STEP 1: Report Direction Selection -->
+                        <div class="report-step-box">
+                            <div class="report-step-header">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="report-step-badge">STEP 1</span>
+                                    <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">Report
+                                        Direction</h5>
+                                </div>
+                                <span class="small text-muted">What is the status of the item?</span>
+                            </div>
+                            <input type="hidden" id="report-type-input" name="type" value="lost">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <button type="button" id="btn-type-lost" class="type-toggle-btn active-lost">
+                                        <div class="d-flex align-items-center justify-content-center gap-3">
+                                            <i class="bi bi-exclamation-triangle-fill fs-2"
+                                                style="color:var(--lost-color);"></i>
+                                            <div class="text-start">
+                                                <div class="fw-bold">I Lost Something</div>
+                                                <div class="extra-small text-muted fw-normal">Help me locate my lost
+                                                    property</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button type="button" id="btn-type-found" class="type-toggle-btn">
+                                        <div class="d-flex align-items-center justify-content-center gap-3">
+                                            <i class="bi bi-check-circle-fill fs-2"
+                                                style="color:var(--emerald-primary);"></i>
+                                            <div class="text-start">
+                                                <div class="fw-bold">I Found Something</div>
+                                                <div class="extra-small text-muted fw-normal">I discovered an item on
+                                                    campus</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: Item Characteristics & Photo -->
+                        <div class="report-step-box">
+                            <div class="report-step-header">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="report-step-badge">STEP 2</span>
+                                    <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">Item
+                                        Specifications</h5>
+                                </div>
+                                <span class="small text-muted">Detailed attributes for vector matching</span>
+                            </div>
+
+                            <!-- Item Name -->
+                            <div class="mb-4">
+                                <label for="itemName" class="form-label fw-semibold">Item Name, Brand & Model <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted"><i
+                                            class="bi bi-tag-fill text-success"></i></span>
+                                    <input type="text" id="itemName" name="itemName" class="form-control"
+                                        placeholder="e.g. Black Nike Backpack, Apple iPhone 14 Pro, Casio fx-991EX Calculator"
+                                        required>
+                                </div>
+                                <div class="invalid-feedback" id="itemName-error"></div>
+                                <small class="text-muted extra-small mt-1 d-block"><i
+                                        class="bi bi-info-circle me-1"></i>Include brand names (Nike, Apple, Dell,
+                                    Casio) to trigger specialized NLP brand vector matching.</small>
+                            </div>
+
+                            <!-- Category Quick Chips & Select -->
+                            <div class="mb-4">
+                                <label for="category"
+                                    class="form-label fw-semibold d-flex justify-content-between align-items-center">
+                                    <span>Category <span class="text-danger">*</span></span>
+                                    <small class="text-muted fw-normal extra-small">Click a quick chip or choose from
+                                        dropdown</small>
+                                </label>
+
+                                <div class="quick-chip-group" id="category-chips">
+                                    <button type="button" class="quick-chip-btn" data-category="Electronics"><i
+                                            class="bi bi-laptop"></i> Electronics</button>
+                                    <button type="button" class="quick-chip-btn" data-category="Bags"><i
+                                            class="bi bi-backpack"></i> Bags</button>
+                                    <button type="button" class="quick-chip-btn" data-category="Wallets"><i
+                                            class="bi bi-wallet2"></i> Wallets</button>
+                                    <button type="button" class="quick-chip-btn" data-category="ID Cards"><i
+                                            class="bi bi-person-badge"></i> ID Cards</button>
+                                    <button type="button" class="quick-chip-btn" data-category="Keys"><i
+                                            class="bi bi-key"></i> Keys</button>
+                                    <button type="button" class="quick-chip-btn" data-category="Books"><i
+                                            class="bi bi-book"></i> Books</button>
+                                    <button type="button" class="quick-chip-btn" data-category="Clothing"><i
+                                            class="bi bi-sunglasses"></i> Clothing</button>
+                                    <button type="button" class="quick-chip-btn" data-category="Accessories"><i
+                                            class="bi bi-smartwatch"></i> Accessories</button>
+                                    <button type="button" class="quick-chip-btn" data-category="Other"><i
+                                            class="bi bi-grid"></i> Other</button>
+                                </div>
+
+                                <select id="category" name="category" class="form-select" required>
+                                    <option value="">Select Category…</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Bags">Bags</option>
+                                    <option value="Wallets">Wallets</option>
+                                    <option value="ID Cards">ID Cards</option>
+                                    <option value="Keys">Keys</option>
+                                    <option value="Books">Books</option>
+                                    <option value="Clothing">Clothing</option>
+                                    <option value="Accessories">Accessories</option>
+                                    <option value="Other">Other Category (Specify)</option>
+                                </select>
+                                <div class="invalid-feedback" id="category-error"></div>
+                                <div id="other-category-container" class="mt-2 d-none fade-in">
+                                    <input type="text" id="otherCategory" name="otherCategory"
+                                        class="form-control form-control-sm"
+                                        placeholder="Specify custom category (e.g. Umbrella, Water Bottle, Bicycle)…">
+                                </div>
+
+                                <!-- Dynamic Electronics Specific Device Type Selector -->
+                                <div id="electronics-spec-container" class="mt-3 p-3 rounded-3 border d-none fade-in"
+                                    style="background:linear-gradient(145deg, #f0fdf4 0%, #ecfdf5 100%);border-color:var(--mint-border)!important;">
+                                    <label for="electronicType"
+                                        class="form-label fw-bold small text-uppercase d-flex align-items-center justify-content-between mb-2"
+                                        style="color:#059669;letter-spacing:0.04em;">
+                                        <span><i class="bi bi-cpu-fill me-1"></i>Specify Electronics Device Type <span
+                                                class="text-danger">*</span></span>
+                                        <span
+                                            class="badge bg-white text-success border border-success-subtle rounded-pill fw-bold"
+                                            style="font-size:0.65rem;">DEVICE SPECIFICATION</span>
+                                    </label>
+
+                                    <div class="quick-chip-group mb-2" id="electronics-device-chips">
+                                        <button type="button" class="quick-chip-btn" data-device="Laptop"><i
+                                                class="bi bi-laptop"></i> Laptop</button>
+                                        <button type="button" class="quick-chip-btn" data-device="Smartphone"><i
+                                                class="bi bi-phone"></i> Smartphone</button>
+                                        <button type="button" class="quick-chip-btn"
+                                            data-device="Headphones / Earbuds"><i class="bi bi-headphones"></i>
+                                            Headphones</button>
+                                        <button type="button" class="quick-chip-btn" data-device="Tablet / iPad"><i
+                                                class="bi bi-tablet"></i> Tablet / iPad</button>
+                                        <button type="button" class="quick-chip-btn" data-device="Smartwatch"><i
+                                                class="bi bi-smartwatch"></i> Smartwatch</button>
+                                        <button type="button" class="quick-chip-btn" data-device="Charger & Cable"><i
+                                                class="bi bi-battery-charging"></i> Charger & Cable</button>
+                                        <button type="button" class="quick-chip-btn" data-device="Power Bank"><i
+                                                class="bi bi-lightning-charge"></i> Power Bank</button>
+                                        <button type="button" class="quick-chip-btn"
+                                            data-device="Scientific Calculator"><i class="bi bi-calculator"></i>
+                                            Calculator</button>
+                                        <button type="button" class="quick-chip-btn" data-device="USB / Hard Drive"><i
+                                                class="bi bi-device-hdd"></i> USB / Drive</button>
+                                        <button type="button" class="quick-chip-btn" data-device="Camera"><i
+                                                class="bi bi-camera"></i> Camera</button>
+                                        <button type="button" class="quick-chip-btn" data-device="Other Device"><i
+                                                class="bi bi-three-dots"></i> Other</button>
+                                    </div>
+
+                                    <select id="electronicType" name="electronicType"
+                                        class="form-select form-select-sm">
+                                        <option value="">Select Specific Electronics Device…</option>
+                                        <option value="Laptop">Laptop / Notebook (MacBook, Dell, ThinkPad, HP, Asus)
+                                        </option>
+                                        <option value="Smartphone">Smartphone / Mobile Phone (iPhone, Samsung, OnePlus)
+                                        </option>
+                                        <option value="Headphones / Earbuds">Headphones / Earbuds / TWS (AirPods, Boat,
+                                            Sony)</option>
+                                        <option value="Tablet / iPad">Tablet / iPad (iPad Pro, Galaxy Tab)</option>
+                                        <option value="Smartwatch">Smartwatch / Fitness Tracker (Apple Watch, Fitbit,
+                                            Fossil)</option>
+                                        <option value="Charger & Cable">Charger / Adapter / Charging Cable</option>
+                                        <option value="Power Bank">Power Bank / Portable Battery</option>
+                                        <option value="Scientific Calculator">Scientific Calculator (Casio fx-991, TI)
+                                        </option>
+                                        <option value="USB / Hard Drive">USB Flash Drive / External Hard Drive</option>
+                                        <option value="Camera">Camera / DSLR / Lens</option>
+                                        <option value="Other Device">Other Electronic Device (Specify Below)</option>
+                                    </select>
+                                    <div class="invalid-feedback" id="electronicType-error"></div>
+
+                                    <div id="other-electronic-type-container" class="mt-2 d-none fade-in">
+                                        <input type="text" id="otherElectronicType" name="otherElectronicType"
+                                            class="form-control form-control-sm"
+                                            placeholder="Specify electronic device (e.g. Drone, Stylus Pen, Kindle, Speaker, Mouse)…">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Color Swatches & Select -->
+                            <div class="mb-4">
+                                <label for="color"
+                                    class="form-label fw-semibold d-flex justify-content-between align-items-center">
+                                    <span>Primary Color <span class="text-danger">*</span></span>
+                                    <small class="text-muted fw-normal extra-small">Pick a swatch or select
+                                        below</small>
+                                </label>
+
+                                <div class="color-swatch-group" id="color-swatches">
+                                    <button type="button" class="color-swatch-btn" data-color="Black"
+                                        style="background:#111827;color:#fff;" title="Black"></button>
+                                    <button type="button" class="color-swatch-btn" data-color="White"
+                                        style="background:#ffffff;color:#111;border-color:#cbd5e1;"
+                                        title="White"></button>
+                                    <button type="button" class="color-swatch-btn" data-color="Blue"
+                                        style="background:#2563eb;color:#fff;" title="Blue"></button>
+                                    <button type="button" class="color-swatch-btn" data-color="Red"
+                                        style="background:#ef4444;color:#fff;" title="Red"></button>
+                                    <button type="button" class="color-swatch-btn" data-color="Green"
+                                        style="background:#10b981;color:#fff;" title="Green"></button>
+                                    <button type="button" class="color-swatch-btn" data-color="Yellow"
+                                        style="background:#f59e0b;color:#111;" title="Yellow"></button>
+                                    <button type="button" class="color-swatch-btn" data-color="Brown"
+                                        style="background:#854d0e;color:#fff;" title="Brown"></button>
+                                    <button type="button" class="color-swatch-btn" data-color="Grey"
+                                        style="background:#64748b;color:#fff;" title="Grey"></button>
+                                    <button type="button" class="quick-chip-btn ms-2" data-color="Other"
+                                        style="font-size:0.75rem;padding:0.2rem 0.6rem;">Other Color</button>
+                                </div>
+
+                                <select id="color" name="color" class="form-select" required>
+                                    <option value="">Select Color…</option>
+                                    <option value="Black">Black</option>
+                                    <option value="White">White</option>
+                                    <option value="Blue">Blue</option>
+                                    <option value="Red">Red</option>
+                                    <option value="Green">Green</option>
+                                    <option value="Yellow">Yellow</option>
+                                    <option value="Brown">Brown</option>
+                                    <option value="Grey">Grey</option>
+                                    <option value="Other">Other Color (Specify)</option>
+                                </select>
+                                <div class="invalid-feedback" id="color-error"></div>
+                                <div id="other-color-container" class="mt-2 d-none fade-in">
+                                    <input type="text" id="otherColor" name="otherColor"
+                                        class="form-control form-control-sm"
+                                        placeholder="Specify color (e.g. Maroon, Turquoise, Silver, Rose Gold)…">
+                                </div>
+                            </div>
+
+                            <!-- Image Upload Drag & Drop -->
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold text-dark">
+                                    <i class="bi bi-camera-fill me-1 text-success"></i>Upload Item Photo <span
+                                        class="text-muted fw-normal extra-small">(Optional, high visual accuracy)</span>
+                                </label>
+
+                                <div class="dropzone-box" id="image-dropzone"
+                                    onclick="document.getElementById('itemImage').click();">
+                                    <input type="file" id="itemImage" accept="image/*" class="d-none"
+                                        onchange="previewImage(event)">
+                                    <div id="dropzone-default-content">
+                                        <div class="dropzone-icon-wrap">
+                                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                                        </div>
+                                        <div class="fw-bold text-dark mb-1">Click to browse or drag & drop item image
+                                        </div>
+                                        <div class="extra-small text-muted">Supports JPG, PNG, WEBP (Max 5MB)</div>
+                                    </div>
+                                    <div id="dropzone-preview-container" class="d-none mt-2">
+                                        <div class="position-relative d-inline-block">
+                                            <img id="img-preview" src="" class="img-fluid rounded-3 border shadow-sm"
+                                                style="max-height:180px;object-fit:cover;border-color:var(--emerald-primary)!important;">
+                                            <button type="button"
+                                                class="btn btn-sm btn-danger rounded-pill position-absolute"
+                                                style="top:-8px;right:-8px;font-size:0.7rem;padding:0.2rem 0.5rem;"
+                                                onclick="event.stopPropagation(); removeUploadedImage();">
+                                                <i class="bi bi-trash3-fill"></i> Remove
+                                            </button>
+                                        </div>
+                                        <div class="extra-small text-success fw-bold mt-2"><i
+                                                class="bi bi-check2-circle me-1"></i>Image attached for vector
+                                            comparison</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Location & Incident Time -->
+                        <div class="report-step-box">
+                            <div class="report-step-header">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="report-step-badge">STEP 3</span>
+                                    <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">Location &
+                                        Date</h5>
+                                </div>
+                                <span class="small text-muted">Campus topological proximity matching</span>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Campus Zone -->
+                                <div class="col-md-6">
+                                    <label for="zone" class="form-label fw-semibold">Campus Zone / Building <span
+                                            class="text-danger">*</span></label>
+
+                                    <div class="quick-chip-group mb-2" id="zone-chips">
+                                        <button type="button" class="quick-chip-btn" data-zone="Library"
+                                            style="font-size:0.75rem;padding:0.25rem 0.6rem;"><i class="bi bi-book"></i>
+                                            Library</button>
+                                        <button type="button" class="quick-chip-btn" data-zone="Main Block"
+                                            style="font-size:0.75rem;padding:0.25rem 0.6rem;"><i
+                                                class="bi bi-building"></i> Main Block</button>
+                                        <button type="button" class="quick-chip-btn" data-zone="Cafeteria"
+                                            style="font-size:0.75rem;padding:0.25rem 0.6rem;"><i
+                                                class="bi bi-cup-hot"></i> Cafeteria</button>
+                                        <button type="button" class="quick-chip-btn" data-zone="Hostel"
+                                            style="font-size:0.75rem;padding:0.25rem 0.6rem;"><i
+                                                class="bi bi-house-door"></i> Hostel</button>
+                                        <button type="button" class="quick-chip-btn" data-zone="Sports Complex"
+                                            style="font-size:0.75rem;padding:0.25rem 0.6rem;"><i
+                                                class="bi bi-trophy"></i> Sports</button>
+                                    </div>
+
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i
+                                                class="bi bi-geo-alt-fill text-success"></i></span>
+                                        <select id="zone" name="zone" class="form-select" required>
+                                            <option value="">Select Campus Zone…</option>
+                                            <option value="Library">Library</option>
+                                            <option value="Main Block">Main Block</option>
+                                            <option value="Cafeteria">Cafeteria</option>
+                                            <option value="Hostel">Hostel</option>
+                                            <option value="Sports Complex">Sports Complex</option>
+                                            <option value="Parking">Parking Area</option>
+                                            <option value="Auditorium">Auditorium</option>
+                                            <option value="Laboratory">Laboratory</option>
+                                            <option value="Admin Block">Admin Block</option>
+                                            <option value="Other">Other Campus Location (Specify)</option>
+                                        </select>
+                                    </div>
+                                    <div class="invalid-feedback" id="zone-error"></div>
+                                    <div id="other-zone-container" class="mt-2 d-none fade-in">
+                                        <input type="text" id="otherZone" name="otherZone"
+                                            class="form-control form-control-sm"
+                                            placeholder="Specify exact campus location (e.g. Lawn, Gate 2, Robotics Lab)…">
+                                    </div>
+                                </div>
+
+                                <!-- Date of Incident -->
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label for="date" class="form-label fw-semibold mb-0">Date of Incident <span
+                                                class="text-danger">*</span></label>
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-success rounded-pill py-0 px-2"
+                                            style="font-size:0.7rem;" onclick="setDateToday()">
+                                            <i class="bi bi-clock-history me-1"></i>Set Today
+                                        </button>
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light text-muted"><i
+                                                class="bi bi-calendar-event-fill text-success"></i></span>
+                                        <input type="date" id="date" name="date" class="form-control" required>
+                                    </div>
+                                    <div class="invalid-feedback" id="date-error"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4: Description & Confidential Lockbox -->
+                        <div class="report-step-box">
+                            <div class="report-step-header">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="report-step-badge">STEP 4</span>
+                                    <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">Details &
+                                        Verification</h5>
+                                </div>
+                                <span class="small text-muted">NLP keyword extraction & security verification</span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label for="description" class="form-label fw-semibold mb-0">Public Description
+                                        <span class="text-danger">*</span></label>
+                                    <span id="desc-char-count" class="char-counter-badge">0 / 500</span>
+                                </div>
+                                <textarea id="description" name="description" rows="3" class="form-control"
+                                    placeholder="Provide distinct characteristics like brand, markings, scratches, stickers, accessories, or exact table location."
+                                    maxlength="500" required></textarea>
+                                <div class="invalid-feedback" id="description-error"></div>
+                                <small class="text-muted extra-small d-block mt-1"><i
+                                        class="bi bi-lightbulb text-warning me-1"></i>Tip: Specific words like "red
+                                    zipper", "dell charger", "transparent case" significantly boost AI matching
+                                    accuracy.</small>
+                            </div>
+
+                            <!-- Verification & Privacy Note (Details asked during meeting) -->
+                            <div class="p-3 rounded-3 border mb-2 d-flex align-items-center gap-3"
+                                style="background:#f0fdf4;border-color:var(--mint-border)!important;">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                    style="width:36px;height:36px;background:#d1fae5;color:#059669;">
+                                    <i class="bi bi-shield-check fs-5"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-dark small">Confidential Handover Protection</strong>
+                                    <span class="text-muted extra-small">When a finder matches your item, you will
+                                        privately verify ownership details during the handover meeting.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 5: Reporter Contact Profile (Dynamic Logged In Account) -->
+                        <div class="report-step-box mb-4">
+                            <div class="report-step-header">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="report-step-badge">STEP 5</span>
+                                    <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">Reporter
+                                        Contact Profile</h5>
+                                </div>
+                                <span class="verified-glow-badge"><i class="bi bi-patch-check-fill text-success"></i>
+                                    Auto Verified</span>
+                            </div>
+
+                            <div class="reporter-id-card">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="reporter-avatar-circle" id="report-user-avatar">
+                                            U
+                                        </div>
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <h6 class="fw-bold mb-0 text-dark" id="report-user-name"
+                                                    style="font-family:'Sora',sans-serif;">Student</h6>
+                                                <span class="badge rounded-pill"
+                                                    style="background:var(--mint-light);color:#059669;font-size:0.65rem;border:1px solid var(--mint-border);">Active
+                                                    Reporter</span>
+                                            </div>
+                                            <div class="small text-muted text-break" id="report-user-email">
+                                                user@campus.edu</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Inline Switch Account / Sign In Dropdown -->
+                                    <div class="dropdown" id="report-account-switch-container">
+                                        <button
+                                            class="btn btn-sm btn-outline-secondary dropdown-toggle rounded-pill px-3 fw-semibold"
+                                            type="button" data-bs-toggle="dropdown" id="btn-switch-reporter">
+                                            <i class="bi bi-arrow-repeat me-1 text-success"></i>Switch Account
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow p-2"
+                                            id="report-users-dropdown" style="min-width:260px;">
+                                            <!-- Dynamically populated by app.js -->
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2 pt-2 border-top extra-small text-muted align-items-center">
+                                    <div class="col-sm-6">
+                                        <i class="bi bi-shield-shaded text-success me-1"></i>Indexed under verified
+                                        university identity
+                                    </div>
+                                    <div class="col-sm-6 text-sm-end">
+                                        <i class="bi bi-bell-fill text-primary me-1"></i>Real-time match alerts sent to
+                                        this email
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="btn-submit-report"
+                            class="btn btn-emerald-pill btn-arrow-slide w-100 py-3 justify-content-center fs-6 shadow-sm">
+                            <span id="btn-submit-text">SUBMIT REPORT & RUN AI ENGINE</span> <i class="bi bi-arrow-right"
+                                id="btn-submit-icon"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center small">
+            © 2026 Campus Lost & Found System. All reports securely indexed.
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/matching.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
