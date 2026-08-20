@@ -473,6 +473,104 @@
         </div>
     </div>
 
+    <!-- Lost Owner: Handover Verification QR Pass Modal -->
+    <div class="modal fade" id="qrPassModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-dark text-white">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" style="font-family:'Sora',sans-serif;">
+                            <i class="bi bi-qr-code-scan me-2 text-success"></i>My Handover Security Pass
+                        </h5>
+                        <small class="text-light opacity-75 extra-small">Show this QR code to Finder at the handover meeting</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center bg-light">
+                    <div class="qr-pass-card p-4 rounded-4 shadow-sm bg-white border text-center position-relative mb-3">
+                        <div class="badge bg-success-subtle text-success border border-success-subtle rounded-pill mb-3 px-3 py-1 fw-bold">
+                            <i class="bi bi-shield-check me-1"></i>VERIFIED OWNER PASS
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1" id="qr-pass-item-name" style="font-family:'Sora',sans-serif;">Item Title</h5>
+                        <p class="small text-muted mb-3" id="qr-pass-owner-info">Student Name (email@campus.edu)</p>
+                        
+                        <!-- Canvas QR Render Box -->
+                        <div class="qr-code-wrapper mx-auto p-3 bg-white rounded-3 border shadow-sm mb-3" style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;">
+                            <canvas id="qr-pass-canvas" width="180" height="180"></canvas>
+                        </div>
+                        
+                        <!-- 6-Digit PIN Backup -->
+                        <div class="p-2 bg-slate-100 rounded-3 border" style="background:#f1f5f9;">
+                            <small class="text-muted d-block extra-small text-uppercase fw-bold mb-1">Manual Security PIN for Founder</small>
+                            <span class="fs-3 fw-bold text-success" id="qr-pass-pin" style="font-family:monospace;letter-spacing:5px;">849201</span>
+                        </div>
+                    </div>
+                    <div class="alert alert-info border-0 small mb-0 text-start">
+                        <i class="bi bi-info-circle-fill me-1"></i>
+                        <strong>How to use:</strong> When you meet Founder, show this QR Code on your screen. Founder will scan it to verify that you are the legitimate owner before handing over your item!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Founder: Scan & Authenticate Claimant QR Pass Modal -->
+    <div class="modal fade" id="qrScannerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-dark text-white">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" style="font-family:'Sora',sans-serif;">
+                            <i class="bi bi-camera-fill me-2 text-warning"></i>Scan Claimant's QR Pass
+                        </h5>
+                        <small class="text-light opacity-75 extra-small">Verify that the person in front of you is the true owner</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+                    <input type="hidden" id="qr-scan-claim-id">
+                    
+                    <!-- Viewfinder Camera Scanner Container -->
+                    <div id="qr-scanner-camera-box" class="qr-scanner-hud mb-3 position-relative rounded-4 overflow-hidden">
+                        <div class="qr-laser-beam"></div>
+                        <div class="qr-target-corners">
+                            <span class="corner top-left"></span>
+                            <span class="corner top-right"></span>
+                            <span class="corner bottom-left"></span>
+                            <span class="corner bottom-right"></span>
+                        </div>
+                        <div class="qr-scanner-prompt text-center text-white p-3">
+                            <i class="bi bi-qr-code-scan display-4 d-block mb-2 text-success"></i>
+                            <div class="fw-bold">Point Camera at Owner's Phone Screen</div>
+                            <small class="opacity-75">Align QR code inside frame to authenticate owner identity</small>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Camera Scan Action Button -->
+                    <button type="button" class="btn btn-emerald-pill w-100 py-2.5 fw-bold shadow-sm mb-3 d-flex align-items-center justify-content-center gap-2" onclick="triggerSimulatedQRScan()">
+                        <i class="bi bi-camera-reels-fill"></i>
+                        <span>Scan Owner's QR Code (Camera Scan)</span>
+                    </button>
+
+                    <div class="text-center text-muted extra-small text-uppercase fw-bold mb-2">── OR ENTER OWNER'S 6-DIGIT PIN ──</div>
+
+                    <!-- Manual PIN Input Form -->
+                    <form id="qr-pin-form" onsubmit="handleVerifyQRPinSubmit(event)">
+                        <div class="input-group mb-3">
+                            <input type="text" id="qr-pin-input" class="form-control text-center fw-bold fs-5" placeholder="Enter 6-Digit PIN..." maxlength="6" pattern="[0-9]{6}" required autocomplete="off" style="letter-spacing:4px;">
+                            <button type="submit" class="btn btn-dark px-3 fw-bold">
+                                Verify PIN <i class="bi bi-shield-check ms-1"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Authentication Result Container -->
+                    <div id="qr-auth-result-box"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <div class="container text-center small">

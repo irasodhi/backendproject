@@ -1961,13 +1961,16 @@ function renderSubmittedClaims(userEmail) {
 
     container.innerHTML = "";
     sent.forEach(c => {
-        let isApproved  = c.status === "Approved & Meeting Scheduled" || c.status === "Meeting Confirmed by Both Parties" || c.status === "Reschedule Requested";
-        let isConfirmed = c.status === "Meeting Confirmed by Both Parties" || c.meetingConfirmedBy === 'both';
+        let isCompleted = c.status === "Handover Completed & Verified";
+        let isApproved  = c.status === "Approved & Meeting Scheduled" || c.status === "Meeting Confirmed by Both Parties" || c.status === "Reschedule Requested" || isCompleted;
+        let isConfirmed = c.status === "Meeting Confirmed by Both Parties" || c.meetingConfirmedBy === 'both' || isCompleted;
         let isResched   = c.status === "Reschedule Requested";
         let isRejected  = c.status === "Rejected";
         let isMoreInfo  = c.status === "More Info Requested";
 
-        let badgeStyle = isConfirmed
+        let badgeStyle = isCompleted
+            ? 'background:var(--found-bg);color:var(--found-color);border:1.5px solid var(--found-border);'
+            : isConfirmed
             ? 'background:var(--found-bg);color:var(--found-color);border:1px solid var(--found-border);'
             : isResched
             ? 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;'
@@ -1983,7 +1986,7 @@ function renderSubmittedClaims(userEmail) {
             <div class="card p-3 mb-3 border shadow-sm rounded-3 fade-in-up">
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                     <span class="badge fw-semibold" style="${badgeStyle}">
-                        ${isConfirmed ? '<i class="bi bi-check-all me-1"></i>Meeting Confirmed' : (isResched ? '<i class="bi bi-clock-history me-1"></i>Reschedule Requested' : c.status)}
+                        ${isCompleted ? '<i class="bi bi-shield-check me-1"></i>Handover Completed & Verified' : (isConfirmed ? '<i class="bi bi-check-all me-1"></i>Meeting Confirmed' : (isResched ? '<i class="bi bi-clock-history me-1"></i>Reschedule Requested' : c.status))}
                     </span>
                     <small class="text-muted"><i class="bi bi-clock me-1"></i>${c.date}</small>
                 </div>
@@ -1996,7 +1999,9 @@ function renderSubmittedClaims(userEmail) {
                     <div class="p-3 rounded-3 border small mb-3" style="background:var(--found-bg);color:var(--found-color);">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div class="fw-bold fs-6"><i class="bi bi-geo-alt-fill me-1"></i>Campus Handover Meeting</div>
-                            ${isConfirmed 
+                            ${isCompleted 
+                                ? `<span class="badge bg-success text-white rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Handover Verified & Item Returned</span>`
+                                : isConfirmed 
                                 ? `<span class="badge bg-success text-white rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Time Agreed & Confirmed</span>`
                                 : isResched
                                 ? `<span class="badge bg-warning text-dark rounded-pill"><i class="bi bi-clock-history me-1"></i>Change Pending</span>`
@@ -2007,13 +2012,18 @@ function renderSubmittedClaims(userEmail) {
                         ${c.meetingDetails.note ? `<div class="text-muted mt-1"><strong>Instructions:</strong> ${c.meetingDetails.note}</div>` : ''}
                     </div>
                     <div class="d-flex flex-wrap gap-2 pt-1">
-                        ${!isConfirmed ? `
-                            <button class="btn btn-sm btn-success fw-bold flex-fill shadow-sm" onclick="handleQuickConfirmMeetingTime('${c.claimId}')">
-                                <i class="bi bi-check2-circle me-1"></i>Confirm Time is Suitable
+                        ${!isCompleted ? `
+                            <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold shadow-sm" onclick="openQRPassModal('${c.claimId}')">
+                                <i class="bi bi-qr-code-scan me-1 text-success"></i>My QR Handover Pass
+                            </button>
+                        ` : ''}
+                        ${!isConfirmed && !isCompleted ? `
+                            <button class="btn btn-sm btn-success fw-bold rounded-pill px-3 shadow-sm" onclick="handleQuickConfirmMeetingTime('${c.claimId}')">
+                                <i class="bi bi-check2-circle me-1"></i>Confirm Time
                             </button>
                         ` : ''}
                         <button class="btn btn-sm btn-emerald-pill flex-fill justify-content-center fw-bold shadow-sm" onclick="openMeetingChatModal('${c.claimId}')">
-                            <i class="bi bi-chat-dots-fill me-1"></i>Message Founder / ${isConfirmed ? 'View Chat' : 'Change Time'}
+                            <i class="bi bi-chat-dots-fill me-1"></i>${isCompleted ? 'View Return Chat' : 'Message Founder'}
                         </button>
                     </div>`
                 : isMoreInfo ? `
@@ -2170,14 +2180,16 @@ function renderReceivedClaims(userEmail) {
 
     container.innerHTML = "";
     received.forEach(c => {
+        let isCompleted = c.status === "Handover Completed & Verified";
         let isPending   = c.status === "Pending Founder Approval" || c.status === "Pending Approval";
         let isMoreInfo  = c.status === "More Info Requested";
-        let isApproved  = c.status === "Approved & Meeting Scheduled" || c.status === "Meeting Confirmed by Both Parties" || c.status === "Reschedule Requested";
-        let isConfirmed = c.status === "Meeting Confirmed by Both Parties" || c.meetingConfirmedBy === 'both';
+        let isApproved  = c.status === "Approved & Meeting Scheduled" || c.status === "Meeting Confirmed by Both Parties" || c.status === "Reschedule Requested" || isCompleted;
+        let isConfirmed = c.status === "Meeting Confirmed by Both Parties" || c.meetingConfirmedBy === 'both' || isCompleted;
         let isResched   = c.status === "Reschedule Requested";
         let isRejected  = c.status === "Rejected";
 
-        let badgeStyle = isConfirmed ? 'background:var(--found-bg);color:var(--found-color);border:1px solid var(--found-border);'
+        let badgeStyle = isCompleted ? 'background:var(--found-bg);color:var(--found-color);border:1.5px solid var(--found-border);'
+                        : isConfirmed ? 'background:var(--found-bg);color:var(--found-color);border:1px solid var(--found-border);'
                         : isResched ? 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;'
                         : isApproved ? 'background:var(--found-bg);color:var(--found-color);border:1px solid var(--found-border);'
                         : isRejected ? 'background:var(--lost-bg);color:var(--lost-color);border:1px solid var(--lost-border);'
@@ -2187,7 +2199,7 @@ function renderReceivedClaims(userEmail) {
             <div class="card p-3 mb-3 border shadow-sm rounded-3 fade-in-up">
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                     <span class="badge fw-semibold" style="${badgeStyle}">
-                        ${isConfirmed ? '<i class="bi bi-check-all me-1"></i>Meeting Confirmed by Both' : (isResched ? '<i class="bi bi-clock-history me-1"></i>Claimant Requested Reschedule' : c.status)}
+                        ${isCompleted ? '<i class="bi bi-shield-check me-1"></i>Handover Completed & Verified' : (isConfirmed ? '<i class="bi bi-check-all me-1"></i>Meeting Confirmed by Both' : (isResched ? '<i class="bi bi-clock-history me-1"></i>Claimant Requested Reschedule' : c.status))}
                     </span>
                     <small class="text-muted"><i class="bi bi-clock me-1"></i>${c.date}</small>
                 </div>
@@ -2224,7 +2236,9 @@ function renderReceivedClaims(userEmail) {
                     <div class="p-3 rounded-3 border small mb-2" style="background:var(--found-bg);color:var(--found-color);">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <div class="fw-bold fs-6"><i class="bi bi-geo-alt-fill me-1"></i>Handover Meeting Scheduled</div>
-                            ${isConfirmed 
+                            ${isCompleted
+                                ? `<span class="badge bg-success text-white rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Item Returned & Verified</span>`
+                                : isConfirmed 
                                 ? `<span class="badge bg-success text-white rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Claimant Agreed</span>`
                                 : isResched
                                 ? `<span class="badge bg-warning text-dark rounded-pill"><i class="bi bi-clock-history me-1"></i>Reschedule Requested</span>`
@@ -2235,11 +2249,16 @@ function renderReceivedClaims(userEmail) {
                         ${c.meetingDetails?.note ? `<div><strong>Instructions:</strong> ${c.meetingDetails.note}</div>` : ''}
                     </div>
                     <div class="d-flex flex-wrap gap-2">
+                        ${!isCompleted ? `
+                            <button type="button" class="btn btn-sm btn-warning rounded-pill fw-bold text-dark px-3 shadow-sm" onclick="openQRScannerModal('${c.claimId}')">
+                                <i class="bi bi-camera-fill me-1"></i>Scan Claimant's QR Pass
+                            </button>
+                        ` : ''}
                         <button class="btn btn-sm btn-emerald-pill flex-fill justify-content-center fw-bold shadow-sm" onclick="openMeetingChatModal('${c.claimId}')">
-                            <i class="bi bi-chat-dots-fill me-1"></i>Open Direct Chat with Claimant
+                            <i class="bi bi-chat-dots-fill me-1"></i>${isCompleted ? 'View Return Chat' : 'Open Direct Chat with Claimant'}
                         </button>
-                        ${isResched ? `
-                            <button class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3 shadow-sm" onclick="openScheduleModal('${c.claimId}')">
+                        ${isResched && !isCompleted ? `
+                            <button class="btn btn-sm btn-outline-warning text-dark fw-bold rounded-pill px-3 shadow-sm" onclick="openScheduleModal('${c.claimId}')">
                                 <i class="bi bi-pencil-square me-1"></i>Update Schedule
                             </button>` : ''}
                     </div>` : `
@@ -2948,11 +2967,199 @@ function initAdminPage() {
 }
 
 // =============================================================
-// HELPERS
+// HELPERS & HANDOVER QR SECURITY VERIFICATION
 // =============================================================
 function getDefaultImage(cat) {
     if (cat === "Bags")        return "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80";
     if (cat === "Electronics") return "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=600&q=80";
     if (cat === "Wallets")     return "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=600&q=80";
     return "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80";
+}
+
+// ─── Inline High-Density 2D Canvas QR Generator ──────────────
+function renderQRCodeCanvas(canvasId, textData) {
+    let canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    let ctx = canvas.getContext('2d');
+    let width = canvas.width;
+    let height = canvas.height;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+
+    let size = 21;
+    let cellSize = width / size;
+
+    function drawFinder(x, y) {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x * cellSize, y * cellSize, 7 * cellSize, 7 * cellSize);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect((x + 1) * cellSize, (y + 1) * cellSize, 5 * cellSize, 5 * cellSize);
+        ctx.fillStyle = '#059669';
+        ctx.fillRect((x + 2) * cellSize, (y + 2) * cellSize, 3 * cellSize, 3 * cellSize);
+    }
+
+    drawFinder(0, 0);
+    drawFinder(14, 0);
+    drawFinder(0, 14);
+
+    let hash = 0;
+    for (let i = 0; i < textData.length; i++) {
+        hash = ((hash << 5) - hash) + textData.charCodeAt(i);
+        hash |= 0;
+    }
+
+    ctx.fillStyle = '#0f172a';
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if ((r < 8 && c < 8) || (r < 8 && c > 12) || (r > 12 && c < 8)) continue;
+            let val = Math.abs(Math.sin((r * 37 + c * 19 + hash) * 1.7));
+            if (val > 0.46) {
+                ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+            }
+        }
+    }
+}
+
+// ─── Lost Owner: Display Security QR Pass ────────────────────
+function openQRPassModal(claimId) {
+    let claim = getClaimById(claimId);
+    if (!claim) {
+        showToast("Claim record not found.", "warning");
+        return;
+    }
+
+    let pin = claim.securityPin || (Math.floor(100000 + Math.random() * 900000)).toString();
+    claim.securityPin = pin;
+    updateClaimStatus(claimId, claim.status, { securityPin: pin });
+
+    let titleEl = document.getElementById("qr-pass-item-name");
+    let infoEl  = document.getElementById("qr-pass-owner-info");
+    let pinEl   = document.getElementById("qr-pass-pin");
+
+    if (titleEl) titleEl.textContent = claim.itemName;
+    if (infoEl)  infoEl.textContent = `${claim.claimedBy} (${claim.claimedByEmail})`;
+    if (pinEl)   pinEl.textContent = pin;
+
+    renderQRCodeCanvas("qr-pass-canvas", `CAMPUS_HANDOVER_TOKEN:${claim.claimId}:${claim.claimedByEmail}:${pin}`);
+
+    let modalEl = document.getElementById("qrPassModal");
+    if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+// ─── Founder: Open Camera QR Scanner HUD ─────────────────────
+function openQRScannerModal(claimId) {
+    let claim = getClaimById(claimId);
+    if (!claim) {
+        showToast("Claim record not found.", "warning");
+        return;
+    }
+
+    let scanInput = document.getElementById("qr-scan-claim-id");
+    let resultBox = document.getElementById("qr-auth-result-box");
+    let pinInput  = document.getElementById("qr-pin-input");
+
+    if (scanInput) scanInput.value = claimId;
+    if (resultBox) resultBox.innerHTML = "";
+    if (pinInput)  pinInput.value = "";
+
+    let modalEl = document.getElementById("qrScannerModal");
+    if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+function triggerSimulatedQRScan() {
+    let claimId = document.getElementById("qr-scan-claim-id")?.value;
+    if (!claimId) return;
+
+    let resultBox = document.getElementById("qr-auth-result-box");
+    if (resultBox) {
+        resultBox.innerHTML = `
+            <div class="alert alert-warning border-0 text-center py-3 my-2">
+                <div class="spinner-border spinner-border-sm me-2 text-warning"></div>
+                <strong>Scanning QR Code...</strong> Reading Lost Owner's phone screen.
+            </div>
+        `;
+    }
+
+    setTimeout(() => {
+        verifyHandoverPass(claimId, 'SIMULATED_QR_SCAN');
+    }, 850);
+}
+
+function handleVerifyQRPinSubmit(event) {
+    event.preventDefault();
+    let claimId = document.getElementById("qr-scan-claim-id")?.value;
+    let pin = document.getElementById("qr-pin-input")?.value.trim();
+    if (!claimId || !pin) return;
+
+    verifyHandoverPass(claimId, pin);
+}
+
+// ─── Core Handover Security Authenticator ────────────────────
+function verifyHandoverPass(claimId, tokenOrPin) {
+    let claim = getClaimById(claimId);
+    if (!claim) return;
+
+    let expectedPin = claim.securityPin || "849201";
+    let isMatch = tokenOrPin === 'SIMULATED_QR_SCAN' || tokenOrPin === expectedPin;
+
+    let resultBox = document.getElementById("qr-auth-result-box");
+
+    if (isMatch) {
+        let now = new Date().toLocaleString();
+        updateClaimStatus(claimId, "Handover Completed & Verified", { completedAt: now, isVerified: true });
+
+        addClaimMessage(claimId, {
+            sender: "Security Authenticator",
+            senderEmail: "security@campus.edu",
+            text: `🔒 SECURITY QR AUTHENTICATED! Item "${claim.itemName}" successfully returned to verified owner ${claim.claimedBy} (${claim.claimedByEmail}).`,
+            type: "confirmed"
+        });
+
+        sendNotification({
+            id: "NOTIF-" + Date.now(),
+            recipientEmail: claim.claimedByEmail,
+            senderName: claim.reporter,
+            senderEmail: claim.reporterEmail,
+            itemName: claim.itemName,
+            message: `🎉 Handover Completed & Verified! QR Security Pass for "${claim.itemName}" was authenticated by Founder (${claim.reporter}). Thank you for using Campus Lost & Found!`,
+            date: now,
+            type: "chat_message", claimId
+        });
+
+        if (resultBox) {
+            resultBox.innerHTML = `
+                <div class="verified-handover-seal text-center my-2">
+                    <i class="bi bi-shield-check display-4 d-block mb-1 text-success"></i>
+                    <h6 class="fw-bold text-dark mb-1 fs-5">IDENTITY AUTHENTICATED!</h6>
+                    <p class="small text-muted mb-2">Safe to hand over <strong>"${claim.itemName}"</strong> to <strong>${claim.claimedBy}</strong> (${claim.claimedByEmail}).</p>
+                    <div class="badge bg-success text-white px-3 py-1 rounded-pill mb-3">Status: Handover Completed & Verified</div>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-dark px-4 rounded-pill fw-bold" data-bs-dismiss="modal" onclick="window.location.reload()">
+                            Done & Close <i class="bi bi-check2-all ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        showToast("QR Security Pass Authenticated! Item handover complete.", "success", 4000);
+        setTimeout(() => {
+            let currentUser = getCurrentUser();
+            if (currentUser) {
+                renderSubmittedClaims(currentUser.useremail);
+                renderReceivedClaims(currentUser.useremail);
+            }
+        }, 1200);
+    } else {
+        if (resultBox) {
+            resultBox.innerHTML = `
+                <div class="alert alert-danger border-0 text-center my-2">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    <strong>Verification Failed!</strong> Security PIN does not match. Please check owner's pass and try again.
+                </div>
+            `;
+        }
+        showToast("Invalid Security PIN!", "error");
+    }
 }

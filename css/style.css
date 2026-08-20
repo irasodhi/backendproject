@@ -2430,6 +2430,58 @@ footer a:hover { color: var(--emerald-primary); }
     border-color: var(--mint-border);
 }
 
+/* ─── Handover QR Security Verification HUD ────────────────── */
+.qr-scanner-hud {
+    height: 220px;
+    background: #020617;
+    border: 2px solid #334155;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+}
+.qr-laser-beam {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--emerald-primary), #00f0ff, transparent);
+    box-shadow: 0 0 14px var(--emerald-primary), 0 0 28px var(--emerald-primary);
+    animation: qrLaserScan 2s ease-in-out infinite alternate;
+    z-index: 10;
+}
+@keyframes qrLaserScan {
+    0%   { top: 15%; opacity: 0.2; }
+    50%  { opacity: 1; }
+    100% { top: 85%; opacity: 0.2; }
+}
+
+.qr-target-corners .corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-color: var(--emerald-primary);
+    border-style: solid;
+    z-index: 5;
+}
+.qr-target-corners .top-left     { top: 16px; left: 16px; border-width: 3px 0 0 3px; border-top-left-radius: 6px; }
+.qr-target-corners .top-right    { top: 16px; right: 16px; border-width: 3px 3px 0 0; border-top-right-radius: 6px; }
+.qr-target-corners .bottom-left  { bottom: 16px; left: 16px; border-width: 0 0 3px 3px; border-bottom-left-radius: 6px; }
+.qr-target-corners .bottom-right { bottom: 16px; right: 16px; border-width: 0 3px 3px 0; border-bottom-right-radius: 6px; }
+
+.qr-pass-card {
+    border-top: 4px solid var(--emerald-primary) !important;
+}
+.verified-handover-seal {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1.5px solid #a7f3d0;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    color: #064e3b;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+    animation: fadeInUp 0.4s ease both;
+}
+
 /* ─── Responsive Tweaks ─────────────────────────────────────────────────────── */
 @media (max-width: 992px) {
     .hero-display-title { font-size: 2.5rem; }
@@ -2452,4 +2504,5 @@ footer a:hover { color: var(--emerald-primary); }
     .dash-stat-card { padding: 0.9rem; }
     .dash-stat-value { font-size: 1.35rem; }
 }
+
 
