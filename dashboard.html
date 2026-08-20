@@ -69,27 +69,83 @@
         </div>
     </section>
 
-    <main class="py-5" style="background-color:var(--bg-main);">
+    <main class="py-4" style="background-color:var(--bg-main);">
         <div class="container">
+            <!-- Executive Summary Metrics Cards -->
+            <div class="row g-3 mb-4 fade-in-up">
+                <div class="col-6 col-md-3">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon stat-icon-emerald">
+                            <i class="bi bi-collection-fill"></i>
+                        </div>
+                        <div>
+                            <div class="dash-stat-value" id="dash-stat-myreports">0</div>
+                            <div class="dash-stat-label">My Active Reports</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon stat-icon-amber">
+                            <i class="bi bi-bell-fill"></i>
+                        </div>
+                        <div>
+                            <div class="dash-stat-value" id="dash-stat-alerts">0</div>
+                            <div class="dash-stat-label">Found Item Alerts</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon stat-icon-blue">
+                            <i class="bi bi-send-check-fill"></i>
+                        </div>
+                        <div>
+                            <div class="dash-stat-value" id="dash-stat-claims">0</div>
+                            <div class="dash-stat-label">Sent Claims</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon stat-icon-teal">
+                            <i class="bi bi-calendar2-check-fill"></i>
+                        </div>
+                        <div>
+                            <div class="dash-stat-value" id="dash-stat-handovers">0</div>
+                            <div class="dash-stat-label">Confirmed Meetings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Welcome Header Profile Bar -->
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 p-3 bg-white rounded-3 border shadow-sm fade-in-up">
+            <div class="dash-profile-bar mb-4 p-3 bg-white rounded-3 border shadow-sm fade-in-up delay-1">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="brand-icon" style="width:44px;height:44px;font-size:1.3rem;">
+                    <div class="dash-user-avatar" id="dash-user-avatar-badge">
                         <i class="bi bi-person-check-fill"></i>
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                            Welcome back, <span id="dash-user-name" style="color:#059669;">Student</span>
-                        </h4>
-                        <span class="small text-muted"><i class="bi bi-shield-check text-success me-1"></i>Active Campus Session</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <h4 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
+                                Welcome back, <span id="dash-user-name" style="color:#059669;">Student</span>
+                            </h4>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill extra-small px-2 py-1">
+                                <span class="dash-online-dot"></span> Active Session
+                            </span>
+                        </div>
+                        <span class="small text-muted"><i class="bi bi-shield-lock text-success me-1"></i>Verified Campus Student • Multi-Attribute Match Enabled</span>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="report.html?type=lost" class="btn btn-lost btn-sm px-3">
+                    <a href="report.html?type=lost" class="btn btn-lost btn-sm px-3 shadow-sm">
                         <i class="bi bi-plus-circle me-1"></i>Report Lost
                     </a>
-                    <a href="report.html?type=found" class="btn btn-found btn-sm px-3">
+                    <a href="report.html?type=found" class="btn btn-found btn-sm px-3 shadow-sm">
                         <i class="bi bi-plus-circle me-1"></i>Report Found
+                    </a>
+                    <a href="matches.html" class="btn btn-outline-success btn-sm px-3 rounded-pill fw-bold">
+                        <i class="bi bi-cpu me-1"></i>Match Engine
                     </a>
                 </div>
             </div>
@@ -97,60 +153,70 @@
             <div class="row g-4">
                 <!-- Notifications Sidebar -->
                 <div class="col-lg-4">
-                    <div class="bg-white rounded-3 border shadow-sm p-4 h-100 fade-in-up delay-1">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                                <i class="bi bi-bell-fill me-2 text-warning"></i>Notifications
-                            </h5>
-                            <button id="btn-clear-notifications" class="btn btn-sm btn-outline-danger rounded-pill fw-semibold py-1 px-2" onclick="handleClearAllNotifications()" title="Delete all notifications">
-                                <i class="bi bi-trash3 me-1"></i>Clear
+                    <div class="bg-white rounded-3 border shadow-sm p-3 p-md-4 h-100 fade-in-up delay-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-square-sm bg-warning-subtle text-warning rounded-2">
+                                    <i class="bi bi-bell-fill"></i>
+                                </div>
+                                <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;font-size:1.05rem;">
+                                    Notifications
+                                </h5>
+                            </div>
+                            <button id="btn-clear-notifications" class="btn btn-sm btn-outline-danger rounded-pill fw-semibold py-1 px-2.5 extra-small" onclick="handleClearAllNotifications()" title="Delete all notifications">
+                                <i class="bi bi-trash3 me-1"></i>Clear All
                             </button>
                         </div>
-                        <div id="notifications-container" class="rounded border p-2" style="max-height:460px;overflow-y:auto;background:var(--bg-elevated);">
+                        <div id="notifications-container" class="rounded-3 border p-2" style="max-height:480px;overflow-y:auto;background:var(--bg-elevated);">
                             <!-- Dynamic via app.js -->
                         </div>
                     </div>
                 </div>
 
                 <!-- Main Tabbed Content -->
-                <div class="col-lg-8 fade-in-up delay-2">
-                    <!-- Tab Navigation -->
-                    <ul class="nav nav-tabs dash-tabs" id="dashTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="tab-alerts-btn" data-bs-toggle="tab" data-bs-target="#tab-alerts" type="button" role="tab">
-                                <i class="bi bi-bell-fill text-warning"></i> Found Alerts
-                                <span id="tab-alerts-badge" class="tab-badge badge-alert">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab-received-btn" data-bs-toggle="tab" data-bs-target="#tab-received" type="button" role="tab">
-                                <i class="bi bi-shield-check text-success"></i> Claims Received
-                                <span id="tab-received-badge" class="tab-badge">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab-myclaims-btn" data-bs-toggle="tab" data-bs-target="#tab-myclaims" type="button" role="tab">
-                                <i class="bi bi-send-check text-primary"></i> My Claims
-                                <span id="tab-myclaims-badge" class="tab-badge">0</span>
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="tab-reports-btn" data-bs-toggle="tab" data-bs-target="#tab-reports" type="button" role="tab">
-                                <i class="bi bi-collection text-secondary"></i> My Reports
-                                <span id="tab-reports-badge" class="tab-badge">0</span>
-                            </button>
-                        </li>
-                    </ul>
+                <div class="col-lg-8 fade-in-up delay-3">
+                    <!-- Tab Navigation Bar (Pill Segmented Style) -->
+                    <div class="dash-tabs-wrapper mb-3">
+                        <ul class="nav nav-pills dash-tabs-pills" id="dashTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="tab-alerts-btn" data-bs-toggle="tab" data-bs-target="#tab-alerts" type="button" role="tab">
+                                    <i class="bi bi-bell-fill text-warning me-1.5"></i>Found Alerts
+                                    <span id="tab-alerts-badge" class="tab-badge badge-alert ms-1">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-received-btn" data-bs-toggle="tab" data-bs-target="#tab-received" type="button" role="tab">
+                                    <i class="bi bi-shield-check text-success me-1.5"></i>Claims Received
+                                    <span id="tab-received-badge" class="tab-badge ms-1">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-myclaims-btn" data-bs-toggle="tab" data-bs-target="#tab-myclaims" type="button" role="tab">
+                                    <i class="bi bi-send-check text-primary me-1.5"></i>My Claims
+                                    <span id="tab-myclaims-badge" class="tab-badge ms-1">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-reports-btn" data-bs-toggle="tab" data-bs-target="#tab-reports" type="button" role="tab">
+                                    <i class="bi bi-collection text-secondary me-1.5"></i>My Reports
+                                    <span id="tab-reports-badge" class="tab-badge ms-1">0</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
 
                     <!-- Tab Panels -->
                     <div class="tab-content">
                         <!-- Tab 1: Found Alerts -->
                         <div class="tab-pane fade show active tab-content-panel" id="tab-alerts" role="tabpanel">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                                    <i class="bi bi-bell-fill me-2 text-warning"></i>Found Item Alerts
-                                </h6>
-                                <small class="text-muted">Provide hidden details to claim your item</small>
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
+                                        <i class="bi bi-bell-fill me-1.5 text-warning"></i>Found Item Alerts
+                                    </h6>
+                                    <small class="text-muted">Students reported finding items matching your lost reports</small>
+                                </div>
+                                <small class="badge bg-light text-dark border"><i class="bi bi-shield-lock text-success me-1"></i>Private Verification</small>
                             </div>
                             <div id="found-notices-container">
                                 <!-- Dynamic -->
@@ -159,11 +225,14 @@
 
                         <!-- Tab 2: Claims Received -->
                         <div class="tab-pane fade tab-content-panel" id="tab-received" role="tabpanel">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                                    <i class="bi bi-shield-check me-2 text-success"></i>Claim Requests Received
-                                </h6>
-                                <small class="text-muted">Verify hidden details & schedule meeting</small>
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
+                                        <i class="bi bi-shield-check me-1.5 text-success"></i>Claim Requests Received
+                                    </h6>
+                                    <small class="text-muted">Verify claimant proof & schedule handover meetings</small>
+                                </div>
+                                <small class="badge bg-light text-dark border"><i class="bi bi-calendar-check text-success me-1"></i>Campus Meeting Flow</small>
                             </div>
                             <div id="received-claims-container">
                                 <!-- Dynamic -->
@@ -172,11 +241,14 @@
 
                         <!-- Tab 3: My Sent Claims -->
                         <div class="tab-pane fade tab-content-panel" id="tab-myclaims" role="tabpanel">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                                    <i class="bi bi-send-check me-2 text-success"></i>My Sent Claim Requests
-                                </h6>
-                                <small class="text-muted">Track approval status & meeting details</small>
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
+                                        <i class="bi bi-send-check me-1.5 text-success"></i>My Sent Claim Requests
+                                    </h6>
+                                    <small class="text-muted">Track status, confirm times & chat with founders</small>
+                                </div>
+                                <small class="badge bg-light text-dark border"><i class="bi bi-chat-dots text-primary me-1"></i>Direct Messaging</small>
                             </div>
                             <div id="submitted-claims-container">
                                 <!-- Dynamic -->
@@ -185,11 +257,16 @@
 
                         <!-- Tab 4: My Reports -->
                         <div class="tab-pane fade tab-content-panel" id="tab-reports" role="tabpanel">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                                    <i class="bi bi-collection me-2 text-success"></i>My Submitted Reports
-                                </h6>
-                                <small class="text-muted">Manage your active reports</small>
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
+                                        <i class="bi bi-collection me-1.5 text-success"></i>My Submitted Reports
+                                    </h6>
+                                    <small class="text-muted">Manage your active lost and found reports</small>
+                                </div>
+                                <a href="report.html" class="btn btn-sm btn-outline-success rounded-pill fw-bold py-0 px-2.5 extra-small">
+                                    <i class="bi bi-plus-lg me-1"></i>New Report
+                                </a>
                             </div>
                             <div id="my-lost-container">
                                 <!-- Dynamic -->
@@ -269,17 +346,29 @@
     <!-- Handover Chat & Meeting Coordination Modal (Direct Texting & Rescheduling) -->
     <div class="modal fade" id="meetingChatModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header">
-                    <div>
-                        <h5 class="modal-title fw-bold text-white mb-0" style="font-family:'Sora',sans-serif;">
-                            <i class="bi bi-chat-dots-fill me-2" style="color:var(--emerald-primary);"></i>Handover Coordination & Direct Chat
-                        </h5>
-                        <small class="text-light opacity-75 extra-small" id="chat-modal-subtitle">Connecting Lost Owner & Finder</small>
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Authentic Messenger Modal Header -->
+                <div class="chat-modal-header p-3 bg-dark text-white d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="chat-partner-avatar" id="chat-partner-avatar">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h6 class="modal-title fw-bold text-white mb-0" id="chat-modal-title" style="font-family:'Sora',sans-serif;font-size:1.05rem;">
+                                    Campus Handover Chat
+                                </h6>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill extra-small px-2 py-0.5" id="chat-online-badge">
+                                    <span class="chat-online-dot"></span> Online
+                                </span>
+                            </div>
+                            <small class="text-light opacity-75 extra-small" id="chat-modal-subtitle">Connecting Lost Owner & Finder • End-to-End Encrypted Session</small>
+                        </div>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-4">
+
+                <div class="modal-body p-3 p-md-4 style-chat-body">
                     <input type="hidden" id="chat-current-claim-id">
                     
                     <!-- Meeting Summary Card & Actions -->
@@ -289,7 +378,7 @@
 
                     <!-- Inline Reschedule Form (Hidden by default) -->
                     <div id="inline-reschedule-box" class="p-3 mb-3 rounded-3 border d-none fade-in" style="background:#fffbeb;border-color:#fde68a!important;">
-                        <h6 class="fw-bold text-dark mb-2" style="font-size:0.9rem;">
+                        <h6 class="fw-bold text-dark mb-2" style="font-size:0.88rem;">
                             <i class="bi bi-clock-history text-warning me-1"></i>Request Time / Location Change
                         </h6>
                         <div class="row g-2 mb-2">
@@ -314,14 +403,17 @@
                         </div>
                     </div>
 
-                    <!-- Direct Chat Message Stream -->
-                    <div class="mb-2 d-flex justify-content-between align-items-center">
-                        <span class="small fw-bold text-dark text-uppercase" style="letter-spacing:0.04em;">
-                            <i class="bi bi-chat-left-text-fill text-success me-1"></i>Direct Conversation
+                    <!-- Conversation Header & Thread Bar -->
+                    <div class="mb-2 d-flex justify-content-between align-items-center px-1">
+                        <span class="extra-small fw-bold text-uppercase text-muted" style="letter-spacing:0.06em;">
+                            <i class="bi bi-chat-left-text-fill text-success me-1"></i>Direct Conversation Stream
                         </span>
-                        <span class="badge bg-light text-muted border extra-small"><i class="bi bi-shield-lock-fill text-success me-1"></i>Secure Campus Thread</span>
+                        <span class="badge bg-light text-secondary border extra-small px-2 py-1">
+                            <i class="bi bi-shield-check text-success me-1"></i>Campus Verified
+                        </span>
                     </div>
 
+                    <!-- Direct Chat Message Stream Container -->
                     <div id="chat-messages-container" class="chat-conversation-container mb-3">
                         <!-- Populated dynamically with bubbles -->
                     </div>
@@ -336,10 +428,13 @@
                     </div>
 
                     <!-- Send Message Input Bar -->
-                    <form id="chat-send-form" onsubmit="handleSendChatMessage(event)" class="d-flex gap-2">
-                        <input type="text" id="chat-input-text" class="form-control" placeholder="Type a message to coordinate handover details (e.g. I am waiting near the desk)…" required autocomplete="off">
-                        <button type="submit" class="btn btn-emerald-pill px-4 flex-shrink-0 d-flex align-items-center gap-1">
-                            <span>Send</span> <i class="bi bi-send-fill"></i>
+                    <form id="chat-send-form" onsubmit="handleSendChatMessage(event)" class="chat-send-input-group d-flex align-items-center gap-2">
+                        <div class="chat-input-wrapper flex-grow-1 position-relative">
+                            <i class="bi bi-chat-dots chat-input-icon text-muted"></i>
+                            <input type="text" id="chat-input-text" class="form-control chat-input-field" placeholder="Type a message (e.g. I'm near the main entrance desk)..." required autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn btn-emerald-pill px-4 flex-shrink-0 d-flex align-items-center justify-content-center gap-1.5 shadow-sm">
+                            <span>Send</span> <i class="bi bi-send-fill text-white" style="font-size:0.85rem;"></i>
                         </button>
                     </form>
                 </div>

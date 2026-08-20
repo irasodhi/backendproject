@@ -1721,6 +1721,36 @@ function initDashboardPage() {
     let nameEl = document.getElementById("dash-user-name");
     if (nameEl) nameEl.innerText = currentUser.username;
 
+    // Update user profile avatar badge initials
+    let avatarEl = document.getElementById("dash-user-avatar-badge");
+    if (avatarEl && currentUser.username) {
+        let initials = currentUser.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        avatarEl.innerText = initials;
+    }
+
+    // Calculate Summary Stats
+    let reports = getReports();
+    let claims  = getClaims();
+    let notifs  = getNotifications(currentUser.useremail);
+
+    let myReportsCount = reports.filter(r => r.postedByEmail?.toLowerCase().trim() === currentUser.useremail?.toLowerCase().trim()).length;
+    let alertsCount    = notifs.filter(n => n.type === "owner_notification" || (n.message && n.message.includes("Good News"))).length;
+    let claimsCount    = claims.filter(c => c.claimedByEmail?.toLowerCase().trim() === currentUser.useremail?.toLowerCase().trim()).length;
+    let handoversCount = claims.filter(c => 
+        (c.claimedByEmail?.toLowerCase().trim() === currentUser.useremail?.toLowerCase().trim() || c.reporterEmail?.toLowerCase().trim() === currentUser.useremail?.toLowerCase().trim()) &&
+        (c.status === "Approved & Meeting Scheduled" || c.status === "Meeting Confirmed by Both Parties")
+    ).length;
+
+    let elMyReports = document.getElementById("dash-stat-myreports");
+    let elAlerts    = document.getElementById("dash-stat-alerts");
+    let elClaims    = document.getElementById("dash-stat-claims");
+    let elHandovers = document.getElementById("dash-stat-handovers");
+
+    if (elMyReports) animateCountUp(elMyReports, myReportsCount, 600);
+    if (elAlerts)    animateCountUp(elAlerts, alertsCount, 750);
+    if (elClaims)    animateCountUp(elClaims, claimsCount, 900);
+    if (elHandovers) animateCountUp(elHandovers, handoversCount, 1050);
+
     renderNotificationsFeed(currentUser.useremail);
     renderFoundNotices(currentUser.useremail);
     renderReceivedClaims(currentUser.useremail);
@@ -2342,10 +2372,19 @@ function openMeetingChatModal(claimId) {
     let hiddenClaimInput = document.getElementById("chat-current-claim-id");
     if (hiddenClaimInput) hiddenClaimInput.value = claimId;
 
+    let isClaimant = currentUser && claim.claimedByEmail && currentUser.useremail &&
+                     claim.claimedByEmail.toLowerCase().trim() === currentUser.useremail.toLowerCase().trim();
+    let partnerName  = isClaimant ? claim.reporter : claim.claimedBy;
+    let partnerRole  = isClaimant ? "Finder" : "Lost Owner";
+    let partnerInit  = partnerName ? partnerName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'P';
+
+    let titleEl    = document.getElementById("chat-modal-title");
     let subtitleEl = document.getElementById("chat-modal-subtitle");
-    if (subtitleEl) {
-        subtitleEl.textContent = `Item: "${claim.itemName}" — Finder: ${claim.reporter} ↔ Lost Owner: ${claim.claimedBy}`;
-    }
+    let avatarEl   = document.getElementById("chat-partner-avatar");
+
+    if (titleEl)    titleEl.textContent = `Chat with ${partnerName} (${partnerRole})`;
+    if (subtitleEl) subtitleEl.textContent = `Item: "${claim.itemName}" • End-to-End Encrypted Session`;
+    if (avatarEl)   avatarEl.textContent = partnerInit;
 
     renderMeetingChatContent(claim, currentUser);
 
@@ -2452,13 +2491,14 @@ function renderMeetingChatContent(claim, currentUser) {
     if (messages.length === 0) {
         msgContainer.innerHTML = `
             <div class="text-center py-4 text-muted my-auto">
+                <div class="chat-date-divider">Today</div>
                 <i class="bi bi-chat-heart fs-3 d-block mb-2 text-success opacity-40"></i>
                 <div class="small fw-semibold text-dark mb-1">Direct Chat Started</div>
                 <div class="extra-small">Send a message to coordinate meeting location, clothing, or schedule changes.</div>
             </div>
         `;
     } else {
-        msgContainer.innerHTML = "";
+        msgContainer.innerHTML = `<div class="chat-date-divider">Today</div>`;
         messages.forEach(msg => {
             if (msg.type === "status" || msg.type === "confirmed" || msg.type === "reschedule") {
                 let pillClass = msg.type === "confirmed" ? "confirmed" : (msg.type === "reschedule" ? "reschedule" : "");
@@ -2477,9 +2517,11 @@ function renderMeetingChatContent(claim, currentUser) {
                     <div class="chat-bubble-row ${isMine ? 'outgoing' : 'incoming'}">
                         <div class="chat-avatar-mini" title="${msg.sender}">${senderInitials}</div>
                         <div class="chat-bubble ${isMine ? 'chat-bubble-outgoing' : 'chat-bubble-incoming'}">
-                            <div class="extra-small fw-bold opacity-75 mb-1">${isMine ? 'You' : msg.sender}</div>
+                            ${!isMine ? `<span class="chat-sender-tag text-muted">${msg.sender}</span>` : ''}
                             <div>${msg.text}</div>
-                            <span class="chat-meta-time">${msg.time}</span>
+                            <span class="chat-meta-time">
+                                ${msg.time} ${isMine ? '<span class="chat-tick-mark ms-1">✓✓</span>' : ''}
+                            </span>
                         </div>
                     </div>
                 `;
