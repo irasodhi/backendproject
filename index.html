@@ -257,14 +257,7 @@
             </div>
         </section>
 
-        <!-- Wave Divider (Curved Organic Split from Dark Hero to Clean White Section) -->
-        <div class="wave-divider-wrap">
-            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-                <path fill="#ffffff" d="M0,32 C240,75 480,85 720,50 C960,15 1200,5 1440,32 L1440,80 L0,80 Z"></path>
-            </svg>
-        </div>
-
-        <!-- Live Recovery Activity Ticker -->
+        <!-- Live Recovery Activity Ticker (Deep Dark High-Contrast Bar) -->
         <div class="recovery-ticker-wrap">
             <div class="recovery-ticker-track">
                 <div class="ticker-item">
@@ -293,6 +286,13 @@
                     <span>⚡ 96.0% similarity match for <strong>Black Nike Backpack</strong> in Zone 2</span>
                 </div>
             </div>
+        </div>
+
+        <!-- Wave Divider (Curved Organic Split from Dark Ticker to Clean White Section) -->
+        <div class="wave-divider-wrap">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+                <path fill="#ffffff" d="M0,32 C240,75 480,85 720,50 C960,15 1200,5 1440,32 L1440,80 L0,80 Z"></path>
+            </svg>
         </div>
 
         <!-- "Delivering The Future" Section (Matching Reference Image) -->
@@ -338,46 +338,97 @@
                 </div>
 
                 <!-- Interactive 6-Factor Similarity Simulator -->
-                <div class="simulator-container reveal-item mt-5">
-                    <div class="row align-items-center g-4">
+                <div class="simulator-container reveal-item mt-5" id="ai-simulator-card">
+                    <!-- Ambient Background Lighting -->
+                    <div class="sim-ambient-glow sim-glow-1"></div>
+                    <div class="sim-ambient-glow sim-glow-2"></div>
+
+                    <div class="row align-items-center g-4 position-relative" style="z-index: 3;">
                         <div class="col-lg-5 text-center text-lg-start">
-                            <span class="badge rounded-pill px-3 py-2 mb-2" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);font-size:0.75rem;border:1px solid rgba(0,230,118,0.4);">
-                                <i class="bi bi-sliders me-1"></i>Interactive AI Simulator
-                            </span>
-                            <h3 class="fw-bold text-white mb-2" style="font-family:'Sora',sans-serif;">Test the Matching Engine</h3>
-                            <p class="small text-light opacity-75 mb-4">
-                                Select sample scenarios below to see how our 6-factor weighted algorithm computes real-time confidence scores.
+                            <div class="d-flex align-items-center gap-2 mb-2 justify-content-center justify-content-lg-start">
+                                <span class="sim-live-badge">
+                                    <span class="radar-pulse"></span>
+                                    <i class="bi bi-cpu-fill me-1"></i>NEURAL SIMULATOR v2.4
+                                </span>
+                                <span class="badge rounded-pill bg-dark border border-success-subtle text-success extra-small">
+                                    <i class="bi bi-activity me-1"></i>Real-Time
+                                </span>
+                            </div>
+                            <h3 class="fw-bold text-white mb-2" style="font-family:'Sora',sans-serif;letter-spacing:-0.02em;">
+                                Test the <span class="text-emerald-glow">Matching Engine</span>
+                            </h3>
+                            <p class="small text-light opacity-75 mb-3">
+                                Select sample comparisons below to watch our 6-factor neural engine calculate real-time similarity in 3D.
                             </p>
 
-                            <!-- Scenario Selector -->
+                            <!-- Interactive Scenario Quick Pill Switcher -->
+                            <div class="sim-scenario-pills mb-3">
+                                <button type="button" class="sim-pill-btn active" id="pill-scenario-high" data-scenario="high" onclick="switchSimScenario('high')">
+                                    <span class="sim-pill-dot dot-emerald"></span> Scenario A (96%)
+                                </button>
+                                <button type="button" class="sim-pill-btn" id="pill-scenario-med" data-scenario="med" onclick="switchSimScenario('med')">
+                                    <span class="sim-pill-dot dot-cyan"></span> Scenario B (74%)
+                                </button>
+                                <button type="button" class="sim-pill-btn" id="pill-scenario-low" data-scenario="low" onclick="switchSimScenario('low')">
+                                    <span class="sim-pill-dot dot-rose"></span> Scenario C (12%)
+                                </button>
+                            </div>
+
+                            <!-- Dropdown Selector -->
                             <div class="mb-4">
-                                <label class="small fw-semibold text-light opacity-75 mb-1 d-block">Choose Demo Comparison:</label>
-                                <select id="sim-scenario-select" class="form-select bg-dark text-white border-secondary" onchange="updateSimulatorScenario(this.value)">
+                                <select id="sim-scenario-select" class="form-select sim-select-custom" onchange="switchSimScenario(this.value)">
                                     <option value="high">Scenario A: Nike Backpack (High Confidence Match - 96%)</option>
                                     <option value="med">Scenario B: iPhone 14 Pro (Partial Color/Zone Match - 74%)</option>
                                     <option value="low">Scenario C: Casio Watch vs Water Bottle (Zero Match - 12%)</option>
                                 </select>
                             </div>
 
-                            <!-- Animated Score Display Ring -->
-                            <div class="sim-score-ring">
-                                <div class="sim-num" id="sim-score-num">96%</div>
-                                <span class="small text-white-50 fw-bold" style="font-size:0.7rem;">CONFIDENCE</span>
+                            <!-- Futuristic Holographic SVG Progress Ring HUD -->
+                            <div class="sim-hud-center">
+                                <div class="sim-score-ring" id="sim-score-ring-wrap">
+                                    <!-- SVG Radial Meter -->
+                                    <svg class="sim-svg-meter" viewBox="0 0 160 160">
+                                        <defs>
+                                            <linearGradient id="simMeterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stop-color="#00e676" id="sim-grad-stop-1" />
+                                                <stop offset="100%" stop-color="#00f0ff" id="sim-grad-stop-2" />
+                                            </linearGradient>
+                                            <filter id="simGlowFilter" x="-20%" y="-20%" width="140%" height="140%">
+                                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                            </filter>
+                                        </defs>
+                                        <!-- Background Circle -->
+                                        <circle cx="80" cy="80" r="66" class="sim-svg-bg" />
+                                        <!-- Animated Progress Stroke -->
+                                        <circle cx="80" cy="80" r="66" class="sim-svg-bar" id="sim-svg-progress" style="stroke-dasharray: 414.7; stroke-dashoffset: 16.59;" />
+                                    </svg>
+
+                                    <!-- Central Digital HUD Readout -->
+                                    <div class="sim-hud-core">
+                                        <div class="sim-num" id="sim-score-num">96%</div>
+                                        <span class="sim-conf-label">CONFIDENCE</span>
+                                        <span class="sim-status-pill tier-high" id="sim-status-pill">MATCH FOUND</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- 6-Factor Weight Breakdown Bars -->
                         <div class="col-lg-7">
-                            <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
-                                <h6 class="fw-bold text-white mb-3" style="font-family:'Sora',sans-serif;">
-                                    <i class="bi bi-pie-chart text-success me-2"></i>Multi-Attribute Mathematical Weights (100% Total)
-                                </h6>
+                            <div class="sim-breakdown-glass-panel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold text-white mb-0" style="font-family:'Sora',sans-serif;font-size:0.92rem;">
+                                        <i class="bi bi-pie-chart text-success me-2"></i>Multi-Attribute Mathematical Weights
+                                    </h6>
+                                    <span class="badge rounded-pill" style="background:rgba(0,230,118,0.15);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);font-size:0.7rem;">100% Total</span>
+                                </div>
 
                                 <!-- Brand / Name -->
-                                <div class="sim-weight-bar-item">
+                                <div class="sim-weight-bar-item" data-factor="brand">
                                     <div class="sim-weight-header">
-                                        <span><i class="bi bi-award text-success me-1"></i>Brand & Name NLP (25% max)</span>
-                                        <span id="sim-val-brand" class="fw-bold text-success">25.0 pts (Exact Brand)</span>
+                                        <span><i class="bi bi-award-fill text-success me-1"></i>Brand & Name NLP (25% max)</span>
+                                        <span id="sim-val-brand" class="sim-val-badge">25.0 pts (Exact Brand)</span>
                                     </div>
                                     <div class="sim-progress-track">
                                         <div id="sim-bar-brand" class="sim-progress-fill" style="width: 100%;"></div>
@@ -385,10 +436,10 @@
                                 </div>
 
                                 <!-- Campus Zone -->
-                                <div class="sim-weight-bar-item">
+                                <div class="sim-weight-bar-item" data-factor="zone">
                                     <div class="sim-weight-header">
-                                        <span><i class="bi bi-geo-alt text-success me-1"></i>Campus Zone Proximity (20% max)</span>
-                                        <span id="sim-val-zone" class="fw-bold text-success">20.0 pts (Exact Zone)</span>
+                                        <span><i class="bi bi-geo-alt-fill text-success me-1"></i>Campus Zone Proximity (20% max)</span>
+                                        <span id="sim-val-zone" class="sim-val-badge">20.0 pts (Exact Zone)</span>
                                     </div>
                                     <div class="sim-progress-track">
                                         <div id="sim-bar-zone" class="sim-progress-fill" style="width: 100%;"></div>
@@ -396,10 +447,10 @@
                                 </div>
 
                                 <!-- Category -->
-                                <div class="sim-weight-bar-item">
+                                <div class="sim-weight-bar-item" data-factor="cat">
                                     <div class="sim-weight-header">
-                                        <span><i class="bi bi-tag text-success me-1"></i>Category & Device (20% max)</span>
-                                        <span id="sim-val-cat" class="fw-bold text-success">20.0 pts (100% Match)</span>
+                                        <span><i class="bi bi-tag-fill text-success me-1"></i>Category & Device (20% max)</span>
+                                        <span id="sim-val-cat" class="sim-val-badge">20.0 pts (100% Match)</span>
                                     </div>
                                     <div class="sim-progress-track">
                                         <div id="sim-bar-cat" class="sim-progress-fill" style="width: 100%;"></div>
@@ -407,10 +458,10 @@
                                 </div>
 
                                 <!-- Color -->
-                                <div class="sim-weight-bar-item">
+                                <div class="sim-weight-bar-item" data-factor="color">
                                     <div class="sim-weight-header">
-                                        <span><i class="bi bi-palette text-success me-1"></i>Color Similarity (15% max)</span>
-                                        <span id="sim-val-color" class="fw-bold text-success">15.0 pts (Identical)</span>
+                                        <span><i class="bi bi-palette-fill text-success me-1"></i>Color Similarity (15% max)</span>
+                                        <span id="sim-val-color" class="sim-val-badge">15.0 pts (Identical)</span>
                                     </div>
                                     <div class="sim-progress-track">
                                         <div id="sim-bar-color" class="sim-progress-fill" style="width: 100%;"></div>
@@ -418,10 +469,10 @@
                                 </div>
 
                                 <!-- Date Interval -->
-                                <div class="sim-weight-bar-item">
+                                <div class="sim-weight-bar-item" data-factor="date">
                                     <div class="sim-weight-header">
-                                        <span><i class="bi bi-calendar-event text-success me-1"></i>Date Interval (10% max)</span>
-                                        <span id="sim-val-date" class="fw-bold text-success">8.8 pts (1 Day Apart)</span>
+                                        <span><i class="bi bi-calendar-event-fill text-success me-1"></i>Date Interval (10% max)</span>
+                                        <span id="sim-val-date" class="sim-val-badge">8.8 pts (1 Day Apart)</span>
                                     </div>
                                     <div class="sim-progress-track">
                                         <div id="sim-bar-date" class="sim-progress-fill" style="width: 88%;"></div>
@@ -429,10 +480,10 @@
                                 </div>
 
                                 <!-- Description Semantic NLP -->
-                                <div class="sim-weight-bar-item mb-0">
+                                <div class="sim-weight-bar-item mb-0" data-factor="desc">
                                     <div class="sim-weight-header">
                                         <span><i class="bi bi-body-text text-success me-1"></i>Semantic Description NLP (10% max)</span>
-                                        <span id="sim-val-desc" class="fw-bold text-success">9.2 pts (Keywords Overlap)</span>
+                                        <span id="sim-val-desc" class="sim-val-badge">9.2 pts (Keywords Overlap)</span>
                                     </div>
                                     <div class="sim-progress-track">
                                         <div id="sim-bar-desc" class="sim-progress-fill" style="width: 92%;"></div>
