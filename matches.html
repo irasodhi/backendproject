@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Engine Results — Campus Lost & Found</title>
+    <meta name="description" content="View ranked probability matches for your lost or found item using our intelligent multi-attribute scoring algorithm.">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Sora + Inter Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="matches">
+
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="brand-icon"><i class="bi bi-search-heart"></i></span>
+                <span>CampusLost<span style="color:var(--emerald-primary);">&</span>Found</span>
+            </a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="bi bi-list fs-2 text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="bi bi-house-door me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="report.html"><i class="bi bi-plus-circle me-1"></i>Report Item</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="matches.html"><i class="bi bi-cpu me-1"></i>Match Engine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="nav-bell-link" href="dashboard.html" title="Notifications">
+                            <i class="bi bi-bell-fill"></i>
+                            <span id="nav-notif-badge" class="notif-badge d-none">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
+                        <a class="btn btn-sm btn-outline-light rounded-pill px-3" href="login.html">
+                            <i class="bi bi-person me-1"></i>Sign In
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Subpage Banner (TenFore Emerald Dark) -->
+    <section class="subpage-banner text-center">
+        <div class="container">
+            <div class="subpage-badge fade-in-up">
+                <i class="bi bi-cpu"></i> 5-Factor Similarity Scoring
+            </div>
+            <h1 class="subpage-title fade-in-up delay-1">Probable Match Engine</h1>
+            <p class="subpage-subtitle mx-auto fade-in-up delay-2">
+                Multi-attribute mathematical vector comparison ranking candidates by calculated similarity score.
+            </p>
+        </div>
+    </section>
+
+    <main class="py-5" style="background-color:var(--bg-main);">
+        <div class="container">
+            <!-- Selector Header Bar -->
+            <div class="row align-items-center mb-4 g-3 fade-in-up">
+                <div class="col-md-5">
+                    <h4 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
+                        <i class="bi bi-crosshair text-success me-2"></i>Active Target Item
+                    </h4>
+                    <p class="text-muted small mb-0">Select which of your submissions to run matching against.</p>
+                </div>
+                <div class="col-md-7">
+                    <div class="input-group">
+                        <span class="input-group-text border-0 text-dark" style="background:var(--emerald-primary);font-weight:bold;">
+                            <i class="bi bi-funnel-fill"></i>
+                        </span>
+                        <select id="target-report-select" class="form-select border-0 shadow-sm fw-semibold">
+                            <!-- Populated dynamically by app.js -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Item Summary Banner -->
+            <div id="target-item-banner"></div>
+
+            <!-- Sort / Filter Controls Bar -->
+            <div class="match-controls-bar fade-in-up delay-1">
+                <!-- Search Filter -->
+                <div class="d-flex align-items-center gap-2 flex-grow-1" style="min-width:200px;">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search text-success"></i></span>
+                        <input type="text" id="match-search-input" class="form-control border-start-0" placeholder="Filter matches by keyword, brand, room…">
+                    </div>
+                </div>
+
+                <!-- Sort By -->
+                <div class="d-flex align-items-center gap-2">
+                    <label><i class="bi bi-sort-down me-1 text-success"></i>Sort:</label>
+                    <select id="match-sort-select" class="form-select">
+                        <option value="score">Highest Score First</option>
+                        <option value="name">Item Name (A→Z)</option>
+                        <option value="zone">Campus Zone (A→Z)</option>
+                        <option value="date">Date (Newest First)</option>
+                    </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="d-flex align-items-center gap-2">
+                    <label><i class="bi bi-tag me-1 text-success"></i>Category:</label>
+                    <select id="match-cat-filter" class="form-select">
+                        <option value="all">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Bags">Bags</option>
+                        <option value="Wallets">Wallets</option>
+                        <option value="ID Cards">ID Cards</option>
+                        <option value="Keys">Keys</option>
+                        <option value="Books">Books</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Confidence Tier Filter -->
+                <div class="d-flex align-items-center gap-2">
+                    <label><i class="bi bi-funnel me-1 text-success"></i>Confidence:</label>
+                    <select id="match-confidence-filter" class="form-select">
+                        <option value="all">All Scores</option>
+                        <option value="high">High Confidence (70%+)</option>
+                        <option value="med">Moderate & Above (45%+)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Counter Bar -->
+            <div class="d-flex justify-content-between align-items-center mb-3 fade-in-up delay-2 flex-wrap gap-2">
+                <span class="text-muted fw-semibold small">
+                    Showing <span id="matches-count" class="fw-bold fs-6" style="color:#059669;">0</span> candidate matches
+                </span>
+                <span class="badge rounded-pill px-3 py-2" style="background:var(--mint-light);color:#059669;font-weight:600;font-size:0.75rem;">
+                    Brand/Name(25%) · Zone(20%) · Category(20%) · Color(15%) · Date(10%) · NLP(10%)
+                </span>
+            </div>
+
+            <!-- Matches List Grid -->
+            <div class="row g-4" id="matches-grid">
+                <!-- Populated dynamically via app.js -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Side-by-Side Comparison Modal -->
+    <div class="modal fade" id="compareModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white" style="font-family:'Sora',sans-serif;">
+                        <i class="bi bi-layout-split me-2" style="color:var(--emerald-primary);"></i>Side-by-Side Item Attribute Comparison
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="compare-modal-body">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Claim & Contact Verification Modal -->
+    <div class="modal fade" id="claimModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white" style="font-family:'Sora',sans-serif;">
+                        <i class="bi bi-shield-check me-2" style="color:var(--emerald-primary);"></i>Claim Item & Contact Reporter
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="claim-modal-body">
+                        <!-- Populated by app.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Handover Chat & Meeting Coordination Modal (Direct Texting & Rescheduling) -->
+    <div class="modal fade" id="meetingChatModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title fw-bold text-white mb-0" style="font-family:'Sora',sans-serif;">
+                            <i class="bi bi-chat-dots-fill me-2" style="color:var(--emerald-primary);"></i>Handover Coordination & Direct Chat
+                        </h5>
+                        <small class="text-light opacity-75 extra-small" id="chat-modal-subtitle">Connecting Lost Owner & Finder</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="chat-current-claim-id">
+                    
+                    <!-- Meeting Summary Card & Actions -->
+                    <div id="chat-meeting-summary-box" class="meeting-coordination-card mb-3">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Inline Reschedule Form (Hidden by default) -->
+                    <div id="inline-reschedule-box" class="p-3 mb-3 rounded-3 border d-none fade-in" style="background:#fffbeb;border-color:#fde68a!important;">
+                        <h6 class="fw-bold text-dark mb-2" style="font-size:0.9rem;">
+                            <i class="bi bi-clock-history text-warning me-1"></i>Request Time / Location Change
+                        </h6>
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label extra-small fw-semibold mb-1">Proposed Suitable Time <span class="text-danger">*</span></label>
+                                <input type="text" id="reschedule-time-input" class="form-control form-control-sm" placeholder="e.g. Tomorrow at 2:00 PM">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label extra-small fw-semibold mb-1">Proposed Location (Optional)</label>
+                                <input type="text" id="reschedule-location-input" class="form-control form-control-sm" placeholder="e.g. Cafeteria Entrance">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label extra-small fw-semibold mb-1">Reason / Note for Founder</label>
+                            <input type="text" id="reschedule-note-input" class="form-control form-control-sm" placeholder="e.g. I have a class at 4:30 PM, can we meet slightly earlier?">
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-sm btn-light rounded-pill px-3" onclick="toggleRescheduleBox(false)">Cancel</button>
+                            <button type="button" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark" onclick="submitRescheduleRequest()">
+                                <i class="bi bi-send-fill me-1"></i>Send Reschedule Request
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Direct Chat Message Stream -->
+                    <div class="mb-2 d-flex justify-content-between align-items-center">
+                        <span class="small fw-bold text-dark text-uppercase" style="letter-spacing:0.04em;">
+                            <i class="bi bi-chat-left-text-fill text-success me-1"></i>Direct Conversation
+                        </span>
+                        <span class="badge bg-light text-muted border extra-small"><i class="bi bi-shield-lock-fill text-success me-1"></i>Secure Campus Thread</span>
+                    </div>
+
+                    <div id="chat-messages-container" class="chat-conversation-container mb-3">
+                        <!-- Populated dynamically with bubbles -->
+                    </div>
+
+                    <!-- Quick Reply Suggestions -->
+                    <div class="chat-quick-replies mb-2">
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('📍 I have arrived at the handover location')">📍 I have arrived</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('🏃 On my way! Arriving in 5 minutes')">🏃 On my way (5 mins)</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('👋 I am waiting near the reception/entrance')">👋 Waiting near entrance</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('⏰ Could we meet 10 minutes later?')">⏰ 10 min delay</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('✅ Handover completed! Thank you so much')">✅ Handover complete</button>
+                    </div>
+
+                    <!-- Send Message Input Bar -->
+                    <form id="chat-send-form" onsubmit="handleSendChatMessage(event)" class="d-flex gap-2">
+                        <input type="text" id="chat-input-text" class="form-control" placeholder="Type a message to coordinate handover details (e.g. I am waiting near the desk)…" required autocomplete="off">
+                        <button type="submit" class="btn btn-emerald-pill px-4 flex-shrink-0 d-flex align-items-center gap-1">
+                            <span>Send</span> <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center small">
+            © 2026 Campus Lost & Found System. Powered by Intelligent Multi-Attribute Matching.
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/matching.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
