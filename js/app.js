@@ -247,10 +247,11 @@ function initHomePage() {
     if (typeSelect) typeSelect.onchange = filterCards;
     if (catSelect)  catSelect.onchange  = filterCards;
 
-    // Initialize 3D Parallax Tilt, Scroll Reveal, and Navbar Scroll Effect
+    // Initialize 3D Parallax Tilt, Scroll Reveal, Navbar Scroll Effect, and Simulator Tilt
     init3DParallaxTilt();
     initScrollReveal();
     initNavbarScroll();
+    initSimulatorTilt();
 }
 
 // ─── 3D Parallax Tilt on Hero Mockup ────────────────────────────────────────
@@ -315,13 +316,14 @@ document.addEventListener("selectstart", function (e) {
     return false;
 });
 
-// ─── Interactive AI Matching Simulator Handler ──────────────────────────────
+// ─── Interactive AI Matching Simulator Handler (Ultra-Animated) ──────────────
 let currentSimScore = 96;
 
-function animateScoreCount(targetVal, targetColor) {
+function animateScoreCount(targetVal, targetColor, textShadow) {
     let scoreEl = document.getElementById("sim-score-num");
     if (!scoreEl) return;
     scoreEl.style.color = targetColor;
+    if (textShadow) scoreEl.style.textShadow = textShadow;
     
     let startVal = currentSimScore;
     let startTime = null;
@@ -343,7 +345,38 @@ function animateScoreCount(targetVal, targetColor) {
     requestAnimationFrame(step);
 }
 
-function updateSimulatorScenario(scenarioKey) {
+function updateSvgMeter(scorePct, color1, color2) {
+    let svgBar = document.getElementById("sim-svg-progress");
+    let stop1  = document.getElementById("sim-grad-stop-1");
+    let stop2  = document.getElementById("sim-grad-stop-2");
+
+    if (stop1 && color1) stop1.setAttribute("stop-color", color1);
+    if (stop2 && color2) stop2.setAttribute("stop-color", color2);
+
+    if (svgBar) {
+        let circumference = 414.7; // 2 * PI * 66
+        let offset = circumference - (scorePct / 100) * circumference;
+        svgBar.style.strokeDashoffset = offset;
+        svgBar.style.filter = `drop-shadow(0 0 10px ${color1})`;
+    }
+}
+
+function switchSimScenario(scenarioKey) {
+    // Update scenario selector dropdown if exists
+    let selectEl = document.getElementById("sim-scenario-select");
+    if (selectEl && selectEl.value !== scenarioKey) {
+        selectEl.value = scenarioKey;
+    }
+
+    // Update pill buttons active state
+    document.querySelectorAll(".sim-pill-btn").forEach(btn => {
+        if (btn.getAttribute("data-scenario") === scenarioKey) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
     let brandVal = document.getElementById("sim-val-brand");
     let brandBar = document.getElementById("sim-bar-brand");
     let zoneVal  = document.getElementById("sim-val-zone");
@@ -356,53 +389,103 @@ function updateSimulatorScenario(scenarioKey) {
     let dateBar  = document.getElementById("sim-bar-date");
     let descVal  = document.getElementById("sim-val-desc");
     let descBar  = document.getElementById("sim-bar-desc");
+    let statusPill = document.getElementById("sim-status-pill");
 
     if (scenarioKey === "high") {
         // High confidence match
-        animateScoreCount(96, "var(--emerald-primary)");
-        if (brandVal) brandVal.innerText = "25.0 pts (Exact Brand: Nike)";
-        if (brandBar) brandBar.style.width = "100%";
-        if (zoneVal)  zoneVal.innerText  = "20.0 pts (Exact Zone: Library)";
-        if (zoneBar)  zoneBar.style.width  = "100%";
-        if (catVal)   catVal.innerText   = "20.0 pts (100% Bags)";
-        if (catBar)   catBar.style.width   = "100%";
-        if (colorVal) colorVal.innerText = "15.0 pts (Identical: Black)";
-        if (colorBar) colorBar.style.width = "100%";
-        if (dateVal)  dateVal.innerText  = "8.8 pts (1 Day Apart)";
-        if (dateBar)  dateBar.style.width  = "88%";
-        if (descVal)  descVal.innerText  = "9.2 pts (Keywords: XPS, zipper)";
-        if (descBar)  descBar.style.width  = "92%";
+        animateScoreCount(96, "var(--emerald-primary)", "0 0 18px rgba(0,230,118,0.75)");
+        updateSvgMeter(96, "#00e676", "#00f0ff");
+
+        if (statusPill) {
+            statusPill.textContent = "MATCH FOUND";
+            statusPill.className = "sim-status-pill tier-high";
+        }
+
+        if (brandVal) { brandVal.innerText = "25.0 pts (Exact Brand: Nike)"; brandVal.style.color = "var(--emerald-primary)"; }
+        if (brandBar) { brandBar.style.width = "100%"; brandBar.style.background = "linear-gradient(90deg, #10b981, #00e676, #00f0ff)"; }
+        if (zoneVal)  { zoneVal.innerText  = "20.0 pts (Exact Zone: Library)"; zoneVal.style.color = "var(--emerald-primary)"; }
+        if (zoneBar)  { zoneBar.style.width  = "100%"; zoneBar.style.background = "linear-gradient(90deg, #10b981, #00e676, #00f0ff)"; }
+        if (catVal)   { catVal.innerText   = "20.0 pts (100% Bags)"; catVal.style.color = "var(--emerald-primary)"; }
+        if (catBar)   { catBar.style.width   = "100%"; catBar.style.background = "linear-gradient(90deg, #10b981, #00e676, #00f0ff)"; }
+        if (colorVal) { colorVal.innerText = "15.0 pts (Identical: Black)"; colorVal.style.color = "var(--emerald-primary)"; }
+        if (colorBar) { colorBar.style.width = "100%"; colorBar.style.background = "linear-gradient(90deg, #10b981, #00e676, #00f0ff)"; }
+        if (dateVal)  { dateVal.innerText  = "8.8 pts (1 Day Apart)"; dateVal.style.color = "var(--emerald-primary)"; }
+        if (dateBar)  { dateBar.style.width  = "88%"; dateBar.style.background = "linear-gradient(90deg, #10b981, #00e676, #00f0ff)"; }
+        if (descVal)  { descVal.innerText  = "9.2 pts (Keywords: XPS, zipper)"; descVal.style.color = "var(--emerald-primary)"; }
+        if (descBar)  { descBar.style.width  = "92%"; descBar.style.background = "linear-gradient(90deg, #10b981, #00e676, #00f0ff)"; }
     } else if (scenarioKey === "med") {
         // Medium confidence match
-        animateScoreCount(74, "#38bdf8");
-        if (brandVal) brandVal.innerText = "25.0 pts (Brand: Apple)";
-        if (brandBar) brandBar.style.width = "100%";
-        if (zoneVal)  zoneVal.innerText  = "14.0 pts (Adjacent Zone: SAC)";
-        if (zoneBar)  zoneBar.style.width  = "70%";
-        if (catVal)   catVal.innerText   = "20.0 pts (Electronics)";
-        if (catBar)   catBar.style.width   = "100%";
-        if (colorVal) colorVal.innerText = "9.0 pts (Similar Tone)";
-        if (colorBar) colorBar.style.width = "60%";
-        if (dateVal)  dateVal.innerText  = "6.5 pts (3 Days Apart)";
-        if (dateBar)  dateBar.style.width  = "65%";
-        if (descVal)  descVal.innerText  = "6.5 pts (Partial Model Match)";
-        if (descBar)  descBar.style.width  = "65%";
+        animateScoreCount(74, "#38bdf8", "0 0 18px rgba(56,189,248,0.75)");
+        updateSvgMeter(74, "#38bdf8", "#818cf8");
+
+        if (statusPill) {
+            statusPill.textContent = "PROBABLE MATCH";
+            statusPill.className = "sim-status-pill tier-med";
+        }
+
+        if (brandVal) { brandVal.innerText = "25.0 pts (Brand: Apple)"; brandVal.style.color = "#38bdf8"; }
+        if (brandBar) { brandBar.style.width = "100%"; brandBar.style.background = "linear-gradient(90deg, #0284c7, #38bdf8, #818cf8)"; }
+        if (zoneVal)  { zoneVal.innerText  = "14.0 pts (Adjacent Zone: SAC)"; zoneVal.style.color = "#38bdf8"; }
+        if (zoneBar)  { zoneBar.style.width  = "70%"; zoneBar.style.background = "linear-gradient(90deg, #0284c7, #38bdf8, #818cf8)"; }
+        if (catVal)   { catVal.innerText   = "20.0 pts (Electronics)"; catVal.style.color = "#38bdf8"; }
+        if (catBar)   { catBar.style.width   = "100%"; catBar.style.background = "linear-gradient(90deg, #0284c7, #38bdf8, #818cf8)"; }
+        if (colorVal) { colorVal.innerText = "9.0 pts (Similar Tone)"; colorVal.style.color = "#38bdf8"; }
+        if (colorBar) { colorBar.style.width = "60%"; colorBar.style.background = "linear-gradient(90deg, #0284c7, #38bdf8, #818cf8)"; }
+        if (dateVal)  { dateVal.innerText  = "6.5 pts (3 Days Apart)"; dateVal.style.color = "#38bdf8"; }
+        if (dateBar)  { dateBar.style.width  = "65%"; dateBar.style.background = "linear-gradient(90deg, #0284c7, #38bdf8, #818cf8)"; }
+        if (descVal)  { descVal.innerText  = "6.5 pts (Partial Model Match)"; descVal.style.color = "#38bdf8"; }
+        if (descBar)  { descBar.style.width  = "65%"; descBar.style.background = "linear-gradient(90deg, #0284c7, #38bdf8, #818cf8)"; }
     } else {
         // Low confidence match
-        animateScoreCount(12, "#f43f5e");
-        if (brandVal) brandVal.innerText = "0.0 pts (Casio vs Milton)";
-        if (brandBar) brandBar.style.width = "0%";
-        if (zoneVal)  zoneVal.innerText  = "6.0 pts (Distant Zone)";
-        if (zoneBar)  zoneBar.style.width  = "30%";
-        if (catVal)   catVal.innerText   = "0.0 pts (Accessories vs Bottle)";
-        if (catBar)   catBar.style.width   = "0%";
-        if (colorVal) colorVal.innerText = "0.0 pts (Different Color)";
-        if (colorBar) colorBar.style.width = "0%";
-        if (dateVal)  dateVal.innerText  = "2.0 pts (10 Days Apart)";
-        if (dateBar)  dateBar.style.width  = "20%";
-        if (descVal)  descVal.innerText  = "1.0 pts (No Overlap)";
-        if (descBar)  descBar.style.width  = "10%";
+        animateScoreCount(12, "#f43f5e", "0 0 18px rgba(244,63,94,0.75)");
+        updateSvgMeter(12, "#f43f5e", "#fb7185");
+
+        if (statusPill) {
+            statusPill.textContent = "MISMATCH";
+            statusPill.className = "sim-status-pill tier-low";
+        }
+
+        if (brandVal) { brandVal.innerText = "0.0 pts (Casio vs Milton)"; brandVal.style.color = "#f43f5e"; }
+        if (brandBar) { brandBar.style.width = "4%"; brandBar.style.background = "linear-gradient(90deg, #e11d48, #f43f5e, #fda4af)"; }
+        if (zoneVal)  { zoneVal.innerText  = "6.0 pts (Distant Zone)"; zoneVal.style.color = "#f43f5e"; }
+        if (zoneBar)  { zoneBar.style.width  = "30%"; zoneBar.style.background = "linear-gradient(90deg, #e11d48, #f43f5e, #fda4af)"; }
+        if (catVal)   { catVal.innerText   = "0.0 pts (Accessories vs Bottle)"; catVal.style.color = "#f43f5e"; }
+        if (catBar)   { catBar.style.width   = "4%"; catBar.style.background = "linear-gradient(90deg, #e11d48, #f43f5e, #fda4af)"; }
+        if (colorVal) { colorVal.innerText = "0.0 pts (Different Color)"; colorVal.style.color = "#f43f5e"; }
+        if (colorBar) { colorBar.style.width = "4%"; colorBar.style.background = "linear-gradient(90deg, #e11d48, #f43f5e, #fda4af)"; }
+        if (dateVal)  { dateVal.innerText  = "2.0 pts (10 Days Apart)"; dateVal.style.color = "#f43f5e"; }
+        if (dateBar)  { dateBar.style.width  = "20%"; dateBar.style.background = "linear-gradient(90deg, #e11d48, #f43f5e, #fda4af)"; }
+        if (descVal)  { descVal.innerText  = "1.0 pts (No Overlap)"; descVal.style.color = "#f43f5e"; }
+        if (descBar)  { descBar.style.width  = "10%"; descBar.style.background = "linear-gradient(90deg, #e11d48, #f43f5e, #fda4af)"; }
     }
+}
+
+// Alias for backwards-compatibility with existing inline onchange
+function updateSimulatorScenario(scenarioKey) {
+    switchSimScenario(scenarioKey);
+}
+
+// ─── 3D Parallax Tilt for AI Simulator Card ───────────────────────────────
+function initSimulatorTilt() {
+    let card = document.getElementById("ai-simulator-card");
+    if (!card) return;
+
+    card.addEventListener("mousemove", (e) => {
+        let rect = card.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        let centerX = rect.width / 2;
+        let centerY = rect.height / 2;
+
+        let rotateX = ((y - centerY) / centerY) * -5;
+        let rotateY = ((x - centerX) / centerX) * 5;
+
+        card.style.transform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+        card.style.transform = "perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+    });
 }
 
 function renderRecentCards(list) {

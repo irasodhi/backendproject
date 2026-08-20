@@ -331,4 +331,3 @@ function resetData() {
 
 // Initialize on file load
 initStorage();
-storage.js
