@@ -84,22 +84,17 @@
                         <p class="hero-description fade-in-up delay-2">
                             The next-generation intelligence platform engineered to reunite campus communities with lost items instantly. Simple, fast, cloud-based, and powered by 5-factor similarity algorithms.
                         </p>
-                        
-                        <!-- Dynamic Guest Sign In / User Status Banner -->
-                        <div id="landing-auth-prompt" class="landing-auth-banner mb-4 fade-in-up delay-3">
-                            <!-- Populated dynamically via initHomePage in app.js -->
-                        </div>
 
                         <!-- CTA Actions -->
                         <div class="d-flex flex-wrap gap-3 mb-4 fade-in-up delay-3" id="hero-cta-buttons">
-                            <a href="login.html" id="hero-main-cta" class="btn btn-emerald-pill btn-arrow-slide">
-                                <span>SIGN IN TO GET STARTED</span> <i class="bi bi-box-arrow-in-right"></i>
-                            </a>
-                            <a href="report.html?type=lost" class="btn btn-glass-pill btn-arrow-slide">
+                            <a href="report.html?type=lost" id="hero-main-cta" class="btn btn-emerald-pill btn-arrow-slide shadow-lg">
                                 <span>SCHEDULE A REPORT</span> <i class="bi bi-arrow-right"></i>
                             </a>
+                            <a href="report.html?type=found" class="btn btn-glass-pill btn-arrow-slide">
+                                <span><i class="bi bi-plus-circle text-success me-1"></i>REPORT FOUND</span>
+                            </a>
                             <a href="matches.html" class="btn btn-glass-pill btn-arrow-slide">
-                                <span>EXPLORE MATCHES</span> <i class="bi bi-lightning-charge"></i>
+                                <span><i class="bi bi-cpu text-info me-1"></i>EXPLORE MATCHES</span>
                             </a>
                         </div>
 
@@ -505,6 +500,53 @@
             </div>
         </section>
 
+        <!-- Interactive Category Quick Explorer -->
+        <section class="py-4 border-bottom" style="background:#ffffff;">
+            <div class="container">
+                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge-dot" style="background:var(--emerald-primary);"></span>
+                        <span class="small fw-bold text-uppercase text-dark" style="letter-spacing:0.06em;font-size:0.78rem;">Explore By Campus Category</span>
+                    </div>
+                    <span class="text-muted extra-small">Click any category for instant 1-click filtering</span>
+                </div>
+                <div class="cat-explorer-scroll-row" id="cat-explorer-strip">
+                    <div class="cat-explorer-chip active" data-cat="all" onclick="selectCategoryChip('all')">
+                        <span class="cat-icon-badge"><i class="bi bi-grid-fill"></i></span>
+                        <span class="cat-label">All Items</span>
+                    </div>
+                    <div class="cat-explorer-chip" data-cat="Electronics" onclick="selectCategoryChip('Electronics')">
+                        <span class="cat-icon-badge"><i class="bi bi-laptop"></i></span>
+                        <span class="cat-label">Electronics</span>
+                    </div>
+                    <div class="cat-explorer-chip" data-cat="Bags" onclick="selectCategoryChip('Bags')">
+                        <span class="cat-icon-badge"><i class="bi bi-backpack"></i></span>
+                        <span class="cat-label">Bags & Packs</span>
+                    </div>
+                    <div class="cat-explorer-chip" data-cat="Wallets" onclick="selectCategoryChip('Wallets')">
+                        <span class="cat-icon-badge"><i class="bi bi-wallet2"></i></span>
+                        <span class="cat-label">Wallets</span>
+                    </div>
+                    <div class="cat-explorer-chip" data-cat="ID Cards" onclick="selectCategoryChip('ID Cards')">
+                        <span class="cat-icon-badge"><i class="bi bi-person-badge"></i></span>
+                        <span class="cat-label">ID Cards</span>
+                    </div>
+                    <div class="cat-explorer-chip" data-cat="Keys" onclick="selectCategoryChip('Keys')">
+                        <span class="cat-icon-badge"><i class="bi bi-key-fill"></i></span>
+                        <span class="cat-label">Keys</span>
+                    </div>
+                    <div class="cat-explorer-chip" data-cat="Books" onclick="selectCategoryChip('Books')">
+                        <span class="cat-icon-badge"><i class="bi bi-book-half"></i></span>
+                        <span class="cat-label">Books</span>
+                    </div>
+                    <div class="cat-explorer-chip" data-cat="Accessories" onclick="selectCategoryChip('Accessories')">
+                        <span class="cat-icon-badge"><i class="bi bi-watch"></i></span>
+                        <span class="cat-label">Accessories</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Quick Items Search & Recent Feed -->
         <section class="py-5" style="background-color:var(--bg-main);">
             <div class="container">
@@ -514,37 +556,58 @@
                         <h2 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Recent Campus Reports</h2>
                         <p class="text-muted mb-0">Browse real-time lost and found submissions across all campus zones</p>
                     </div>
-                    <a href="matches.html" class="btn btn-emerald-pill btn-arrow-slide py-2 px-3">
-                        <span>Open Match Engine</span> <i class="bi bi-arrow-right"></i>
-                    </a>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="report.html?type=lost" class="btn btn-lost btn-sm px-3 shadow-sm">
+                            <i class="bi bi-plus-circle me-1"></i>Report Lost
+                        </a>
+                        <a href="report.html?type=found" class="btn btn-found btn-sm px-3 shadow-sm">
+                            <i class="bi bi-plus-circle me-1"></i>Report Found
+                        </a>
+                        <a href="matches.html" class="btn btn-emerald-pill btn-arrow-slide py-2 px-3">
+                            <span>Match Engine</span> <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Filters Bar -->
-                <div class="row g-3 mb-4 p-3 bg-white rounded-3 border shadow-sm reveal-item delay-1">
-                    <div class="col-md-5">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                            <input type="text" id="home-search-input" class="form-control border-start-0 ps-0" placeholder="Search item name, keyword, brand…">
+                <!-- Modern Interactive Filters Bar -->
+                <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 reveal-item delay-1" style="background:#ffffff;border:1px solid var(--border-color)!important;">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-5">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0 text-muted ps-3"><i class="bi bi-search"></i></span>
+                                <input type="text" id="home-search-input" class="form-control bg-light border-0 py-2.5" placeholder="Search item name, keyword, brand (e.g. MacBook, Nike, ID)…">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select id="home-type-filter" class="form-select">
-                            <option value="all">All Types (Lost & Found)</option>
-                            <option value="lost">Lost Items Only</option>
-                            <option value="found">Found Items Only</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <select id="home-category-filter" class="form-select">
-                            <option value="all">All Categories</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Bags">Bags</option>
-                            <option value="Wallets">Wallets</option>
-                            <option value="ID Cards">ID Cards</option>
-                            <option value="Keys">Keys</option>
-                            <option value="Books">Books</option>
-                            <option value="Accessories">Accessories</option>
-                        </select>
+                        <div class="col-lg-4">
+                            <div class="d-flex align-items-center gap-1 bg-light p-1 rounded-pill">
+                                <button type="button" class="btn btn-sm rounded-pill fw-semibold flex-fill filter-type-btn active" data-type="all" onclick="selectTypeFilter('all')">
+                                    All
+                                </button>
+                                <button type="button" class="btn btn-sm rounded-pill fw-semibold flex-fill filter-type-btn" data-type="lost" onclick="selectTypeFilter('lost')">
+                                    <span class="badge-dot" style="background:#f43f5e;"></span> Lost
+                                </button>
+                                <button type="button" class="btn btn-sm rounded-pill fw-semibold flex-fill filter-type-btn" data-type="found" onclick="selectTypeFilter('found')">
+                                    <span class="badge-dot" style="background:#00e676;"></span> Found
+                                </button>
+                            </div>
+                            <select id="home-type-filter" class="d-none">
+                                <option value="all" selected>All</option>
+                                <option value="lost">Lost</option>
+                                <option value="found">Found</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <select id="home-category-filter" class="form-select border-0 bg-light py-2.5" onchange="syncCategorySelect(this.value)">
+                                <option value="all">All Categories</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Bags">Bags & Backpacks</option>
+                                <option value="Wallets">Wallets</option>
+                                <option value="ID Cards">ID Cards</option>
+                                <option value="Keys">Keys</option>
+                                <option value="Books">Books</option>
+                                <option value="Accessories">Accessories</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 

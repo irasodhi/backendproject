@@ -460,9 +460,10 @@
                     <form id="hidden-details-form" onsubmit="handleProvideHiddenDetailsSubmit(event)">
                         <input type="hidden" id="handover-notif-id">
                         <input type="hidden" id="handover-finder-email">
+                        <input type="hidden" id="handover-claimant-phone">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small">Hidden Details / Distinct Markings</label>
-                            <textarea id="handover-hidden-input" rows="3" class="form-control" placeholder="e.g. Serial number ending in 9821, scratch on the back corner, sticker of astronaut on laptop lid." required></textarea>
+                            <label class="form-label fw-semibold small">Hidden Details / Distinct Markings <span class="text-danger">*</span></label>
+                            <textarea id="handover-hidden-details" rows="3" class="form-control" placeholder="e.g. Serial number ending in 9821, scratch on the back corner, sticker of astronaut on laptop lid." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-emerald-pill btn-arrow-slide w-100 justify-content-center py-2">
                             <span>Send Verification Details</span> <i class="bi bi-arrow-right"></i>

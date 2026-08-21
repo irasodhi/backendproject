@@ -93,8 +93,28 @@ function initStorage() {
         }
     }
 
-    if (!localStorage.getItem("campus_reports")) {
+    let existingReportsStr = localStorage.getItem("campus_reports");
+    if (!existingReportsStr) {
         localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
+    } else {
+        try {
+            let reports = JSON.parse(existingReportsStr);
+            if (Array.isArray(reports)) {
+                let unwantedNames = ["airpods pro gen 2", "student id card & dorm keys", "casio fx-991ex calculator"];
+                let unwantedPosters = ["ananya gupta", "kabir mehta", "campus security", "campus sec..."];
+                let cleanedReports = reports.filter(r => {
+                    let name = (r.itemName || "").toLowerCase().trim();
+                    let poster = (r.postedBy || "").toLowerCase().trim();
+                    let isUnwanted = unwantedNames.some(u => name.includes(u)) || unwantedPosters.some(p => poster.includes(p));
+                    return !isUnwanted;
+                });
+                localStorage.setItem("campus_reports", JSON.stringify(cleanedReports.length > 0 ? cleanedReports : defaultReports));
+            } else {
+                localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
+            }
+        } catch (e) {
+            localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
+        }
     }
     
     // Note: Do NOT auto-login to any user. New visitors start as guest (not logged in).

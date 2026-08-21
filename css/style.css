@@ -105,20 +105,34 @@ textarea,
     user-select: text !important;
 }
 
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+    background-color: #041512;
+    margin: 0;
+    padding: 0;
+}
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background-color: var(--bg-main);
+    background-color: #041512;
     color: var(--text-body);
     line-height: 1.65;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
 }
 
-main { flex: 1; }
+main {
+    flex: 1;
+    background-color: var(--bg-main);
+}
+
+body[data-page="home"] main {
+    background-color: #041512;
+}
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Sora', 'Inter', sans-serif;
@@ -237,6 +251,8 @@ a:hover { color: var(--primary-hover); }
     padding: 0.75rem 0;
     transition: var(--transition-base);
     z-index: 1030;
+    top: 0;
+    margin-top: 0 !important;
 }
 .navbar-custom.navbar-scrolled {
     background-color: rgba(4, 21, 18, 0.95);
@@ -2497,53 +2513,7 @@ footer a:hover { color: var(--emerald-primary); }
     .hero-preheading { font-size: 0.75rem; }
     .hero-emerald { padding: 3.5rem 0 2.5rem; }
     .mockup-alert-pill { position: static; margin-bottom: 0.75rem; display: inline-flex; }
-    /* ─── Landing Guest Auth Banner & Prompt Styling ─────────────────────────── */
-.landing-auth-banner {
-    position: relative;
-    z-index: 10;
-}
-
-.hero-auth-alert {
-    background: rgba(4, 21, 18, 0.82);
-    border: 1px solid rgba(0, 230, 118, 0.4);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 12px 32px rgba(0, 230, 118, 0.12), 0 4px 12px rgba(0,0,0,0.3);
-    transition: all 0.35s ease;
-}
-
-.hero-auth-alert:hover {
-    border-color: var(--emerald-primary);
-    box-shadow: 0 16px 40px rgba(0, 230, 118, 0.22), 0 4px 16px rgba(0,0,0,0.4);
-    transform: translateY(-2px);
-}
-
-.hero-auth-icon-badge {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: rgba(0, 230, 118, 0.15);
-    color: var(--emerald-primary);
-    border: 1px solid rgba(0, 230, 118, 0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 0 16px rgba(0, 230, 118, 0.2);
-}
-
-.hero-welcome-badge {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: rgba(99, 102, 241, 0.18);
-    color: #818cf8;
-    border: 1px solid rgba(99, 102, 241, 0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    .cat-explorer-scroll-row { gap: 0.5rem; }
 }
 
 /* ─── Navbar Multi-Account Switcher Styling ───────────────────────────── */
@@ -2561,6 +2531,238 @@ footer a:hover { color: var(--emerald-primary); }
 .dropdown-item:hover {
     background-color: #f8fafc;
 }
+
+/* ─── Category Quick Explorer Strip ────────────────────────────────────────── */
+.cat-explorer-scroll-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.65rem;
+    scrollbar-width: thin;
+}
+
+.cat-explorer-scroll-row::-webkit-scrollbar {
+    height: 4px;
+}
+
+.cat-explorer-scroll-row::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+}
+
+.cat-explorer-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 1.15rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.cat-explorer-chip .cat-icon-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.22s ease;
+}
+
+.cat-explorer-chip:hover {
+    background: #ffffff;
+    border-color: #10b981;
+    color: #065f46;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+}
+
+.cat-explorer-chip.active {
+    background: #041512;
+    border-color: var(--emerald-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 230, 118, 0.25);
+}
+
+.cat-explorer-chip.active .cat-icon-badge {
+    background: var(--emerald-primary);
+    color: #041512;
+    border-color: var(--emerald-primary);
+}
+
+/* ─── Type Filter Pill Switcher ────────────────────────────────────────────── */
+.filter-type-btn {
+    border: none;
+    background: transparent;
+    color: #64748b;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
+}
+
+.filter-type-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-weight: 700;
+}
+
+/* ─── Modern Elevated Item Cards ───────────────────────────────────────────── */
+.modern-item-card {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.modern-item-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px -6px rgba(0, 0, 0, 0.08), 0 8px 16px -4px rgba(0, 230, 118, 0.12);
+    border-color: #cbd5e1;
+}
+
+.modern-item-card-media {
+    position: relative;
+    width: 100%;
+    height: 190px;
+    background: #091e19;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modern-item-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.modern-item-card:hover .modern-item-card-img {
+    transform: scale(1.06);
+}
+
+.modern-item-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 2.25rem;
+}
+
+.floating-type-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 2;
+}
+
+.floating-type-badge.type-lost {
+    background: rgba(244, 63, 94, 0.9);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+}
+
+.floating-type-badge.type-found {
+    background: rgba(0, 230, 118, 0.9);
+    color: #041512;
+    box-shadow: 0 4px 12px rgba(0, 230, 118, 0.35);
+}
+
+.floating-category-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(4, 21, 18, 0.75);
+    color: #e2fbf1;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 2;
+}
+
+.modern-item-card-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.modern-item-title {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #0f172a;
+    margin-bottom: 0.4rem;
+    line-height: 1.35;
+}
+
+.modern-item-desc {
+    font-size: 0.84rem;
+    color: #64748b;
+    line-height: 1.45;
+    margin-bottom: 0.85rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.modern-item-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #64748b;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.modern-item-zone-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f8fafc;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-weight: 600;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
 
 
 

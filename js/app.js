@@ -376,66 +376,10 @@ function initHomePage() {
     let currentUser = getCurrentUser();
     let reports = getReports();
 
-    // Setup dynamic guest vs logged-in landing prompt banner
-    let authPromptEl = document.getElementById("landing-auth-prompt");
     let mainCta = document.getElementById("hero-main-cta");
-
-    if (!currentUser) {
-        if (authPromptEl) {
-            authPromptEl.innerHTML = `
-                <div class="hero-auth-alert p-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="hero-auth-icon-badge">
-                            <i class="bi bi-person-lock fs-5"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold text-white small" style="font-family:'Sora',sans-serif;">New Student Visitor? Sign In to Get Started</div>
-                            <div class="text-white-50 extra-small">Sign in to file lost/found reports, receive instant AI match alerts, and claim items.</div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <a href="login.html" class="btn btn-emerald-pill btn-sm px-3 py-2">
-                            <span>Sign In</span> <i class="bi bi-box-arrow-in-right"></i>
-                        </a>
-                        <a href="signup.html" class="btn btn-glass-pill btn-sm px-3 py-2">
-                            <span>Create Account</span>
-                        </a>
-                    </div>
-                </div>
-            `;
-        }
-        if (mainCta) {
-            mainCta.innerHTML = `<span>SIGN IN TO GET STARTED</span> <i class="bi bi-box-arrow-in-right"></i>`;
-            mainCta.href = "login.html";
-        }
-    } else {
-        if (authPromptEl) {
-            authPromptEl.innerHTML = `
-                <div class="hero-auth-alert p-3 d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-color:rgba(0,230,118,0.5);">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="hero-welcome-badge">
-                            <i class="bi bi-person-check-fill fs-5"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold text-white small" style="font-family:'Sora',sans-serif;">Welcome back, <strong>${currentUser.username}</strong>!</div>
-                            <div class="text-white-50 extra-small">View your reports, notifications, and live AI matches in your personal dashboard.</div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <a href="dashboard.html" class="btn btn-emerald-pill btn-sm px-3 py-2">
-                            <span>My Dashboard</span> <i class="bi bi-speedometer2"></i>
-                        </a>
-                        <button type="button" onclick="handleLogout()" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-bold">
-                            Log Out
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-        if (mainCta) {
-            mainCta.innerHTML = `<span>GO TO DASHBOARD</span> <i class="bi bi-speedometer2"></i>`;
-            mainCta.href = "dashboard.html";
-        }
+    if (currentUser && mainCta) {
+        mainCta.innerHTML = `<span>GO TO DASHBOARD</span> <i class="bi bi-speedometer2"></i>`;
+        mainCta.href = "dashboard.html";
     }
 
     let totalEl  = document.getElementById("stat-total");
@@ -458,12 +402,12 @@ function initHomePage() {
     let typeSelect = document.getElementById("home-type-filter");
     let catSelect  = document.getElementById("home-category-filter");
 
-    let filterCards = () => {
+    window.triggerHomeFilter = function() {
         let q = searchIn ? searchIn.value.toLowerCase().trim() : "";
         let t = typeSelect ? typeSelect.value : "all";
         let c = catSelect  ? catSelect.value  : "all";
         let filtered = reports.filter(item => {
-            let matchQ = item.itemName.toLowerCase().includes(q) || item.description.toLowerCase().includes(q);
+            let matchQ = item.itemName.toLowerCase().includes(q) || (item.description && item.description.toLowerCase().includes(q)) || (item.zone && item.zone.toLowerCase().includes(q));
             let matchT = t === "all" || item.type === t;
             let matchC = c === "all" || item.category === c;
             return matchQ && matchT && matchC;
@@ -471,15 +415,61 @@ function initHomePage() {
         renderRecentCards(filtered);
     };
 
-    if (searchIn)   searchIn.oninput    = filterCards;
-    if (typeSelect) typeSelect.onchange = filterCards;
-    if (catSelect)  catSelect.onchange  = filterCards;
+    if (searchIn)   searchIn.oninput    = window.triggerHomeFilter;
+    if (typeSelect) typeSelect.onchange = window.triggerHomeFilter;
+    if (catSelect)  catSelect.onchange  = window.triggerHomeFilter;
 
     // Initialize 3D Parallax Tilt, Scroll Reveal, Navbar Scroll Effect, and Simulator Tilt
     init3DParallaxTilt();
     initScrollReveal();
     initNavbarScroll();
     initSimulatorTilt();
+}
+
+function selectCategoryChip(cat) {
+    document.querySelectorAll(".cat-explorer-chip").forEach(chip => {
+        if (chip.getAttribute("data-cat") === cat) {
+            chip.classList.add("active");
+        } else {
+            chip.classList.remove("active");
+        }
+    });
+
+    let catSelect = document.getElementById("home-category-filter");
+    if (catSelect) {
+        catSelect.value = cat;
+    }
+
+    if (window.triggerHomeFilter) window.triggerHomeFilter();
+}
+
+function syncCategorySelect(cat) {
+    document.querySelectorAll(".cat-explorer-chip").forEach(chip => {
+        if (chip.getAttribute("data-cat") === cat) {
+            chip.classList.add("active");
+        } else {
+            chip.classList.remove("active");
+        }
+    });
+
+    if (window.triggerHomeFilter) window.triggerHomeFilter();
+}
+
+function selectTypeFilter(type) {
+    document.querySelectorAll(".filter-type-btn").forEach(btn => {
+        if (btn.getAttribute("data-type") === type) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
+    let typeSelect = document.getElementById("home-type-filter");
+    if (typeSelect) {
+        typeSelect.value = type;
+    }
+
+    if (window.triggerHomeFilter) window.triggerHomeFilter();
 }
 
 // ─── 3D Parallax Tilt on Hero Mockup ────────────────────────────────────────
@@ -721,10 +711,20 @@ function renderRecentCards(list) {
     if (!container) return;
 
     if (list.length === 0) {
-        container.innerHTML = `<div class="col-12 text-center py-5 text-muted">
-            <i class="bi bi-search fs-2 d-block mb-2 text-success opacity-50"></i>
-            <strong>No items found matching current filters.</strong>
-        </div>`;
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <div class="p-5 bg-white rounded-4 border shadow-sm mx-auto" style="max-width:480px;">
+                    <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:64px;height:64px;background:rgba(0,230,118,0.12);color:var(--emerald-primary);font-size:1.75rem;">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-dark" style="font-family:'Sora',sans-serif;">No Matches in This Category</h5>
+                    <p class="text-muted small mb-4">No reports currently match your active search filters or selected campus category.</p>
+                    <button type="button" class="btn btn-emerald-pill btn-sm px-4 py-2" onclick="selectCategoryChip('all'); selectTypeFilter('all'); if(document.getElementById('home-search-input')) document.getElementById('home-search-input').value=''; if(window.triggerHomeFilter) window.triggerHomeFilter();">
+                        <span>Reset All Filters</span> <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+            </div>
+        `;
         return;
     }
 
@@ -737,43 +737,47 @@ function renderRecentCards(list) {
 
         let actionBtnHtml = "";
         if (isMine) {
-            actionBtnHtml = `<a href="matches.html?id=${item.id}" class="btn btn-sm btn-matching fw-semibold">View Matches <i class="bi bi-arrow-right"></i></a>`;
+            actionBtnHtml = `<a href="matches.html?id=${item.id}" class="btn btn-sm btn-emerald-pill py-1.5 px-3 shadow-sm"><span>Matches</span> <i class="bi bi-cpu"></i></a>`;
         } else if (item.type === "lost") {
-            actionBtnHtml = `<a href="matches.html?id=${item.id}" class="btn btn-sm btn-found fw-semibold"><i class="bi bi-bell-fill me-1"></i>I Found This</a>`;
+            actionBtnHtml = `<a href="matches.html?id=${item.id}&action=notify" class="btn btn-sm btn-found py-1.5 px-3 shadow-sm"><i class="bi bi-bell-fill me-1"></i>Found This</a>`;
         } else {
-            actionBtnHtml = `<a href="matches.html?id=${item.id}" class="btn btn-sm btn-matching fw-semibold"><i class="bi bi-shield-check me-1"></i>Claim Item</a>`;
+            actionBtnHtml = `<a href="matches.html?id=${item.id}&action=claim" class="btn btn-sm btn-emerald-pill py-1.5 px-3 shadow-sm"><span>Claim</span> <i class="bi bi-shield-check"></i></a>`;
         }
 
         let delay = idx < 6 ? `delay-${idx + 1}` : '';
+        let isLost = item.type === 'lost';
+        let defaultImg = getDefaultImage(item.category);
+        let imgSrc = item.image || defaultImg;
+
         container.innerHTML += `
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card card-item-emerald h-100 fade-in-up ${delay}">
-                    <div style="position:relative;overflow:hidden;">
-                        <img src="${item.image || getDefaultImage(item.category)}" class="card-img-top" style="height:180px;object-fit:cover;transition:transform 0.4s ease;" 
-                             onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
-                        <span class="badge ${item.type === 'lost' ? 'badge-lost' : 'badge-found'}" style="position:absolute;top:12px;left:12px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
-                            ${item.type === 'lost' ? 'Lost Item' : 'Found Item'}
+                <div class="modern-item-card fade-in-up ${delay}">
+                    <div class="modern-item-card-media">
+                        <img src="${imgSrc}" class="modern-item-card-img" alt="${item.itemName}" onerror="this.src='${defaultImg}'">
+                        <span class="floating-type-badge ${isLost ? 'type-lost' : 'type-found'}">
+                            <i class="bi ${isLost ? 'bi-exclamation-circle-fill' : 'bi-check-circle-fill'} me-1"></i>${isLost ? 'Lost Item' : 'Found Item'}
+                        </span>
+                        <span class="floating-category-badge">
+                            <i class="bi bi-tag-fill text-success me-1"></i>${item.category}
                         </span>
                     </div>
-                    <div class="card-body d-flex flex-column p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge rounded-pill" style="background:var(--mint-light);color:#059669;font-weight:600;font-size:0.75rem;">
-                                <i class="bi bi-tag me-1"></i>${item.category}
-                            </span>
-                            <small class="text-muted"><i class="bi bi-geo-alt text-success"></i> ${item.zone}</small>
+                    <div class="modern-item-card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div class="modern-item-zone-tag">
+                                <i class="bi bi-geo-alt-fill text-success"></i> ${item.zone || 'Campus'}
+                            </div>
+                            <small class="text-muted extra-small"><i class="bi bi-calendar3 me-1"></i>${item.date}</small>
                         </div>
-                        <h5 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;font-size:1.08rem;">${item.itemName}</h5>
-                        <p class="small mb-2">
-                            ${isMine ? `<span class="badge" style="background:var(--mint-light);color:#059669;border:1px solid var(--mint-border);">
-                                <i class="bi bi-person-check-fill me-1"></i>You (${item.postedBy})
-                            </span>` : `<span class="badge bg-light text-dark border">
-                                <i class="bi bi-person me-1 text-muted"></i>${item.postedBy}
-                            </span>`}
-                        </p>
-                        <p class="card-text text-muted small mb-3 flex-grow-1">${item.description.substring(0, 95)}…</p>
-                        <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
-                            <span class="small text-muted"><i class="bi bi-calendar me-1"></i>${item.date}</span>
-                            ${actionBtnHtml}
+                        <h5 class="modern-item-title mt-2 mb-1 text-truncate" title="${item.itemName}">${item.itemName}</h5>
+                        <p class="modern-item-desc">${item.description || 'No additional description provided.'}</p>
+                        
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                            <div class="extra-small text-muted text-truncate" style="max-width:130px;">
+                                ${isMine ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Your Report</span>' : `<i class="bi bi-person text-secondary me-1"></i>${item.postedBy || 'Student'}`}
+                            </div>
+                            <div>
+                                ${actionBtnHtml}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1318,7 +1322,20 @@ function initMatchesPage() {
                 targetReport = requested;
             } else {
                 let myOpposite = myReports.find(r => r.type !== requested.type);
-                targetReport = myOpposite || (myReports.length > 0 ? myReports[0] : requested);
+                if (myOpposite) {
+                    targetReport = myOpposite;
+                } else {
+                    // User has NO corresponding report to compare against:
+                    // Enter Direct Claim / Direct Notification Mode directly!
+                    renderDirectClaimState(requested, currentUser);
+
+                    // If action=claim or notify was requested in URL, open modal automatically
+                    let action = urlParams.get("action");
+                    if (action === "claim" || action === "notify") {
+                        setTimeout(() => openClaimModal(requested.id, requested.id), 300);
+                    }
+                    return;
+                }
             }
         }
     }
@@ -1398,6 +1415,105 @@ function initMatchesPage() {
             sessionStorage.setItem('match_conf', _matchConfidence);
             if (targetReport) renderMatchCardsList(targetReport, reports);
         };
+    }
+}
+
+function renderDirectClaimState(item, currentUser) {
+    let banner    = document.getElementById("target-item-banner");
+    let container = document.getElementById("matches-grid");
+    let countEl   = document.getElementById("matches-count");
+
+    if (countEl) countEl.innerText = "1";
+
+    let isFound = item.type === "found";
+    let defaultImg = getDefaultImage(item.category);
+    let imgSrc = item.image || defaultImg;
+
+    if (banner) {
+        banner.innerHTML = `
+            <div class="target-radar-hud fade-in-up">
+                <div class="row align-items-center g-4">
+                    <div class="col-md-2 text-center">
+                        <div style="position:relative;display:inline-block;">
+                            <img src="${imgSrc}" class="img-fluid rounded-3 border" style="max-height:105px;width:105px;object-fit:cover;border-color:var(--emerald-primary)!important;box-shadow:0 0 16px rgba(0,230,118,0.3);">
+                            <span class="badge ${isFound ? 'badge-found' : 'badge-lost'}" style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);font-size:0.65rem;white-space:nowrap;">
+                                ${item.type.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                            <span class="badge rounded-pill" style="background:rgba(0,230,118,0.18);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.4);font-size:0.75rem;">
+                                <i class="bi bi-shield-lock-fill me-1"></i>Direct ${isFound ? 'Claim' : 'Notification'} Mode
+                            </span>
+                            <span class="badge rounded-pill text-white" style="background:rgba(255,255,255,0.1);font-size:0.75rem;">
+                                <i class="bi bi-person me-1"></i>Reported by: ${item.postedBy}
+                            </span>
+                        </div>
+                        <h3 class="fw-bold mb-2 text-white" style="font-family:'Sora',sans-serif;">${item.itemName}</h3>
+                        <div class="d-flex flex-wrap gap-2 small">
+                            <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-tag text-success me-1"></i>${item.category}</span>
+                            <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-geo-alt text-success me-1"></i>${item.zone}</span>
+                            <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-palette text-success me-1"></i>${item.color || 'Standard'}</span>
+                            <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-calendar text-success me-1"></i>${item.date}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-md-end">
+                        ${isFound ? `
+                            <button type="button" class="btn btn-emerald-pill btn-arrow-slide py-2 px-3 fs-6 shadow-sm" onclick="openClaimModal('${item.id}','${item.id}')">
+                                <span>Claim Item</span> <i class="bi bi-shield-check"></i>
+                            </button>
+                        ` : `
+                            <button type="button" class="btn btn-found py-2 px-3 fs-6 shadow-sm" onclick="openClaimModal('${item.id}','${item.id}')">
+                                <span>I Found This</span> <i class="bi bi-bell-fill"></i>
+                            </button>
+                        `}
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    if (container) {
+        container.innerHTML = `
+            <div class="col-12 mb-4">
+                <div class="card p-4 p-md-5 border-0 shadow-lg rounded-4 text-center" style="background:#ffffff;border:1px solid var(--border-color)!important;">
+                    <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:68px;height:68px;background:rgba(0,230,118,0.12);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);font-size:1.8rem;">
+                        <i class="bi ${isFound ? 'bi-shield-check' : 'bi-bell-fill'}"></i>
+                    </div>
+                    <h4 class="fw-bold mb-2 text-dark" style="font-family:'Sora',sans-serif;">
+                        ${isFound ? 'Ready to Claim this Found Item?' : 'Did you find this Lost Item?'}
+                    </h4>
+                    <p class="text-muted small mb-4 mx-auto" style="max-width:540px;">
+                        ${isFound
+                            ? `You have not filed a lost report for this item. You can claim it directly by providing zero-knowledge identifying marks (such as engravings, serial numbers, pocket contents, or lock screen wallpaper) to finder <strong>${item.postedBy}</strong>.`
+                            : `Let owner <strong>${item.postedBy}</strong> know that you have found their lost item to arrange a safe campus handover.`}
+                    </p>
+
+                    <div class="p-3 bg-light rounded-3 border text-start mx-auto mb-4" style="max-width:540px;">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-semibold small text-dark">${item.itemName}</span>
+                            <span class="badge ${isFound ? 'badge-found' : 'badge-lost'}">${isFound ? 'Found Item' : 'Lost Item'}</span>
+                        </div>
+                        <div class="small text-muted mb-2"><strong>Location / Zone:</strong> ${item.zone}</div>
+                        <div class="small text-muted mb-0"><strong>Details:</strong> ${item.description || 'No additional details.'}</div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        ${isFound ? `
+                            <button type="button" class="btn btn-emerald-pill py-2.5 px-4 fw-bold shadow-sm" onclick="openClaimModal('${item.id}','${item.id}')">
+                                <span>Verify Ownership & Submit Claim</span> <i class="bi bi-arrow-right"></i>
+                            </button>
+                            <a href="report.html?type=lost" class="btn btn-outline-secondary rounded-pill py-2.5 px-4 small fw-semibold">
+                                File a Lost Report Instead
+                            </a>
+                        ` : `
+                            <button type="button" class="btn btn-found py-2.5 px-4 fw-bold shadow-sm" onclick="openClaimModal('${item.id}','${item.id}')">
+                                <i class="bi bi-bell-fill me-1"></i>Notify Owner (${item.postedBy})
+                            </button>
+                        `}
+                    </div>
+                </div>
+            </div>`;
     }
 }
 
@@ -2095,32 +2211,75 @@ function renderFoundNotices(userEmail) {
         let finderName  = n.senderName  || "Founder";
         let itemName    = n.itemName    || "Lost Item";
 
-        let existingClaim = allClaims.find(c =>
-            c.claimedByEmail?.toLowerCase().trim() === userEmail.toLowerCase().trim() &&
-            c.reporterEmail?.toLowerCase().trim()  === finderEmail.toLowerCase().trim() &&
-            (c.itemId === n.itemId || c.itemName === itemName)
-        );
+        let existingClaim = allClaims.find(c => {
+            let emailMatch = c.claimedByEmail?.toLowerCase().trim() === userEmail.toLowerCase().trim();
+            let finderMatch = c.reporterEmail?.toLowerCase().trim() === finderEmail.toLowerCase().trim() ||
+                              c.reporter?.toLowerCase().trim() === finderName.toLowerCase().trim();
+            let itemMatch = (c.itemId && n.itemId && c.itemId === n.itemId) ||
+                            (c.claimId && n.claimId && c.claimId === n.claimId) ||
+                            (c.itemName && itemName && c.itemName.toLowerCase().trim() === itemName.toLowerCase().trim());
+            return emailMatch && (finderMatch || itemMatch);
+        });
 
         let actionHtml = "";
         if (existingClaim) {
-            if (existingClaim.status === "Approved & Meeting Scheduled" && existingClaim.meetingDetails) {
-                actionHtml = `<div class="w-100 p-2 rounded border small fw-bold" style="background:var(--found-bg);color:var(--found-color);">
-                    <i class="bi bi-check2-circle me-1"></i>Approved! Meeting at ${existingClaim.meetingDetails.location} | ${existingClaim.meetingDetails.time}
-                </div>`;
+            let isCompleted = existingClaim.status === "Handover Completed & Verified";
+            let isConfirmed = existingClaim.status === "Meeting Confirmed by Both Parties" || existingClaim.meetingConfirmedBy === 'both' || isCompleted;
+            let isResched   = existingClaim.status === "Reschedule Requested";
+            let isApproved  = existingClaim.status === "Approved & Meeting Scheduled" || isConfirmed || isResched || isCompleted || Boolean(existingClaim.meetingDetails);
+
+            if (isApproved && existingClaim.meetingDetails) {
+                actionHtml = `
+                    <div class="w-100 p-3 rounded-3 border small mt-2" style="background:var(--found-bg);color:var(--found-color);border-color:var(--found-border)!important;">
+                        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                            <span class="fw-bold fs-6 text-dark"><i class="bi bi-check2-circle text-success me-1"></i>Meeting Agreed & Scheduled!</span>
+                            ${isCompleted 
+                                ? `<span class="badge bg-success text-white rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Handover Completed</span>`
+                                : isConfirmed
+                                ? `<span class="badge bg-success text-white rounded-pill"><i class="bi bi-check-all me-1"></i>Time Agreed & Confirmed</span>`
+                                : isResched
+                                ? `<span class="badge bg-warning text-dark rounded-pill"><i class="bi bi-clock-history me-1"></i>Reschedule Requested</span>`
+                                : `<span class="badge bg-white text-success border border-success-subtle rounded-pill"><i class="bi bi-hourglass-split me-1"></i>Awaiting Your Confirmation</span>`}
+                        </div>
+                        <div class="mb-1 text-dark"><strong><i class="bi bi-geo-alt-fill text-danger me-1"></i>Location:</strong> ${existingClaim.meetingDetails.location}</div>
+                        <div class="mb-2 text-dark"><strong><i class="bi bi-clock-fill text-primary me-1"></i>Time:</strong> ${existingClaim.meetingDetails.time}</div>
+                        ${existingClaim.meetingDetails.note ? `<div class="text-muted small mb-2"><strong>Instructions:</strong> ${existingClaim.meetingDetails.note}</div>` : ''}
+                        
+                        <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                            ${!isCompleted ? `
+                                <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold shadow-sm" onclick="openQRPassModal('${existingClaim.claimId}')">
+                                    <i class="bi bi-qr-code-scan me-1 text-success"></i>My QR Handover Pass
+                                </button>
+                            ` : ''}
+                            ${!isConfirmed && !isCompleted ? `
+                                <button class="btn btn-sm btn-success fw-bold rounded-pill px-3 shadow-sm" onclick="handleQuickConfirmMeetingTime('${existingClaim.claimId}')">
+                                    <i class="bi bi-check2-circle me-1"></i>Confirm Meeting Time
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-sm btn-emerald-pill flex-fill justify-content-center fw-bold shadow-sm" onclick="openMeetingChatModal('${existingClaim.claimId}')">
+                                <i class="bi bi-chat-dots-fill me-1"></i>${isCompleted ? 'View Return Chat' : 'Message Finder'}
+                            </button>
+                        </div>
+                    </div>`;
             } else if (existingClaim.status === "More Info Requested") {
-                actionHtml = `<div class="w-100 p-2 rounded border small" style="background:#fef3c7;">
+                actionHtml = `<div class="w-100 p-3 rounded border small mt-2" style="background:#fef3c7;">
                     <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>${finderName} needs more info:</div>
-                    <div class="mb-2">"${existingClaim.founderFeedback || 'Please provide more details'}"</div>
-                    <button class="btn btn-sm btn-warning text-dark fw-bold" onclick="openUpdateDetailsModal('${existingClaim.claimId}')">
-                        <i class="bi bi-pencil-square me-1"></i>Provide Updated Details
-                    </button>
+                    <div class="mb-2 text-dark">"${existingClaim.founderFeedback || 'Please provide more details'}"</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-warning text-dark fw-bold" onclick="openUpdateDetailsModal('${existingClaim.claimId}')">
+                            <i class="bi bi-pencil-square me-1"></i>Provide Updated Details
+                        </button>
+                        <button class="btn btn-sm btn-outline-dark" onclick="openMeetingChatModal('${existingClaim.claimId}')">
+                            <i class="bi bi-chat-left-text me-1"></i>Text ${finderName}
+                        </button>
+                    </div>
                 </div>`;
             } else if (existingClaim.status === "Rejected") {
-                actionHtml = `<div class="w-100 p-2 rounded border small" style="background:var(--lost-bg);color:var(--lost-color);">
+                actionHtml = `<div class="w-100 p-2 rounded border small mt-2" style="background:var(--lost-bg);color:var(--lost-color);">
                     <i class="bi bi-x-circle-fill me-1"></i><strong>Claim Rejected:</strong> ${existingClaim.rejectionReason || 'Details did not match'}
                 </div>`;
             } else {
-                actionHtml = `<div class="w-100 p-2 rounded border small text-dark" style="background:#fef3c7;">
+                actionHtml = `<div class="w-100 p-2 rounded border small text-dark mt-2" style="background:#fef3c7;">
                     <i class="bi bi-hourglass-split text-warning me-1"></i><strong>Details Submitted.</strong> Awaiting ${finderName} to verify & schedule.
                 </div>`;
             }
@@ -2167,23 +2326,25 @@ function openProvideHiddenDetailsModal(notifId) {
     let currentUser = getCurrentUser();
     let el = id => document.getElementById(id);
 
-    if (el('handover-notif-id'))         el('handover-notif-id').value     = notif.id;
-    if (el('handover-finder-email'))      el('handover-finder-email').value = notif.senderEmail || "";
-    if (el('handover-hidden-details'))    el('handover-hidden-details').value = "";
+    if (el('handover-notif-id'))          el('handover-notif-id').value = notif.id;
+    if (el('handover-finder-email'))       el('handover-finder-email').value = notif.senderEmail || "";
+    if (el('handover-hidden-details'))     el('handover-hidden-details').value = "";
+    if (el('handover-hidden-input'))       el('handover-hidden-input').value = "";
     if (el('handover-claimant-phone') && currentUser) el('handover-claimant-phone').value = currentUser.contactPhone || "+91 98765 43210";
-    if (el('handover-finder-name'))       el('handover-finder-name').innerText = notif.senderName || "Founder";
-    if (el('handover-finder-name-label')) el('handover-finder-name-label').innerText = notif.senderName || "Founder";
-    if (el('handover-item-name'))         el('handover-item-name').innerText = `"${notif.itemName || 'Lost Item'}"`;
+    if (el('handover-finder-name'))        el('handover-finder-name').innerText = notif.senderName || "Founder";
+    if (el('handover-finder-name-label'))  el('handover-finder-name-label').innerText = notif.senderName || "Founder";
+    if (el('handover-item-name'))          el('handover-item-name').innerText = `"${notif.itemName || 'Lost Item'}"`;
 
     let modalEl = document.getElementById("provideHiddenDetailsModal");
     if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
 }
 
 function handleProvideHiddenDetailsSubmit(event) {
-    event.preventDefault();
-    let notifId      = document.getElementById("handover-notif-id").value;
-    let finderEmail  = document.getElementById("handover-finder-email").value;
-    let hiddenDetails = document.getElementById("handover-hidden-details").value.trim();
+    if (event) event.preventDefault();
+    let notifId      = document.getElementById("handover-notif-id")?.value || "";
+    let finderEmail  = document.getElementById("handover-finder-email")?.value || "";
+    let hiddenInput  = document.getElementById("handover-hidden-details") || document.getElementById("handover-hidden-input");
+    let hiddenDetails = hiddenInput ? hiddenInput.value.trim() : "";
     let claimantPhone = document.getElementById("handover-claimant-phone")?.value.trim() || "";
 
     if (!hiddenDetails) {
@@ -2194,11 +2355,12 @@ function handleProvideHiddenDetailsSubmit(event) {
     let currentUser = getCurrentUser();
     let notifs  = JSON.parse(localStorage.getItem("campus_notifications")) || [];
     let notif   = notifs.find(n => n.id === notifId);
-    let itemName = notif ? notif.itemName : "Lost Item";
+    let itemName = notif ? (notif.itemName || "Lost Item") : "Lost Item";
     let claimId = "CLM-" + Math.floor(1000 + Math.random() * 9000);
 
     saveClaim({
-        claimId, itemId: notif ? notif.itemId : "ITEM-" + Date.now(),
+        claimId,
+        itemId: notif ? notif.itemId : ("ITEM-" + Date.now()),
         itemName,
         claimedBy: currentUser ? currentUser.username : "Owner",
         claimedByEmail: currentUser ? currentUser.useremail : "",
@@ -2219,18 +2381,19 @@ function handleProvideHiddenDetailsSubmit(event) {
         itemName,
         message: `🔐 Hidden Details Submitted! ${currentUser ? currentUser.username : 'Owner'} submitted hidden details to claim "${itemName}": "${hiddenDetails}". Review on your Dashboard.`,
         date: new Date().toLocaleString(),
-        type: "claim_request", claimId
+        type: "claim_request",
+        claimId
     });
 
-    showToast(`Hidden details submitted to Finder (${finderEmail})!`, 'success');
+    showToast(`Verification details submitted to Finder (${finderEmail || 'Finder'})!`, 'success', 3000);
 
     let modalEl = document.getElementById("provideHiddenDetailsModal");
     if (modalEl) {
-        let m = bootstrap.Modal.getInstance(modalEl);
+        let m = bootstrap.Modal.getInstance(modalEl) || bootstrap.Modal.getOrCreateInstance(modalEl);
         if (m) m.hide();
     }
 
-    setTimeout(() => window.location.reload(), 800);
+    setTimeout(() => window.location.reload(), 700);
 }
 
 function renderSubmittedClaims(userEmail) {
