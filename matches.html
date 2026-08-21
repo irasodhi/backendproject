@@ -277,6 +277,57 @@
         </div>
     </div>
 
+    <!-- Add Account Modal -->
+    <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 pb-0" style="background:#041512; color:#ffffff;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:rgba(0,230,118,0.15);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold" id="addAccountModalLabel" style="font-family:'Sora',sans-serif;">Add Another Account</h5>
+                            <small class="text-white-50">Sign in to a second student account on this browser</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" style="background:#ffffff;">
+                    <form id="dash-add-account-form" onsubmit="handleAddAccountSubmit(event)">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark">Full Name <span class="text-muted fw-normal">(for new account)</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" id="add-acc-name" class="form-control" placeholder="e.g. Ira Sodhi">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark">Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                <input type="email" id="add-acc-email" class="form-control" placeholder="e.g. ira.sodhi@example.com" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-lock"></i></span>
+                                <input type="password" id="add-acc-password" class="form-control" placeholder="Enter password (min 6 chars)" minlength="6" required>
+                            </div>
+                        </div>
+                        <div id="add-acc-feedback" class="small mb-3 d-none"></div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-emerald-pill py-2.5 fw-bold shadow-sm">
+                                <span>Sign In & Connect Account</span> <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <div class="container text-center small">

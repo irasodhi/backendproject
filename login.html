@@ -48,19 +48,6 @@
 
           <div class="card-body p-4 p-md-5">
 
-            <!-- Saved Accounts Quick Fill -->
-            <div class="mb-4 p-3 rounded-3 border" style="background:var(--bg-elevated);">
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="small fw-bold text-uppercase text-muted" style="letter-spacing:0.04em;">
-                  <i class="bi bi-people-fill me-1" style="color:var(--primary-color)"></i>Saved Accounts
-                </span>
-                <span class="badge rounded-pill" style="background:var(--primary-light);color:var(--primary-color);">1-Click Fill</span>
-              </div>
-              <div class="row g-2" id="saved-accounts-grid">
-                <!-- Dynamically populated -->
-              </div>
-            </div>
-
             <!-- Main Login Form -->
             <form id="loginForm" onsubmit="handleSubmit(event)" novalidate>
               <!-- Email -->
@@ -69,11 +56,11 @@
                 <div class="input-group">
                   <span class="input-group-text border-end-0 text-muted" style="background:var(--bg-elevated);"><i class="bi bi-envelope"></i></span>
                   <input type="email" id="email" class="form-control border-start-0 ps-0"
-                    placeholder="e.g. user@example.com" required>
+                    placeholder="Enter your email address" autocomplete="email" required>
                 </div>
                 <div class="invalid-feedback d-block" id="email-error" style="display:none!important;"></div>
                 <div class="form-text extra-small text-muted mt-1">
-                  <i class="bi bi-info-circle me-1"></i>New email addresses are auto-registered on first sign-in.
+                  <i class="bi bi-info-circle me-1"></i>New student email addresses are auto-registered on first sign-in.
                 </div>
               </div>
 
@@ -81,13 +68,12 @@
               <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <label for="password" class="form-label fw-semibold text-dark small mb-0">Password</label>
-                  <a href="#" class="text-decoration-none small" style="color:var(--primary-color);" onclick="showCredentialsHint()">Password Hint</a>
                 </div>
                 <div class="input-group">
                   <span class="input-group-text border-end-0 text-muted" style="background:var(--bg-elevated);"><i class="bi bi-lock"></i></span>
                   <input type="password" id="password" class="form-control border-start-0 border-end-0 ps-0"
-                    placeholder="••••••••" required>
-                  <button type="button" class="input-group-text border-start-0 text-muted" style="background:var(--bg-elevated);" onclick="togglePasswordVisibility('password', this)">
+                    placeholder="Enter your password" autocomplete="current-password" required>
+                  <button type="button" class="input-group-text border-start-0 text-muted" style="background:var(--bg-elevated);" onclick="togglePasswordVisibility('password', this)" aria-label="Toggle password visibility">
                     <i class="bi bi-eye"></i>
                   </button>
                 </div>
@@ -102,12 +88,12 @@
               </div>
 
               <button type="submit" class="btn btn-auth w-100 fw-bold py-2 mb-3">
-                Sign In / Register & Save <i class="bi bi-arrow-right ms-1"></i>
+                Sign In <i class="bi bi-arrow-right ms-1"></i>
               </button>
 
               <div class="text-center pt-2">
                 <p class="text-muted small mb-0">
-                  Prefer full registration? <a href="signup.html" class="fw-bold text-decoration-none" style="color:var(--primary-color);">Create an account</a>
+                  Don't have an account? <a href="signup.html" class="fw-bold text-decoration-none" style="color:var(--primary-color);">Create an account</a>
                 </p>
               </div>
             </form>
@@ -123,44 +109,6 @@
   <script src="js/validation.js"></script>
   <script src="js/ui.js"></script>
   <script>
-    function renderSavedAccounts() {
-      const container = document.getElementById("saved-accounts-grid");
-      if (!container) return;
-      const users = getUsers();
-      container.innerHTML = "";
-      const colors = ["var(--primary-color)","var(--found-color)","#6366f1","#f59e0b","var(--lost-color)","#8b5cf6"];
-      users.forEach((u, idx) => {
-        const initials = u.username ? u.username.split(" ").map(w => w[0]).join("").substring(0,2).toUpperCase() : "U";
-        const color    = colors[idx % colors.length];
-        const pass     = u.userpassword || "Pass@2026!";
-        container.innerHTML += `
-          <div class="col-sm-6 col-12">
-            <button type="button" class="btn btn-demo-user w-100 text-start p-2 rounded-3 border" onclick="fillDemoUser('${u.useremail}','${pass}')">
-              <div class="d-flex align-items-center">
-                <div class="rounded-circle text-white fw-bold me-2 flex-shrink-0 d-flex align-items-center justify-content-center"
-                     style="width:32px;height:32px;font-size:0.72rem;background:${color};">${initials}</div>
-                <div class="text-truncate">
-                  <strong class="d-block text-dark small">${u.username}</strong>
-                  <span class="text-muted extra-small d-block text-truncate">${u.useremail}</span>
-                </div>
-              </div>
-            </button>
-          </div>`;
-      });
-    }
-
-    function fillDemoUser(email, pass) {
-      document.getElementById("email").value    = email;
-      document.getElementById("password").value = pass;
-      showToast(`Filled credentials for <strong>${email}</strong>. Click Sign In!`, 'info');
-    }
-
-    function showCredentialsHint() {
-      const users = getUsers();
-      let msg = users.map(u => `<strong>${u.username}</strong><br>${u.useremail}<br><code>${u.userpassword || 'Pass@2026!'}</code>`).join('<hr class="my-2">');
-      showToast(msg || 'No saved accounts found.', 'info', 6000);
-    }
-
     function togglePasswordVisibility(inputId, btn) {
       const input = document.getElementById(inputId);
       const icon  = btn.querySelector("i");
@@ -215,18 +163,21 @@
         return;
       }
 
+      let urlParams = new URLSearchParams(window.location.search);
+      let returnUrl = urlParams.get("returnUrl") || "index.html";
+
       let users         = getUsers();
       let verified_user = users.find(el => el.useremail?.toLowerCase() === email.toLowerCase());
 
       if (verified_user) {
         if (verified_user.userpassword && verified_user.userpassword !== pass) {
-          showToast(`Incorrect password for <strong>${verified_user.username}</strong>. Click "Password Hint" for help.`, "error");
+          showToast(`Incorrect password for <strong>${verified_user.username}</strong>. Please check your credentials.`, "error");
           return;
         }
         localStorage.setItem("current_user", JSON.stringify(verified_user));
         localStorage.setItem("isLoggedIn", "true");
         showToast(`Welcome back, <strong>${verified_user.username}</strong>! Redirecting…`, "success");
-        setTimeout(() => { window.location.href = "index.html"; }, 900);
+        setTimeout(() => { window.location.href = returnUrl; }, 800);
       } else {
         let derivedName = formatNameFromEmail(email);
         let newUser = {
@@ -236,12 +187,10 @@
         saveUser(newUser);
         localStorage.setItem("current_user", JSON.stringify(newUser));
         localStorage.setItem("isLoggedIn", "true");
-        showToast(`New account for <strong>${derivedName}</strong> saved! Redirecting…`, "success");
-        setTimeout(() => { window.location.href = "index.html"; }, 900);
+        showToast(`Welcome, <strong>${derivedName}</strong>! Your account has been registered. Redirecting…`, "success");
+        setTimeout(() => { window.location.href = returnUrl; }, 800);
       }
     };
-
-    document.addEventListener("DOMContentLoaded", renderSavedAccounts);
   </script>
 </body>
 </html>

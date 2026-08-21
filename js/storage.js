@@ -1,19 +1,8 @@
 // Storage script for Campus Lost & Found System
 // Uses localStorage for reports, users, claims, and notifications
 
-// Initial default sample users for multi-user demo with enhanced secure passwords
-let defaultUsers = [
-    {
-        username: "Ira Sodhi",
-        useremail: "ira.sodhi@example.com",
-        userpassword: "Ira@2026!"
-    },
-    {
-        username: "Rohan Verma",
-        useremail: "rohan.verma@example.com",
-        userpassword: "Rohan@2026!"
-    }
-];
+// Initial default sample users list (empty for clean new user experience)
+let defaultUsers = [];
 
 // Initial sample reports
 let defaultReports = [
@@ -27,8 +16,8 @@ let defaultReports = [
         date: "2026-08-11",
         description: "Black Nike backpack with laptop compartment and red zipper puller. Left near silent study zone.",
         hiddenDetails: "Contains a Dell XPS charger and blue notebook with initials IS.",
-        postedBy: "Ira Sodhi",
-        postedByEmail: "ira.sodhi@example.com",
+        postedBy: "Campus Student",
+        postedByEmail: "student1@campus.edu",
         contactPhone: "+91 98765 43210",
         image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80",
         status: "Searching"
@@ -43,8 +32,8 @@ let defaultReports = [
         date: "2026-08-12",
         description: "Found black Nike bag near second floor study tables in Library with red accent zippers.",
         hiddenDetails: "Contains a Dell XPS charger inside.",
-        postedBy: "Rohan Verma",
-        postedByEmail: "rohan.verma@example.com",
+        postedBy: "Campus Finder",
+        postedByEmail: "finder1@campus.edu",
         contactPhone: "+91 98123 45678",
         image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80",
         status: "Searching"
@@ -59,8 +48,8 @@ let defaultReports = [
         date: "2026-08-10",
         description: "Space black iPhone 14 Pro with a clear transparent magsafe protective case.",
         hiddenDetails: "Lockscreen wallpaper is a golden retriever dog sitting on grass.",
-        postedBy: "Ira Sodhi",
-        postedByEmail: "ira.sodhi@example.com",
+        postedBy: "Campus Student",
+        postedByEmail: "student2@campus.edu",
         contactPhone: "+91 97654 32109",
         image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=600&q=80",
         status: "Searching"
@@ -75,8 +64,8 @@ let defaultReports = [
         date: "2026-08-11",
         description: "Found an iPhone on a dining table near cafeteria entry in Main Block. Screen turns on.",
         hiddenDetails: "Golden retriever lockscreen wallpaper.",
-        postedBy: "Rohan Verma",
-        postedByEmail: "rohan.verma@example.com",
+        postedBy: "Campus Finder",
+        postedByEmail: "finder2@campus.edu",
         contactPhone: "+91 98000 11122",
         image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=600&q=80",
         status: "Searching"
@@ -87,24 +76,20 @@ let defaultReports = [
 function initStorage() {
     let existingUsersStr = localStorage.getItem("users");
     if (!existingUsersStr) {
-        localStorage.setItem("users", JSON.stringify(defaultUsers));
+        localStorage.setItem("users", JSON.stringify([]));
     } else {
         try {
             let parsed = JSON.parse(existingUsersStr);
-            if (!Array.isArray(parsed) || parsed.length === 0) {
-                localStorage.setItem("users", JSON.stringify(defaultUsers));
+            if (Array.isArray(parsed)) {
+                // Filter out legacy demo mock users so only actual user-registered accounts exist
+                let demoEmails = ["ira.sodhi@example.com", "rohan.verma@example.com", "admin@fluffytails.com"];
+                let cleaned = parsed.filter(u => u && u.useremail && !demoEmails.includes(u.useremail.toLowerCase().trim()));
+                localStorage.setItem("users", JSON.stringify(cleaned));
             } else {
-                // Ensure default users exist in users array without removing any custom 3rd users
-                let updated = [...parsed];
-                defaultUsers.forEach(defU => {
-                    if (!updated.some(u => u.useremail && u.useremail.toLowerCase() === defU.useremail.toLowerCase())) {
-                        updated.push(defU);
-                    }
-                });
-                localStorage.setItem("users", JSON.stringify(updated));
+                localStorage.setItem("users", JSON.stringify([]));
             }
         } catch (e) {
-            localStorage.setItem("users", JSON.stringify(defaultUsers));
+            localStorage.setItem("users", JSON.stringify([]));
         }
     }
 
@@ -112,13 +97,7 @@ function initStorage() {
         localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
     }
     
-    if (!localStorage.getItem("current_user")) {
-        localStorage.setItem("current_user", JSON.stringify(defaultUsers[0]));
-    }
-
-    if (localStorage.getItem("isLoggedIn") === null) {
-        localStorage.setItem("isLoggedIn", "true");
-    }
+    // Note: Do NOT auto-login to any user. New visitors start as guest (not logged in).
 
     if (!localStorage.getItem("campus_claims")) {
         localStorage.setItem("campus_claims", JSON.stringify([]));
@@ -134,9 +113,9 @@ function getUsers() {
     initStorage();
     try {
         let users = JSON.parse(localStorage.getItem("users"));
-        return Array.isArray(users) && users.length > 0 ? users : defaultUsers;
+        return Array.isArray(users) ? users : [];
     } catch (e) {
-        return defaultUsers;
+        return [];
     }
 }
 
@@ -164,6 +143,46 @@ function switchUser(email) {
         return found;
     }
     return null;
+}
+
+// Add a new user account and make it active
+function addAndSwitchAccount(user) {
+    if (!user || !user.useremail) return null;
+    saveUser(user);
+    localStorage.setItem("current_user", JSON.stringify(user));
+    localStorage.setItem("isLoggedIn", "true");
+    return user;
+}
+
+// Remove a specific signed-in account from the browser
+function removeUserAccount(email) {
+    if (!email) return null;
+    let users = getUsers();
+    let updatedUsers = users.filter(u => u && u.useremail && u.useremail.toLowerCase() !== email.toLowerCase().trim());
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    let currentUser = getCurrentUser();
+    if (currentUser && currentUser.useremail && currentUser.useremail.toLowerCase() === email.toLowerCase().trim()) {
+        if (updatedUsers.length > 0) {
+            // Switch to next available account
+            localStorage.setItem("current_user", JSON.stringify(updatedUsers[0]));
+            localStorage.setItem("isLoggedIn", "true");
+            return updatedUsers[0];
+        } else {
+            // No more accounts
+            localStorage.removeItem("current_user");
+            localStorage.removeItem("isLoggedIn");
+            return null;
+        }
+    }
+    return currentUser;
+}
+
+// Log out of all accounts on this browser
+function logoutAllAccounts() {
+    localStorage.setItem("users", JSON.stringify([]));
+    localStorage.removeItem("current_user");
+    localStorage.removeItem("isLoggedIn");
 }
 
 // Get all reports
@@ -308,14 +327,18 @@ function deleteNotification(notifId) {
     }
 }
 
-// Get logged in user
+// Get logged in user (returns null if unauthenticated / guest)
 function getCurrentUser() {
     initStorage();
     try {
+        let isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+            return null;
+        }
         let user = localStorage.getItem("current_user");
-        return user ? JSON.parse(user) : defaultUsers[0];
+        return user ? JSON.parse(user) : null;
     } catch (e) {
-        return defaultUsers[0];
+        return null;
     }
 }
 
@@ -323,8 +346,8 @@ function getCurrentUser() {
 function resetData() {
     localStorage.setItem("users", JSON.stringify(defaultUsers));
     localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("current_user", JSON.stringify(defaultUsers[0]));
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("current_user");
     localStorage.setItem("campus_claims", JSON.stringify([]));
     localStorage.setItem("campus_notifications", JSON.stringify([]));
 }

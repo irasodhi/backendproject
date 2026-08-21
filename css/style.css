@@ -2497,12 +2497,71 @@ footer a:hover { color: var(--emerald-primary); }
     .hero-preheading { font-size: 0.75rem; }
     .hero-emerald { padding: 3.5rem 0 2.5rem; }
     .mockup-alert-pill { position: static; margin-bottom: 0.75rem; display: inline-flex; }
-    .pipeline-flow-grid { grid-template-columns: 1fr; }
-    .match-controls-bar { flex-direction: column; align-items: stretch; }
-    .match-controls-bar .form-select { width: 100%; }
-    .chat-bubble-row { max-width: 90%; }
-    .dash-stat-card { padding: 0.9rem; }
-    .dash-stat-value { font-size: 1.35rem; }
+    /* ─── Landing Guest Auth Banner & Prompt Styling ─────────────────────────── */
+.landing-auth-banner {
+    position: relative;
+    z-index: 10;
 }
+
+.hero-auth-alert {
+    background: rgba(4, 21, 18, 0.82);
+    border: 1px solid rgba(0, 230, 118, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 32px rgba(0, 230, 118, 0.12), 0 4px 12px rgba(0,0,0,0.3);
+    transition: all 0.35s ease;
+}
+
+.hero-auth-alert:hover {
+    border-color: var(--emerald-primary);
+    box-shadow: 0 16px 40px rgba(0, 230, 118, 0.22), 0 4px 16px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+}
+
+.hero-auth-icon-badge {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(0, 230, 118, 0.15);
+    color: var(--emerald-primary);
+    border: 1px solid rgba(0, 230, 118, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(0, 230, 118, 0.2);
+}
+
+.hero-welcome-badge {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.18);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ─── Navbar Multi-Account Switcher Styling ───────────────────────────── */
+.dropdown-menu {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    z-index: 1050;
+}
+
+.dropdown-item {
+    transition: all 0.18s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8fafc;
+}
+
+
 
 

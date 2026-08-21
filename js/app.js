@@ -50,22 +50,35 @@ function setDateToday() {
     }
 }
 
-window.onload = function() {
+function initApp() {
     renderNavbarUser();
 
-    let path = window.location.pathname;
-    if (path.includes("report.html")) {
+    let path = (window.location.pathname || "").toLowerCase();
+    let pageAttr = document.body ? (document.body.getAttribute("data-page") || "").toLowerCase() : "";
+
+    if (path.includes("report") || pageAttr === "report") {
         initReportPage();
-    } else if (path.includes("matches.html")) {
+    } else if (path.includes("matches") || pageAttr === "matches") {
         initMatchesPage();
-    } else if (path.includes("dashboard.html")) {
+    } else if (path.includes("dashboard") || pageAttr === "dashboard") {
         initDashboardPage();
-    } else if (path.includes("admin.html")) {
+    } else if (path.includes("admin") || pageAttr === "admin") {
         initAdminPage();
+    } else if (path.includes("login") || path.includes("signup")) {
+        // Auth pages
     } else {
         initHomePage();
     }
-};
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initApp);
+} else {
+    initApp();
+}
+window.addEventListener("load", () => {
+    renderNavbarUser();
+});
 
 // ─── Count-Up Animation ─────────────────────────────────────────────────────
 function animateCountUp(element, target, duration = 900) {
@@ -129,58 +142,99 @@ function renderNavbarUser() {
 
     if (!currentUser) {
         userDisplay.innerHTML = `
-            <a class="btn btn-sm btn-outline-primary fw-semibold" href="login.html">
-                <i class="bi bi-person me-1"></i>Sign In / Switch User
-            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a class="btn btn-emerald-pill btn-arrow-slide py-1 px-3 fs-6" href="login.html">
+                    <span>Sign In</span> <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+                <a class="btn btn-outline-light rounded-pill btn-sm px-3 py-1 fw-semibold d-none d-md-inline-block" href="signup.html">
+                    Register
+                </a>
+            </div>
         `;
         updateNavBellBadge();
         return;
     }
 
-    let userOptionsHtml = allUsers.map(u => {
-        let isCurrent = u.useremail && currentUser.useremail && u.useremail.toLowerCase().trim() === currentUser.useremail.toLowerCase().trim();
-        return `
-            <li>
-                <a class="dropdown-item d-flex align-items-center justify-content-between py-2 ${isCurrent ? 'bg-light fw-bold' : ''}" href="#" onclick="switchAccount('${u.useremail}')">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle fw-bold me-2 d-flex align-items-center justify-content-center" style="width:28px;height:28px;font-size:0.72rem;background:var(--primary-light);color:var(--primary-color);">
-                            ${u.username ? u.username.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase() : 'U'}
+    let otherUsers = allUsers.filter(u => u && u.useremail && u.useremail.toLowerCase().trim() !== currentUser.useremail.toLowerCase().trim());
+
+    let switchAccountsHtml = "";
+    if (otherUsers.length > 0) {
+        switchAccountsHtml = `
+            <li><hr class="dropdown-divider my-2"></li>
+            <li class="px-3 py-1"><small class="text-muted fw-bold extra-small text-uppercase" style="letter-spacing:0.5px;">Switch Account</small></li>
+            ${otherUsers.map(u => {
+                let initials = u.username ? u.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'U';
+                return `
+                    <li>
+                        <div class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 rounded-2" style="cursor:pointer;" onclick="switchAccount('${u.useremail}')">
+                            <div class="d-flex align-items-center gap-2 overflow-hidden">
+                                <div class="rounded-circle fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width:30px;height:30px;font-size:0.75rem;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">
+                                    ${initials}
+                                </div>
+                                <div class="text-truncate">
+                                    <div class="small fw-semibold text-dark text-truncate">${u.username}</div>
+                                    <div class="extra-small text-muted text-truncate" style="font-size:0.7rem;">${u.useremail}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                                <span class="badge bg-light text-secondary border extra-small px-2 py-1" style="font-size:0.65rem;">Switch</span>
+                                <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-1 text-decoration-none" onclick="event.stopPropagation(); handleRemoveAccount('${u.useremail}')" title="Remove account from device" style="font-size:0.85rem;"><i class="bi bi-x-circle"></i></button>
+                            </div>
                         </div>
-                        <div>
-                            <div class="small fw-semibold">${u.username}</div>
-                            <div class="extra-small text-muted">${u.useremail}</div>
-                        </div>
-                    </div>
-                    ${isCurrent ? '<span class="badge bg-primary rounded-pill ms-2" style="font-size:0.62rem;">Active</span>' : ''}
-                </a>
-            </li>
+                    </li>
+                `;
+            }).join('')}
         `;
-    }).join('');
+    }
+
+    let activeInitials = currentUser.username ? currentUser.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'U';
 
     userDisplay.innerHTML = `
         <div class="dropdown">
-            <button class="btn btn-sm btn-light dropdown-toggle border shadow-sm fw-bold text-dark px-3" type="button" data-bs-toggle="dropdown">
-                <i class="bi bi-person-circle text-primary me-1"></i><span>${currentUser.username}</span>
+            <button class="btn btn-sm btn-light dropdown-toggle border shadow-sm fw-bold text-dark px-3 rounded-pill d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                <span class="rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold" style="width:22px;height:22px;font-size:0.65rem;background:var(--emerald-primary);color:#041512;">${activeInitials}</span>
+                <span>${currentUser.username}</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow p-2" style="min-width:260px;">
-                <li class="px-3 py-2 rounded-3 mb-2 border" style="background:var(--primary-light);">
-                    <small class="text-muted d-block text-uppercase extra-small fw-bold">Active Account</small>
-                    <strong class="text-dark small d-block">${currentUser.username}</strong>
-                    <span class="extra-small text-muted d-block text-truncate">${currentUser.useremail}</span>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg p-2 rounded-3 border" style="min-width:275px;">
+                <li class="px-3 py-2.5 rounded-3 mb-2" style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.25);">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <small class="text-success text-uppercase extra-small fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Signed In</small>
+                        <span class="badge bg-success rounded-pill extra-small" style="font-size:0.6rem;">Active</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:34px;height:34px;font-size:0.8rem;background:var(--emerald-primary);color:#041512;font-weight:700;">
+                            ${activeInitials}
+                        </div>
+                        <div class="overflow-hidden">
+                            <strong class="text-dark small d-block text-truncate">${currentUser.username}</strong>
+                            <span class="extra-small text-muted d-block text-truncate" style="font-size:0.72rem;">${currentUser.useremail}</span>
+                        </div>
+                    </div>
                 </li>
-                <li class="px-2 pb-1"><small class="text-muted fw-bold extra-small text-uppercase">Switch Account</small></li>
-                ${userOptionsHtml}
+                <li>
+                    <a class="dropdown-item small rounded-2 py-2 fw-semibold" href="dashboard.html">
+                        <i class="bi bi-speedometer2 text-success me-2 fs-6"></i>My Dashboard
+                    </a>
+                </li>
+                ${switchAccountsHtml}
                 <li><hr class="dropdown-divider my-2"></li>
                 <li>
-                    <a class="dropdown-item small rounded-2 py-2" href="login.html">
-                        <i class="bi bi-person-plus text-success me-2"></i>Sign In / Add User
+                    <a class="dropdown-item small rounded-2 py-2 text-success fw-semibold d-flex align-items-center" href="#" onclick="openAddAccountModal()">
+                        <i class="bi bi-person-plus-fill text-success me-2 fs-6"></i>+ Add Account
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item small text-danger fw-bold rounded-2 py-2" href="#" onclick="handleLogout()">
-                        <i class="bi bi-box-arrow-right me-2"></i>Log Out
+                    <a class="dropdown-item small text-danger fw-semibold rounded-2 py-2 d-flex align-items-center" href="#" onclick="handleLogout()">
+                        <i class="bi bi-box-arrow-right text-danger me-2 fs-6"></i>Sign Out of ${currentUser.username ? currentUser.username.split(' ')[0] : 'Current Account'}
                     </a>
                 </li>
+                ${otherUsers.length > 0 ? `
+                <li>
+                    <a class="dropdown-item small text-muted rounded-2 py-2 d-flex align-items-center" href="#" onclick="handleLogoutAll()">
+                        <i class="bi bi-power text-muted me-2 fs-6"></i>Sign Out of All Accounts
+                    </a>
+                </li>
+                ` : ''}
             </ul>
         </div>
     `;
@@ -191,24 +245,198 @@ function renderNavbarUser() {
 function switchAccount(email) {
     let u = switchUser(email);
     if (u) {
-        if (window.location.pathname.includes("matches.html")) {
-            window.location.href = "matches.html";
-        } else {
-            window.location.reload();
+        showToast(`Switched active account to: <strong>${u.username}</strong>`, "success", 2000);
+        setTimeout(() => {
+            if (window.location.pathname.includes("matches.html")) {
+                window.location.href = "matches.html";
+            } else {
+                window.location.reload();
+            }
+        }, 300);
+    }
+}
+
+function openAddAccountModal() {
+    let modalEl = document.getElementById("addAccountModal");
+    if (modalEl) {
+        let modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        let feedback = document.getElementById("add-acc-feedback");
+        if (feedback) { feedback.className = "small mb-3 d-none"; feedback.innerHTML = ""; }
+        let form = document.getElementById("dash-add-account-form");
+        if (form) form.reset();
+        modal.show();
+    } else {
+        let currentPath = window.location.pathname || "index.html";
+        window.location.href = `login.html?returnUrl=${encodeURIComponent(currentPath)}&mode=add_account`;
+    }
+}
+
+function handleAddAccountSubmit(event) {
+    if (event) event.preventDefault();
+    let nameInput = document.getElementById("add-acc-name");
+    let emailInput = document.getElementById("add-acc-email");
+    let passInput = document.getElementById("add-acc-password");
+    let feedback = document.getElementById("add-acc-feedback");
+
+    let email = (emailInput?.value || "").trim();
+    let pass = (passInput?.value || "").trim();
+    let name = (nameInput?.value || "").trim();
+
+    if (!email || !pass) {
+        if (feedback) {
+            feedback.className = "alert alert-danger py-1 px-2 small mb-3";
+            feedback.textContent = "Please provide both email and password.";
         }
+        return;
+    }
+
+    let allUsers = getUsers();
+    let existing = allUsers.find(u => u && u.useremail && u.useremail.toLowerCase() === email.toLowerCase());
+
+    if (existing) {
+        if (existing.userpassword && existing.userpassword !== pass) {
+            if (feedback) {
+                feedback.className = "alert alert-danger py-1 px-2 small mb-3";
+                feedback.textContent = "Incorrect password for this existing account.";
+            }
+            return;
+        }
+        addAndSwitchAccount(existing);
+        showToast(`Switched active account to: <strong>${existing.username}</strong>`, 'success');
+    } else {
+        let derivedName = name || formatNameFromEmail(email);
+        let newUser = {
+            username: derivedName,
+            useremail: email,
+            userpassword: pass,
+            contactPhone: "+91 98" + Math.floor(10000000 + Math.random() * 90000000)
+        };
+        addAndSwitchAccount(newUser);
+        showToast(`Connected & switched to new account: <strong>${derivedName}</strong>!`, 'success');
+    }
+
+    let modalEl = document.getElementById("addAccountModal");
+    if (modalEl) {
+        let modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    }
+
+    setTimeout(() => {
+        window.location.reload();
+    }, 400);
+}
+
+function handleRemoveAccount(email) {
+    if (!email) return;
+    if (confirm(`Remove account ${email} from this device session?`)) {
+        removeUserAccount(email);
+        showToast(`Account removed from session list.`, 'info');
+        setTimeout(() => {
+            window.location.reload();
+        }, 300);
     }
 }
 
 function handleLogout() {
+    let currentUser = getCurrentUser();
+
+    if (currentUser && currentUser.useremail) {
+        let remainingUser = removeUserAccount(currentUser.useremail);
+        if (remainingUser) {
+            showToast(`Signed out of <strong>${currentUser.username}</strong>. Active session switched to <strong>${remainingUser.username}</strong>.`, "info", 3000);
+            setTimeout(() => {
+                window.location.reload();
+            }, 400);
+            return;
+        }
+    }
+
+    // No other accounts remain on device
     localStorage.removeItem("isLoggedIn");
-    window.location.href = "login.html";
+    localStorage.removeItem("current_user");
+    localStorage.setItem("users", JSON.stringify([]));
+    showToast("Logged out successfully.", "info");
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 400);
+}
+
+function handleLogoutAll() {
+    logoutAllAccounts();
+    showToast("Signed out of all accounts.", "info");
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 400);
 }
 
 // =============================================================
 // 1. HOME PAGE LOGIC & INTERACTIVE 3D ANIMATIONS
 // =============================================================
 function initHomePage() {
+    let currentUser = getCurrentUser();
     let reports = getReports();
+
+    // Setup dynamic guest vs logged-in landing prompt banner
+    let authPromptEl = document.getElementById("landing-auth-prompt");
+    let mainCta = document.getElementById("hero-main-cta");
+
+    if (!currentUser) {
+        if (authPromptEl) {
+            authPromptEl.innerHTML = `
+                <div class="hero-auth-alert p-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="hero-auth-icon-badge">
+                            <i class="bi bi-person-lock fs-5"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-white small" style="font-family:'Sora',sans-serif;">New Student Visitor? Sign In to Get Started</div>
+                            <div class="text-white-50 extra-small">Sign in to file lost/found reports, receive instant AI match alerts, and claim items.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="login.html" class="btn btn-emerald-pill btn-sm px-3 py-2">
+                            <span>Sign In</span> <i class="bi bi-box-arrow-in-right"></i>
+                        </a>
+                        <a href="signup.html" class="btn btn-glass-pill btn-sm px-3 py-2">
+                            <span>Create Account</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+        if (mainCta) {
+            mainCta.innerHTML = `<span>SIGN IN TO GET STARTED</span> <i class="bi bi-box-arrow-in-right"></i>`;
+            mainCta.href = "login.html";
+        }
+    } else {
+        if (authPromptEl) {
+            authPromptEl.innerHTML = `
+                <div class="hero-auth-alert p-3 d-flex align-items-center justify-content-between flex-wrap gap-3" style="border-color:rgba(0,230,118,0.5);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="hero-welcome-badge">
+                            <i class="bi bi-person-check-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-white small" style="font-family:'Sora',sans-serif;">Welcome back, <strong>${currentUser.username}</strong>!</div>
+                            <div class="text-white-50 extra-small">View your reports, notifications, and live AI matches in your personal dashboard.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="dashboard.html" class="btn btn-emerald-pill btn-sm px-3 py-2">
+                            <span>My Dashboard</span> <i class="bi bi-speedometer2"></i>
+                        </a>
+                        <button type="button" onclick="handleLogout()" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-bold">
+                            Log Out
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        if (mainCta) {
+            mainCta.innerHTML = `<span>GO TO DASHBOARD</span> <i class="bi bi-speedometer2"></i>`;
+            mainCta.href = "dashboard.html";
+        }
+    }
 
     let totalEl  = document.getElementById("stat-total");
     let lostEl   = document.getElementById("stat-lost");
@@ -601,39 +829,60 @@ function initReportPage() {
                     : "U";
                 avatarEl.textContent = initials;
             }
+        } else {
+            if (nameEl) nameEl.innerHTML = `<span class="text-warning fw-bold">Guest (Not Signed In)</span>`;
+            if (emailEl) emailEl.innerHTML = `<a href="login.html?returnUrl=report.html" class="text-white small text-decoration-underline">Sign in to publish & track report</a>`;
+            if (avatarEl) avatarEl.innerHTML = `<i class="bi bi-person"></i>`;
         }
 
         if (dropdownEl) {
             let allUsers = getUsers();
-            dropdownEl.innerHTML = `
-                <li class="px-2 pb-1"><small class="text-muted fw-bold extra-small text-uppercase">Switch Active Account</small></li>
-            ` + allUsers.map(u => {
-                let isCurrent = activeUser && u.useremail && activeUser.useremail &&
-                                u.useremail.toLowerCase().trim() === activeUser.useremail.toLowerCase().trim();
-                return `
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center justify-content-between py-2 ${isCurrent ? 'bg-light fw-bold' : ''}" href="#" onclick="switchReportAccount('${u.useremail}')">
-                            <div class="d-flex align-items-center">
-                                <div class="rounded-circle fw-bold me-2 d-flex align-items-center justify-content-center" style="width:26px;height:26px;font-size:0.7rem;background:var(--primary-light);color:var(--primary-color);">
-                                    ${u.username ? u.username.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase() : 'U'}
-                                </div>
-                                <div>
-                                    <div class="small fw-semibold">${u.username}</div>
-                                    <div class="extra-small text-muted">${u.useremail}</div>
-                                </div>
-                            </div>
-                            ${isCurrent ? '<span class="badge bg-success rounded-pill ms-2" style="font-size:0.6rem;">Active</span>' : ''}
-                        </a>
-                    </li>
+            if (!activeUser) {
+                dropdownEl.innerHTML = `
+                    <li class="px-3 py-2 text-muted small">You are currently browsing as a guest.</li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li><a class="dropdown-item small text-primary fw-bold" href="login.html?returnUrl=report.html"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</a></li>
+                    <li><a class="dropdown-item small" href="signup.html"><i class="bi bi-person-plus me-2"></i>Create Account</a></li>
                 `;
-            }).join('') + `
-                <li><hr class="dropdown-divider my-2"></li>
-                <li>
-                    <a class="dropdown-item small rounded-2 py-2" href="login.html">
-                        <i class="bi bi-person-plus text-success me-2"></i>Sign In with Another Account
-                    </a>
-                </li>
-            `;
+            } else {
+                let otherUsers = allUsers.filter(u => u && u.useremail && activeUser && activeUser.useremail && u.useremail.toLowerCase().trim() !== activeUser.useremail.toLowerCase().trim());
+                if (otherUsers.length > 0) {
+                    dropdownEl.innerHTML = `
+                        <li class="px-2 pb-1"><small class="text-muted fw-bold extra-small text-uppercase">Switch Active Account</small></li>
+                    ` + otherUsers.map(u => `
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center justify-content-between py-2" href="#" onclick="switchReportAccount('${u.useremail}')">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle fw-bold me-2 d-flex align-items-center justify-content-center" style="width:26px;height:26px;font-size:0.7rem;background:var(--primary-light);color:var(--primary-color);">
+                                        ${u.username ? u.username.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase() : 'U'}
+                                    </div>
+                                    <div>
+                                        <div class="small fw-semibold">${u.username}</div>
+                                        <div class="extra-small text-muted">${u.useremail}</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    `).join('') + `
+                        <li><hr class="dropdown-divider my-2"></li>
+                        <li>
+                            <a class="dropdown-item small rounded-2 py-2" href="login.html?returnUrl=report.html">
+                                <i class="bi bi-person-plus text-success me-2"></i>Sign In with Another Account
+                            </a>
+                        </li>
+                    `;
+                } else {
+                    dropdownEl.innerHTML = `
+                        <li class="px-3 py-2 text-muted small">Current active account is <strong>${activeUser.username}</strong></li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <a class="dropdown-item small rounded-2 py-2" href="login.html?returnUrl=report.html">
+                                <i class="bi bi-person-plus text-success me-2"></i>Sign In with Another Account
+                            </a>
+                        </li>
+                    `;
+                }
+            }
         }
     }
 
@@ -1516,6 +1765,14 @@ function openClaimModal(targetReportId, candidateItemId) {
     if (!candidateItem) return;
 
     let currentUser = getCurrentUser();
+    if (!currentUser) {
+        showToast('Please sign in or create an account to claim items or notify the finder.', 'warning');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1200);
+        return;
+    }
+
     let modalEl     = document.getElementById("claimModal");
     let modalBody   = document.getElementById("claim-modal-body");
     if (!modalEl || !modalBody) return;
@@ -1718,8 +1975,43 @@ function handleNotifyOwnerSubmit(event, lostReportId, matchingFoundReportId) {
 // =============================================================
 function initDashboardPage() {
     let currentUser = getCurrentUser();
+    if (!currentUser) {
+        let mainEl = document.querySelector("main");
+        if (mainEl) {
+            mainEl.innerHTML = `
+                <div class="container py-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8 col-lg-6 text-center">
+                            <div class="card p-4 p-md-5 border-0 shadow-lg rounded-4 text-center" style="background:#ffffff;border:1px solid var(--border-color);">
+                                <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:72px;height:72px;background:rgba(0,230,118,0.12);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);">
+                                    <i class="bi bi-shield-lock-fill fs-1"></i>
+                                </div>
+                                <h3 class="fw-bold mb-2 text-dark" style="font-family:'Sora',sans-serif;">Sign In Required</h3>
+                                <p class="text-muted small mb-4">Please sign in to access your personal dashboard, view real-time match notifications, manage item claims, and schedule campus handover meetings.</p>
+                                <div class="d-flex flex-column gap-2">
+                                    <a href="login.html?returnUrl=dashboard.html" class="btn btn-emerald-pill py-2 fw-bold">
+                                        <span>Sign In to Dashboard</span> <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                    <a href="signup.html" class="btn btn-outline-secondary rounded-pill py-2 small fw-semibold">
+                                        Create New Student Account
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        return;
+    }
+
     let nameEl = document.getElementById("dash-user-name");
     if (nameEl) nameEl.innerText = currentUser.username;
+
+    let emailEl = document.getElementById("dash-user-email-display");
+    if (emailEl) {
+        emailEl.innerHTML = `<i class="bi bi-envelope text-success me-1"></i>${currentUser.useremail} • Verified Campus Student`;
+    }
 
     // Update user profile avatar badge initials
     let avatarEl = document.getElementById("dash-user-avatar-badge");
