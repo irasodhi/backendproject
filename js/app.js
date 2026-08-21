@@ -109,7 +109,7 @@ function animateProgressBars() {
     });
 }
 
-// ─── Navbar Bell Badge ──────────────────────────────────────────────────────
+// ─── Navbar Bell Badge & Notification Read Handling ─────────────────────────
 function updateNavBellBadge() {
     let currentUser = getCurrentUser();
     let badge = document.getElementById('nav-notif-badge');
@@ -119,17 +119,34 @@ function updateNavBellBadge() {
         return;
     }
     let notifs = getNotifications(currentUser.useremail);
-    // Count unread: claim requests + owner notifications
-    let unread = notifs.filter(n =>
-        n.type === 'claim_request' ||
-        n.type === 'owner_notification' ||
-        (n.message && (n.message.includes('Good News') || n.message.includes('Hidden Details')))
-    ).length;
+    // Count unread: notifications where isRead is not true
+    let unread = notifs.filter(n => !n.isRead).length;
     if (unread > 0) {
         badge.textContent = unread > 99 ? '99+' : unread;
         badge.classList.remove('d-none');
     } else {
         badge.classList.add('d-none');
+    }
+}
+
+function handleBellClick(event) {
+    let currentUser = getCurrentUser();
+    if (currentUser && currentUser.useremail) {
+        markNotificationsAsRead(currentUser.useremail);
+    }
+    let badge = document.getElementById('nav-notif-badge');
+    if (badge) {
+        badge.textContent = "0";
+        badge.classList.add('d-none');
+    }
+    if (window.location.pathname.includes('dashboard.html')) {
+        if (event) event.preventDefault();
+        let notifEl = document.getElementById('notifications-container');
+        if (notifEl) {
+            notifEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            notifEl.style.boxShadow = "0 0 0 3px rgba(0, 230, 118, 0.4)";
+            setTimeout(() => { notifEl.style.boxShadow = ""; }, 1500);
+        }
     }
 }
 
@@ -2165,6 +2182,10 @@ function initDashboardPage() {
     renderSubmittedClaims(currentUser.useremail);
     renderMyReports(currentUser.useremail);
 
+    // Automatically mark notifications as read on dashboard visit to clear the bell badge
+    markNotificationsAsRead(currentUser.useremail);
+    updateNavBellBadge();
+
     // Restore last active tab from sessionStorage
     let lastTab = sessionStorage.getItem('dash_active_tab') || 'tab-alerts';
     let tabEl = document.getElementById(lastTab + '-btn');
@@ -2306,12 +2327,6 @@ function renderFoundNotices(userEmail) {
                     ${n.message}
                 </div>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <a href="tel:${finderPhone}" class="btn btn-sm btn-outline-success fw-semibold">
-                        <i class="bi bi-telephone-fill me-1"></i>Call
-                    </a>
-                    <a href="mailto:${finderEmail}?subject=Re: ${encodeURIComponent(itemName)}" class="btn btn-sm btn-outline-primary fw-semibold">
-                        <i class="bi bi-envelope-fill me-1"></i>Email
-                    </a>
                     ${actionHtml}
                 </div>
             </div>`;

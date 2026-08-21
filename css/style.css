@@ -107,14 +107,18 @@ textarea,
 
 html {
     scroll-behavior: smooth;
-    background-color: #041512;
+    background-color: var(--bg-main, #f8fafc);
     margin: 0;
     padding: 0;
 }
 
+html:has(body[data-page="home"]) {
+    background-color: #041512;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background-color: #041512;
+    background-color: var(--bg-main, #f8fafc);
     color: var(--text-body);
     line-height: 1.65;
     min-height: 100vh;
@@ -125,6 +129,10 @@ body {
     padding: 0;
 }
 
+body[data-page="home"] {
+    background-color: #041512;
+}
+
 main {
     flex: 1;
     background-color: var(--bg-main);
@@ -132,6 +140,53 @@ main {
 
 body[data-page="home"] main {
     background-color: #041512;
+}
+
+/* ─── Auth Pages (Sign In & Sign Up) ───────────────────────────────────────── */
+body.auth-body {
+    background-color: #f8fafc !important;
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 24px 24px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-card {
+    border-radius: 1.25rem;
+    background: #ffffff;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid var(--border-color, #e2e8f0) !important;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, #041512 0%, #064e3b 100%);
+    border-bottom: 1px solid rgba(0, 230, 118, 0.2);
+    color: #ffffff !important;
+}
+
+.auth-header h1,
+.auth-header h2,
+.auth-header h3,
+.auth-header h4 {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.auth-header p {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.auth-avatar-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: rgba(0, 230, 118, 0.15);
+    border: 1px solid rgba(0, 230, 118, 0.4);
+    color: var(--emerald-primary, #00e676);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -553,6 +608,34 @@ a:hover { color: var(--primary-hover); }
 }
 .btn-arrow-slide:hover i {
     transform: translateX(6px);
+}
+
+/* ─── Auth Submit Buttons (Register & Sign In) ──────────────────────────────── */
+.btn-auth {
+    background: linear-gradient(135deg, var(--emerald-primary, #00e676) 0%, #10b981 100%) !important;
+    color: #041b16 !important;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.8rem 1.6rem;
+    border-radius: var(--radius-pill, 9999px) !important;
+    border: none !important;
+    box-shadow: 0 0 24px rgba(0, 230, 118, 0.45), 0 4px 14px rgba(0, 230, 118, 0.25);
+    transition: var(--transition-base, all 0.25s ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+.btn-auth:hover {
+    background: linear-gradient(135deg, #26ff98 0%, #00e676 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 34px rgba(0, 230, 118, 0.75), 0 6px 20px rgba(0, 230, 118, 0.4);
+    color: #02120e !important;
+}
+.btn-auth:active {
+    transform: translateY(0);
 }
 
 .btn-glass-pill {

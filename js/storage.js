@@ -320,6 +320,24 @@ function sendNotification(notification) {
     }
 }
 
+// Mark all notifications as read for a specific user
+function markNotificationsAsRead(userEmail) {
+    if (!userEmail) return;
+    initStorage();
+    try {
+        let all = JSON.parse(localStorage.getItem("campus_notifications")) || [];
+        let target = userEmail.toLowerCase().trim();
+        all.forEach(n => {
+            if (n.recipientEmail && n.recipientEmail.toLowerCase().trim() === target) {
+                n.isRead = true;
+            }
+        });
+        localStorage.setItem("campus_notifications", JSON.stringify(all));
+    } catch (e) {
+        console.error("Error marking notifications as read", e);
+    }
+}
+
 // Clear all notifications for a specific user
 function clearNotifications(userEmail) {
     if (!userEmail) return;
