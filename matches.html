@@ -120,52 +120,68 @@
             <!-- Target Item Summary Banner -->
             <div id="target-item-banner"></div>
 
-            <!-- Sort / Filter Controls Bar -->
-            <div class="match-controls-bar fade-in-up delay-1">
-                <!-- Search Filter -->
-                <div class="d-flex align-items-center gap-2 flex-grow-1" style="min-width:200px;">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search text-success"></i></span>
-                        <input type="text" id="match-search-input" class="form-control border-start-0" placeholder="Filter matches by keyword, brand, room…">
+            <!-- Sort / Filter Controls Bar (Gathered & Balanced) -->
+            <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 match-controls-card fade-in-up delay-1">
+                <div class="row g-2.5 align-items-center">
+                    <!-- Search Filter -->
+                    <div class="col-lg-4 col-md-12">
+                        <div class="input-group input-group-sm match-input-pill">
+                            <span class="input-group-text ps-3">
+                                <i class="bi bi-search text-success"></i>
+                            </span>
+                            <input type="text" id="match-search-input" class="form-control py-2" placeholder="Search keywords, brand, room…">
+                        </div>
                     </div>
-                </div>
 
-                <!-- Sort By -->
-                <div class="d-flex align-items-center gap-2">
-                    <label><i class="bi bi-sort-down me-1 text-success"></i>Sort:</label>
-                    <select id="match-sort-select" class="form-select">
-                        <option value="score">Highest Score First</option>
-                        <option value="name">Item Name (A→Z)</option>
-                        <option value="zone">Campus Zone (A→Z)</option>
-                        <option value="date">Date (Newest First)</option>
-                    </select>
-                </div>
+                    <!-- Category Filter -->
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="input-group input-group-sm match-input-pill">
+                            <span class="input-group-text ps-2.5 pe-1">
+                                <i class="bi bi-tag-fill text-success"></i>
+                            </span>
+                            <select id="match-cat-filter" class="form-select py-2">
+                                <option value="all">All Categories</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Bags">Bags</option>
+                                <option value="Wallets">Wallets</option>
+                                <option value="ID Cards">ID Cards</option>
+                                <option value="Keys">Keys</option>
+                                <option value="Books">Books</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <!-- Category Filter -->
-                <div class="d-flex align-items-center gap-2">
-                    <label><i class="bi bi-tag me-1 text-success"></i>Category:</label>
-                    <select id="match-cat-filter" class="form-select">
-                        <option value="all">All Categories</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Bags">Bags</option>
-                        <option value="Wallets">Wallets</option>
-                        <option value="ID Cards">ID Cards</option>
-                        <option value="Keys">Keys</option>
-                        <option value="Books">Books</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Accessories">Accessories</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
+                    <!-- Confidence Tier Filter -->
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="input-group input-group-sm match-input-pill">
+                            <span class="input-group-text ps-2.5 pe-1">
+                                <i class="bi bi-funnel-fill text-success"></i>
+                            </span>
+                            <select id="match-confidence-filter" class="form-select py-2">
+                                <option value="all">All Match Scores</option>
+                                <option value="high">High Match (70%+)</option>
+                                <option value="med">Moderate+ (45%+)</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <!-- Confidence Tier Filter -->
-                <div class="d-flex align-items-center gap-2">
-                    <label><i class="bi bi-funnel me-1 text-success"></i>Confidence:</label>
-                    <select id="match-confidence-filter" class="form-select">
-                        <option value="all">All Scores</option>
-                        <option value="high">High Confidence (70%+)</option>
-                        <option value="med">Moderate & Above (45%+)</option>
-                    </select>
+                    <!-- Sort By -->
+                    <div class="col-lg-2 col-md-4 col-sm-12">
+                        <div class="input-group input-group-sm match-input-pill">
+                            <span class="input-group-text ps-2.5 pe-1">
+                                <i class="bi bi-sort-down text-success"></i>
+                            </span>
+                            <select id="match-sort-select" class="form-select py-2">
+                                <option value="score">Top Score</option>
+                                <option value="name">Name (A-Z)</option>
+                                <option value="zone">Zone (A-Z)</option>
+                                <option value="date">Newest</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 

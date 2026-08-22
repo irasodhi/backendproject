@@ -1612,41 +1612,46 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 0 10px var(--emerald-primary);
 }
 
-.match-controls-bar {
+.match-controls-card {
     background: #ffffff;
-    border: 1.5px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 1rem 1.4rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
     transition: var(--transition-base);
 }
-.match-controls-bar:hover {
-    border-color: var(--mint-border);
-    box-shadow: var(--shadow-md);
+.match-controls-card:hover {
+    border-color: rgba(0, 230, 118, 0.3) !important;
+    box-shadow: 0 8px 24px rgba(0, 230, 118, 0.08) !important;
 }
-.match-controls-bar label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0;
+.match-input-pill {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    transition: all 0.2s ease;
 }
-.match-controls-bar .form-select {
-    font-size: 0.88rem;
-    padding: 0.5rem 0.9rem;
-    min-width: 170px;
-    border-radius: var(--radius-pill);
-    border: 1px solid var(--border-color);
-}
-.match-controls-bar .form-select:focus {
+.match-input-pill:hover,
+.match-input-pill:focus-within {
     border-color: var(--emerald-primary);
-    box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.2);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.15);
+}
+.match-input-pill .input-group-text {
+    background: transparent !important;
+    border: none !important;
+    font-size: 0.85rem;
+}
+.match-input-pill .form-control,
+.match-input-pill .form-select {
+    background: transparent !important;
+    border: none !important;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #1e293b;
+    box-shadow: none !important;
+}
+.match-input-pill .form-select option {
+    background: #ffffff;
+    color: #1e293b;
 }
 
 /* Futuristic Match Candidate Card */
