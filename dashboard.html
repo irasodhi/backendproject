@@ -40,11 +40,37 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
                     </li>
-                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-                        <a class="nav-bell-link" href="dashboard.html" title="Notifications" onclick="handleBellClick(event)">
+                    <!-- Notification Bell Dropdown -->
+                    <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
+                        <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
                             <i class="bi bi-bell-fill"></i>
                             <span id="nav-notif-badge" class="notif-badge d-none">0</span>
-                        </a>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
+                            <!-- Premium Header -->
+                            <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-white" style="font-family:'Sora',sans-serif;font-size:0.92rem;letter-spacing:-0.01em;">Notifications</h6>
+                                        <span class="extra-small text-light opacity-75" style="font-size:0.7rem;">Real-time Campus Alerts</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 position-relative" style="z-index:2;">
+                                    <span id="nav-notif-unread-count" class="badge rounded-pill" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.35);font-size:0.68rem;padding:0.35em 0.7em;">0 New</span>
+                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill extra-small py-0.5 px-2 text-decoration-none" onclick="handleClearAllDropdownNotifs(event)" title="Clear all notifications" style="font-size:0.68rem;opacity:0.85;">
+                                        <i class="bi bi-trash3 me-1"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Notifications Items List -->
+                            <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Dynamic rich notification items rendered via app.js -->
+                            </div>
+                        </div>
                     </li>
                     <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
                         <a class="btn btn-sm btn-outline-light rounded-pill px-3" href="login.html">
@@ -137,44 +163,11 @@
                         <span class="small text-muted" id="dash-user-email-display"><i class="bi bi-shield-lock text-success me-1"></i>Verified Campus Student • Multi-Attribute Match Enabled</span>
                     </div>
                 </div>
-                <div class="d-flex gap-2 flex-wrap align-items-center">
-                    <a href="report.html?type=lost" class="btn btn-lost btn-sm px-3 shadow-sm">
-                        <i class="bi bi-plus-circle me-1"></i>Report Lost
-                    </a>
-                    <a href="report.html?type=found" class="btn btn-found btn-sm px-3 shadow-sm">
-                        <i class="bi bi-plus-circle me-1"></i>Report Found
-                    </a>
-                    <a href="matches.html" class="btn btn-outline-dark btn-sm px-3 rounded-pill fw-bold">
-                        <i class="bi bi-cpu me-1"></i>Match Engine
-                    </a>
-                </div>
             </div>
 
             <div class="row g-4">
-                <!-- Notifications Sidebar -->
-                <div class="col-lg-4">
-                    <div class="bg-white rounded-3 border shadow-sm p-3 p-md-4 h-100 fade-in-up delay-2">
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="icon-square-sm bg-warning-subtle text-warning rounded-2">
-                                    <i class="bi bi-bell-fill"></i>
-                                </div>
-                                <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;font-size:1.05rem;">
-                                    Notifications
-                                </h5>
-                            </div>
-                            <button id="btn-clear-notifications" class="btn btn-sm btn-outline-danger rounded-pill fw-semibold py-1 px-2.5 extra-small" onclick="handleClearAllNotifications()" title="Delete all notifications">
-                                <i class="bi bi-trash3 me-1"></i>Clear All
-                            </button>
-                        </div>
-                        <div id="notifications-container" class="rounded-3 border p-2" style="max-height:480px;overflow-y:auto;background:var(--bg-elevated);">
-                            <!-- Dynamic via app.js -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Tabbed Content -->
-                <div class="col-lg-8 fade-in-up delay-3">
+                <!-- Main Tabbed Content (Full Width) -->
+                <div class="col-12 fade-in-up delay-2">
                     <!-- Tab Navigation Bar (Pill Segmented Style) -->
                     <div class="dash-tabs-wrapper mb-3">
                         <ul class="nav nav-pills dash-tabs-pills" id="dashTabs" role="tablist">

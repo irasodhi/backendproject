@@ -42,11 +42,37 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="admin.html" style="color:var(--emerald-primary) !important;"><i class="bi bi-shield-lock me-1"></i>Admin</a>
                     </li>
-                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-                        <a class="nav-bell-link" href="dashboard.html" title="Notifications" onclick="handleBellClick(event)">
+                    <!-- Notification Bell Dropdown -->
+                    <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
+                        <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
                             <i class="bi bi-bell-fill"></i>
                             <span id="nav-notif-badge" class="notif-badge d-none">0</span>
-                        </a>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
+                            <!-- Premium Header -->
+                            <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-white" style="font-family:'Sora',sans-serif;font-size:0.92rem;letter-spacing:-0.01em;">Notifications</h6>
+                                        <span class="extra-small text-light opacity-75" style="font-size:0.7rem;">Real-time Campus Alerts</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 position-relative" style="z-index:2;">
+                                    <span id="nav-notif-unread-count" class="badge rounded-pill" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.35);font-size:0.68rem;padding:0.35em 0.7em;">0 New</span>
+                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill extra-small py-0.5 px-2 text-decoration-none" onclick="handleClearAllDropdownNotifs(event)" title="Clear all notifications" style="font-size:0.68rem;opacity:0.85;">
+                                        <i class="bi bi-trash3 me-1"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Notifications Items List -->
+                            <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Dynamic rich notification items rendered via app.js -->
+                            </div>
+                        </div>
                     </li>
                     <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
                         <a class="btn btn-sm btn-outline-light rounded-pill px-3" href="login.html">

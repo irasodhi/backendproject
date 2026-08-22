@@ -41,12 +41,37 @@
                         <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
                     </li>
 
-                    <!-- Notification Bell -->
-                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-                        <a class="nav-bell-link" href="dashboard.html" title="Notifications" onclick="handleBellClick(event)">
+                    <!-- Notification Bell Dropdown -->
+                    <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
+                        <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
                             <i class="bi bi-bell-fill"></i>
                             <span id="nav-notif-badge" class="notif-badge d-none">0</span>
-                        </a>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
+                            <!-- Premium Header -->
+                            <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-white" style="font-family:'Sora',sans-serif;font-size:0.92rem;letter-spacing:-0.01em;">Notifications</h6>
+                                        <span class="extra-small text-light opacity-75" style="font-size:0.7rem;">Real-time Campus Alerts</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 position-relative" style="z-index:2;">
+                                    <span id="nav-notif-unread-count" class="badge rounded-pill" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.35);font-size:0.68rem;padding:0.35em 0.7em;">0 New</span>
+                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill extra-small py-0.5 px-2 text-decoration-none" onclick="handleClearAllDropdownNotifs(event)" title="Clear all notifications" style="font-size:0.68rem;opacity:0.85;">
+                                        <i class="bi bi-trash3 me-1"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Notifications Items List -->
+                            <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Dynamic rich notification items rendered via app.js -->
+                            </div>
+                        </div>
                     </li>
 
                     <!-- Dynamic User Account Display / CTA -->
@@ -500,56 +525,10 @@
             </div>
         </section>
 
-        <!-- Interactive Category Quick Explorer -->
-        <section class="py-4 border-bottom" style="background:#ffffff;">
-            <div class="container">
-                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge-dot" style="background:var(--emerald-primary);"></span>
-                        <span class="small fw-bold text-uppercase text-dark" style="letter-spacing:0.06em;font-size:0.78rem;">Explore By Campus Category</span>
-                    </div>
-                    <span class="text-muted extra-small">Click any category for instant 1-click filtering</span>
-                </div>
-                <div class="cat-explorer-scroll-row" id="cat-explorer-strip">
-                    <div class="cat-explorer-chip active" data-cat="all" onclick="selectCategoryChip('all')">
-                        <span class="cat-icon-badge"><i class="bi bi-grid-fill"></i></span>
-                        <span class="cat-label">All Items</span>
-                    </div>
-                    <div class="cat-explorer-chip" data-cat="Electronics" onclick="selectCategoryChip('Electronics')">
-                        <span class="cat-icon-badge"><i class="bi bi-laptop"></i></span>
-                        <span class="cat-label">Electronics</span>
-                    </div>
-                    <div class="cat-explorer-chip" data-cat="Bags" onclick="selectCategoryChip('Bags')">
-                        <span class="cat-icon-badge"><i class="bi bi-backpack"></i></span>
-                        <span class="cat-label">Bags & Packs</span>
-                    </div>
-                    <div class="cat-explorer-chip" data-cat="Wallets" onclick="selectCategoryChip('Wallets')">
-                        <span class="cat-icon-badge"><i class="bi bi-wallet2"></i></span>
-                        <span class="cat-label">Wallets</span>
-                    </div>
-                    <div class="cat-explorer-chip" data-cat="ID Cards" onclick="selectCategoryChip('ID Cards')">
-                        <span class="cat-icon-badge"><i class="bi bi-person-badge"></i></span>
-                        <span class="cat-label">ID Cards</span>
-                    </div>
-                    <div class="cat-explorer-chip" data-cat="Keys" onclick="selectCategoryChip('Keys')">
-                        <span class="cat-icon-badge"><i class="bi bi-key-fill"></i></span>
-                        <span class="cat-label">Keys</span>
-                    </div>
-                    <div class="cat-explorer-chip" data-cat="Books" onclick="selectCategoryChip('Books')">
-                        <span class="cat-icon-badge"><i class="bi bi-book-half"></i></span>
-                        <span class="cat-label">Books</span>
-                    </div>
-                    <div class="cat-explorer-chip" data-cat="Accessories" onclick="selectCategoryChip('Accessories')">
-                        <span class="cat-icon-badge"><i class="bi bi-watch"></i></span>
-                        <span class="cat-label">Accessories</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Quick Items Search & Recent Feed -->
         <section class="py-5" style="background-color:var(--bg-main);">
             <div class="container">
+                <!-- Section Header -->
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 gap-3 reveal-item">
                     <div>
                         <span class="badge rounded-pill mb-1" style="background:var(--mint-light);color:#059669;font-weight:700;">LIVE INVENTORY</span>
@@ -569,16 +548,16 @@
                     </div>
                 </div>
 
-                <!-- Modern Interactive Filters Bar -->
-                <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 reveal-item delay-1" style="background:#ffffff;border:1px solid var(--border-color)!important;">
+                <!-- Modern Interactive Filters Bar (Search & Type Switcher) -->
+                <div class="card p-3 mb-3 border-0 shadow-sm rounded-4 reveal-item delay-1" style="background:#ffffff;border:1px solid var(--border-color)!important;">
                     <div class="row g-3 align-items-center">
-                        <div class="col-lg-5">
+                        <div class="col-md-7 col-lg-8">
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-0 text-muted ps-3"><i class="bi bi-search"></i></span>
                                 <input type="text" id="home-search-input" class="form-control bg-light border-0 py-2.5" placeholder="Search item name, keyword, brand (e.g. MacBook, Nike, ID)…">
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-md-5 col-lg-4">
                             <div class="d-flex align-items-center gap-1 bg-light p-1 rounded-pill">
                                 <button type="button" class="btn btn-sm rounded-pill fw-semibold flex-fill filter-type-btn active" data-type="all" onclick="selectTypeFilter('all')">
                                     All
@@ -595,18 +574,62 @@
                                 <option value="lost">Lost</option>
                                 <option value="found">Found</option>
                             </select>
-                        </div>
-                        <div class="col-lg-3">
-                            <select id="home-category-filter" class="form-select border-0 bg-light py-2.5" onchange="syncCategorySelect(this.value)">
-                                <option value="all">All Categories</option>
+                            <!-- Hidden category select for synchronized filter state -->
+                            <select id="home-category-filter" class="d-none">
+                                <option value="all" selected>All Categories</option>
                                 <option value="Electronics">Electronics</option>
-                                <option value="Bags">Bags & Backpacks</option>
+                                <option value="Bags">Bags</option>
                                 <option value="Wallets">Wallets</option>
                                 <option value="ID Cards">ID Cards</option>
                                 <option value="Keys">Keys</option>
                                 <option value="Books">Books</option>
                                 <option value="Accessories">Accessories</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Category Quick Explorer Strip (Below Recent Campus) -->
+                <div class="mb-4 reveal-item delay-2">
+                    <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge-dot" style="background:var(--emerald-primary);"></span>
+                            <span class="small fw-bold text-uppercase text-dark" style="letter-spacing:0.06em;font-size:0.78rem;">Explore By Campus Category</span>
+                        </div>
+                        <span class="text-muted extra-small">Click any category for instant 1-click filtering</span>
+                    </div>
+                    <div class="cat-explorer-scroll-row" id="cat-explorer-strip">
+                        <div class="cat-explorer-chip active" data-cat="all" onclick="selectCategoryChip('all')">
+                            <span class="cat-icon-badge"><i class="bi bi-grid-fill"></i></span>
+                            <span class="cat-label">All Items</span>
+                        </div>
+                        <div class="cat-explorer-chip" data-cat="Electronics" onclick="selectCategoryChip('Electronics')">
+                            <span class="cat-icon-badge"><i class="bi bi-laptop"></i></span>
+                            <span class="cat-label">Electronics</span>
+                        </div>
+                        <div class="cat-explorer-chip" data-cat="Bags" onclick="selectCategoryChip('Bags')">
+                            <span class="cat-icon-badge"><i class="bi bi-backpack"></i></span>
+                            <span class="cat-label">Bags & Packs</span>
+                        </div>
+                        <div class="cat-explorer-chip" data-cat="Wallets" onclick="selectCategoryChip('Wallets')">
+                            <span class="cat-icon-badge"><i class="bi bi-wallet2"></i></span>
+                            <span class="cat-label">Wallets</span>
+                        </div>
+                        <div class="cat-explorer-chip" data-cat="ID Cards" onclick="selectCategoryChip('ID Cards')">
+                            <span class="cat-icon-badge"><i class="bi bi-person-badge"></i></span>
+                            <span class="cat-label">ID Cards</span>
+                        </div>
+                        <div class="cat-explorer-chip" data-cat="Keys" onclick="selectCategoryChip('Keys')">
+                            <span class="cat-icon-badge"><i class="bi bi-key-fill"></i></span>
+                            <span class="cat-label">Keys</span>
+                        </div>
+                        <div class="cat-explorer-chip" data-cat="Books" onclick="selectCategoryChip('Books')">
+                            <span class="cat-icon-badge"><i class="bi bi-book-half"></i></span>
+                            <span class="cat-label">Books</span>
+                        </div>
+                        <div class="cat-explorer-chip" data-cat="Accessories" onclick="selectCategoryChip('Accessories')">
+                            <span class="cat-icon-badge"><i class="bi bi-watch"></i></span>
+                            <span class="cat-label">Accessories</span>
                         </div>
                     </div>
                 </div>
@@ -618,36 +641,85 @@
             </div>
         </section>
 
-        <!-- Feature Trust Ecosystem -->
-        <section class="py-5 bg-white border-top border-bottom">
+        <!-- Feature Trust Ecosystem (Animated Green Contrast Theme) -->
+        <section class="ecosystem-section-emerald">
             <div class="container">
-                <div class="row g-4 text-center">
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <div class="fs-1 text-success mb-2"><i class="bi bi-shield-lock"></i></div>
-                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Zero-Knowledge Claims</h6>
-                            <p class="small text-muted mb-0">Hidden verification marks keep student belongings safe from false claims.</p>
+                <!-- Section Title with High-Contrast Header -->
+                <div class="text-center mb-5 reveal-item">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3" style="background:rgba(0,230,118,0.12);border:1px solid rgba(0,230,118,0.35);box-shadow:0 0 20px rgba(0,230,118,0.2);">
+                        <i class="bi bi-shield-fill-check text-success"></i>
+                        <span class="extra-small fw-bold text-uppercase" style="color:var(--emerald-primary);letter-spacing:0.08em;font-size:0.75rem;">Verified Campus Security Ecosystem</span>
+                    </div>
+                    <h2 class="fw-bold text-white mb-2" style="font-family:'Sora',sans-serif;font-size:clamp(1.75rem, 3.5vw, 2.35rem);letter-spacing:-0.02em;">
+                        Engineered For Speed, Precision & Trust
+                    </h2>
+                    <p class="mx-auto text-light opacity-75 mb-0" style="max-width:620px;font-size:0.95rem;line-height:1.6;">
+                        Every report is indexed against our 5-factor similarity model to ensure rapid, authentic returns with complete privacy.
+                    </p>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Card 1: Zero-Knowledge Claims -->
+                    <div class="col-md-6 col-lg-3 reveal-item delay-1">
+                        <div class="ecosystem-card">
+                            <div class="ecosystem-icon-box">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <span class="ecosystem-badge-tag">
+                                <i class="bi bi-check-circle-fill"></i> 100% Private
+                            </span>
+                            <h5 class="ecosystem-card-title">Zero-Knowledge Proofs</h5>
+                            <p class="ecosystem-card-desc">
+                                Hidden verification questions and secret identifiers prevent false claims and protect valuable student property.
+                            </p>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <div class="fs-1 text-success mb-2"><i class="bi bi-pin-map"></i></div>
-                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Campus Zone Proximity</h6>
-                            <p class="small text-muted mb-0">Algorithms factor campus topology to find adjacent zone drops accurately.</p>
+
+                    <!-- Card 2: Campus Zone Proximity -->
+                    <div class="col-md-6 col-lg-3 reveal-item delay-2">
+                        <div class="ecosystem-card">
+                            <div class="ecosystem-icon-box">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <span class="ecosystem-badge-tag">
+                                <i class="bi bi-diagram-3-fill"></i> Campus Topology
+                            </span>
+                            <h5 class="ecosystem-card-title">Zone Proximity AI</h5>
+                            <p class="ecosystem-card-desc">
+                                Graph-weighted campus zone distance scoring detects items dropped between adjacent buildings and walking corridors.
+                            </p>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <div class="fs-1 text-success mb-2"><i class="bi bi-bell"></i></div>
-                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Instant Notifications</h6>
-                            <p class="small text-muted mb-0">Automatic notifications trigger the instant a matching probability score passes threshold.</p>
+
+                    <!-- Card 3: Instant Notifications -->
+                    <div class="col-md-6 col-lg-3 reveal-item delay-3">
+                        <div class="ecosystem-card">
+                            <div class="ecosystem-icon-box">
+                                <i class="bi bi-lightning-charge-fill"></i>
+                            </div>
+                            <span class="ecosystem-badge-tag">
+                                <i class="bi bi-bell-fill"></i> Real-Time Alerts
+                            </span>
+                            <h5 class="ecosystem-card-title">Instant Match Engine</h5>
+                            <p class="ecosystem-card-desc">
+                                Automated high-confidence alerts trigger the instant a matching probability score passes threshold, alerting both parties.
+                            </p>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <div class="fs-1 text-success mb-2"><i class="bi bi-calendar-check"></i></div>
-                            <h6 class="fw-bold mb-1" style="font-family:'Sora',sans-serif;">Handover Scheduler</h6>
-                            <p class="small text-muted mb-0">Coordinate meeting locations and times on campus with safety confirmation.</p>
+
+                    <!-- Card 4: Handover Scheduler -->
+                    <div class="col-md-6 col-lg-3 reveal-item delay-4">
+                        <div class="ecosystem-card">
+                            <div class="ecosystem-icon-box">
+                                <i class="bi bi-qr-code-scan"></i>
+                            </div>
+                            <span class="ecosystem-badge-tag">
+                                <i class="bi bi-calendar-check-fill"></i> Secure Handover
+                            </span>
+                            <h5 class="ecosystem-card-title">Safe Meet & QR Pass</h5>
+                            <p class="ecosystem-card-desc">
+                                Coordinate campus security booth handovers with built-in chat, time confirmation, and tamper-proof security QR passes.
+                            </p>
                         </div>
                     </div>
                 </div>

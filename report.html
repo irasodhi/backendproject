@@ -47,11 +47,37 @@
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
                     </li>
-                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-                        <a class="nav-bell-link" href="dashboard.html" title="Notifications" onclick="handleBellClick(event)">
+                    <!-- Notification Bell Dropdown -->
+                    <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
+                        <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
                             <i class="bi bi-bell-fill"></i>
                             <span id="nav-notif-badge" class="notif-badge d-none">0</span>
-                        </a>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
+                            <!-- Premium Header -->
+                            <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-white" style="font-family:'Sora',sans-serif;font-size:0.92rem;letter-spacing:-0.01em;">Notifications</h6>
+                                        <span class="extra-small text-light opacity-75" style="font-size:0.7rem;">Real-time Campus Alerts</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 position-relative" style="z-index:2;">
+                                    <span id="nav-notif-unread-count" class="badge rounded-pill" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.35);font-size:0.68rem;padding:0.35em 0.7em;">0 New</span>
+                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill extra-small py-0.5 px-2 text-decoration-none" onclick="handleClearAllDropdownNotifs(event)" title="Clear all notifications" style="font-size:0.68rem;opacity:0.85;">
+                                        <i class="bi bi-trash3 me-1"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Notifications Items List -->
+                            <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Dynamic rich notification items rendered via app.js -->
+                            </div>
+                        </div>
                     </li>
                     <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
                         <a class="btn btn-sm btn-outline-light rounded-pill px-3" href="login.html">
@@ -82,6 +108,9 @@
             <div style="max-width:760px;margin:0 auto;">
 
                 <div class="card form-card-emerald p-4 p-md-5 fade-in-up delay-3 shadow-lg">
+                    <!-- Guest Authentication Notice Banner -->
+                    <div id="report-auth-banner"></div>
+
                     <form id="report-form" novalidate>
 
                         <!-- STEP 1: Report Direction Selection -->
@@ -555,6 +584,47 @@
             </div>
         </div>
     </main>
+
+    <!-- Sign In Required Modal (Instant Gate for Logged-Out Users) -->
+    <div class="modal fade" id="reportAuthModal" tabindex="-1" aria-labelledby="reportAuthModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-2xl rounded-4 overflow-hidden" style="background:#ffffff;border:1px solid rgba(0,230,118,0.25)!important;">
+                <!-- Glowing Emerald Dark Header -->
+                <div class="modal-header border-0 p-4 pb-3" style="background:linear-gradient(135deg, #041512 0%, #062e24 100%);color:#ffffff;position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:-40%;right:-15%;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(0,230,118,0.3) 0%,transparent 70%);pointer-events:none;"></div>
+                    <div class="d-flex align-items-center gap-3 position-relative" style="z-index:2;">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);border:1.5px solid rgba(0,230,118,0.35);font-size:1.3rem;box-shadow:0 0 16px rgba(0,230,118,0.3);">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                        <div>
+                            <span class="badge rounded-pill mb-1" style="background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.68rem;letter-spacing:0.04em;">AUTHENTICATION REQUIRED</span>
+                            <h5 class="modal-title fw-bold text-white mb-0" id="reportAuthModalLabel" style="font-family:'Sora',sans-serif;font-size:1.15rem;">Please Sign In to Report</h5>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white position-relative" data-bs-dismiss="modal" aria-label="Close" style="z-index:2;"></button>
+                </div>
+                <!-- Body -->
+                <div class="modal-body p-4 text-center">
+                    <p class="text-secondary small mb-4" style="line-height:1.55;">
+                        To protect campus students and prevent false claims, you must be signed in with your campus account before creating a lost or found report. Signing in ensures you receive <strong>real-time similarity match alerts</strong>, claim notifications, and handover chats.
+                    </p>
+                    
+                    <div class="d-grid gap-2 mb-3">
+                        <a id="modal-signin-btn" href="login.html?returnUrl=report.html" class="btn btn-emerald-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                            <span>Sign In to Continue</span> <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a id="modal-signup-btn" href="signup.html?returnUrl=report.html" class="btn btn-outline-dark rounded-pill py-2.5 small fw-semibold">
+                            <i class="bi bi-person-plus me-1"></i>Create New Account
+                        </a>
+                    </div>
+                    
+                    <button type="button" class="btn btn-link text-muted extra-small text-decoration-none" data-bs-dismiss="modal">
+                        Preview form without signing in (submission locked)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Account Modal -->
     <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">

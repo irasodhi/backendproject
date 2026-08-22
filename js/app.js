@@ -109,45 +109,213 @@ function animateProgressBars() {
     });
 }
 
-// ─── Navbar Bell Badge & Notification Read Handling ─────────────────────────
+// ─── Navbar Bell Badge & Dropdown Notification Center ───────────────────────
 function updateNavBellBadge() {
     let currentUser = getCurrentUser();
     let badge = document.getElementById('nav-notif-badge');
-    if (!badge) return;
+    let unreadCountEl = document.getElementById('nav-notif-unread-count');
+    
     if (!currentUser || !currentUser.useremail) {
-        badge.classList.add('d-none');
+        if (badge) badge.classList.add('d-none');
+        if (unreadCountEl) unreadCountEl.textContent = '0';
+        renderNavNotifDropdown();
         return;
     }
+    
     let notifs = getNotifications(currentUser.useremail);
-    // Count unread: notifications where isRead is not true
     let unread = notifs.filter(n => !n.isRead).length;
-    if (unread > 0) {
-        badge.textContent = unread > 99 ? '99+' : unread;
-        badge.classList.remove('d-none');
-    } else {
-        badge.classList.add('d-none');
+    
+    if (badge) {
+        if (unread > 0) {
+            badge.textContent = unread > 99 ? '99+' : unread;
+            badge.classList.remove('d-none');
+        } else {
+            badge.classList.add('d-none');
+        }
     }
+    
+    if (unreadCountEl) {
+        unreadCountEl.textContent = `${unread}`;
+    }
+    
+    renderNavNotifDropdown();
+}
+
+function renderNavNotifDropdown() {
+    let listContainer = document.getElementById('nav-notif-dropdown-list');
+    if (!listContainer) return;
+    
+    let currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.useremail) {
+        listContainer.innerHTML = `
+            <div class="text-center py-5 px-4 notif-empty-state">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:54px;height:54px;background:rgba(0,230,118,0.12);color:#059669;">
+                    <i class="bi bi-person-lock fs-4"></i>
+                </div>
+                <h6 class="fw-bold text-dark mb-1" style="font-family:'Sora',sans-serif;font-size:0.95rem;">Sign In to View Alerts</h6>
+                <p class="extra-small text-muted mb-3" style="line-height:1.4;">Sign in to receive instant similarity match alerts, claim approvals, and handover chats.</p>
+                <a href="login.html" class="btn btn-sm btn-emerald-pill px-4 py-1.5 extra-small fw-semibold">Sign In Now</a>
+            </div>
+        `;
+        return;
+    }
+    
+    let notifs = getNotifications(currentUser.useremail);
+    if (!notifs || notifs.length === 0) {
+        listContainer.innerHTML = `
+            <div class="text-center py-5 px-4 notif-empty-state">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:54px;height:54px;background:rgba(0,230,118,0.12);color:#059669;box-shadow:0 0 20px rgba(0,230,118,0.15);">
+                    <i class="bi bi-bell-slash fs-4"></i>
+                </div>
+                <h6 class="fw-bold text-dark mb-1" style="font-family:'Sora',sans-serif;font-size:0.95rem;">All Caught Up!</h6>
+                <p class="extra-small text-muted mb-0" style="line-height:1.4;">No new notifications right now. When someone finds your item or sends a message, it will pop up here instantly.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    listContainer.innerHTML = notifs.map(n => {
+        let isOwnerAlert = n.type === "owner_notification" || (n.message && n.message.includes("Good News"));
+        let isApproved   = n.type === "claim_approved"    || (n.message && n.message.includes("Claim Approved"));
+        let isMoreInfo   = n.type === "more_info_requested";
+        let isRejected   = n.type === "claim_rejected"    || (n.message && n.message.includes("Claim Rejected"));
+        let isChatMsg    = n.type === "chat_message"      || (n.message && n.message.includes("New Message"));
+
+        let iconBg = isOwnerAlert ? 'background:linear-gradient(135deg, #fef3c7, #fde68a);color:#b45309;' 
+                   : isApproved   ? 'background:linear-gradient(135deg, #d1fae5, #a7f3d0);color:#047857;'
+                   : isRejected   ? 'background:linear-gradient(135deg, #ffe4e6, #fecdd3);color:#be123c;'
+                   : isChatMsg    ? 'background:linear-gradient(135deg, #e0f2fe, #bae6fd);color:#0369a1;'
+                   : 'background:linear-gradient(135deg, #f1f5f9, #e2e8f0);color:#334155;';
+
+        let iconClass = isOwnerAlert ? 'bi-bell-fill'
+                      : isApproved   ? 'bi-check-circle-fill'
+                      : isMoreInfo   ? 'bi-question-circle-fill'
+                      : isRejected   ? 'bi-x-circle-fill'
+                      : isChatMsg    ? 'bi-chat-dots-fill'
+                      : 'bi-shield-check';
+
+        let badgeText  = isOwnerAlert ? 'Found Item Alert' : isApproved ? 'Approved' : isMoreInfo ? 'More Info' : isRejected ? 'Rejected' : isChatMsg ? 'Direct Message' : 'Details Received';
+        let badgeStyle = isOwnerAlert ? 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;' 
+                       : isApproved   ? 'background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;' 
+                       : isRejected   ? 'background:#ffe4e6;color:#9f1239;border:1px solid #fecdd3;' 
+                       : isChatMsg    ? 'background:#e0f2fe;color:#075985;border:1px solid #bae6fd;' 
+                       : 'background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;';
+
+        let timeStr = n.date || 'Just now';
+
+        let actionBtnHtml = '';
+        if (n.claimId) {
+            actionBtnHtml = `
+                <div class="mt-2 d-flex align-items-center gap-1.5 flex-wrap">
+                    <button type="button" class="notif-action-btn" onclick="openMeetingChatModal('${n.claimId}'); event.stopPropagation();">
+                        <i class="bi bi-chat-dots-fill"></i> Open Direct Conversation
+                    </button>
+                </div>
+            `;
+        }
+
+        let contactInfoHtml = '';
+        if (n.senderEmail || n.senderPhone) {
+            contactInfoHtml = `
+                <div class="extra-small text-muted mt-1.5 pt-1.5 border-top d-flex align-items-center gap-2 flex-wrap" style="font-size:0.7rem;">
+                    ${n.senderEmail ? `<span><i class="bi bi-envelope text-success me-1"></i>${n.senderEmail}</span>` : ''}
+                    ${n.senderPhone ? `<span><i class="bi bi-telephone text-success me-1"></i>${n.senderPhone}</span>` : ''}
+                </div>
+            `;
+        }
+
+        return `
+            <div class="notif-dropdown-item ${!n.isRead ? 'is-unread' : ''}">
+                <div class="d-flex align-items-start gap-2.5">
+                    <div class="notif-icon-box" style="${iconBg}">
+                        <i class="bi ${iconClass}"></i>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="d-flex align-items-center justify-content-between gap-1 mb-1">
+                            <span class="badge extra-small rounded-pill" style="${badgeStyle};font-size:0.66rem;padding:0.25em 0.65em;">${badgeText}</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="text-muted extra-small" style="font-size:0.68rem;"><i class="bi bi-clock me-1"></i>${timeStr}</span>
+                                <button type="button" class="notif-del-btn" onclick="handleDeleteSingleNotification('${n.id}'); event.stopPropagation();" title="Delete notification">
+                                    <i class="bi bi-trash3" style="font-size:0.75rem;"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="small text-dark mb-0 fw-medium" style="font-size:0.82rem;line-height:1.4;">${n.message || ''}</p>
+                        ${actionBtnHtml}
+                        ${contactInfoHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 function handleBellClick(event) {
+    handleBellDropdownClick(event);
+}
+
+function handleBellDropdownClick(event) {
     let currentUser = getCurrentUser();
     if (currentUser && currentUser.useremail) {
         markNotificationsAsRead(currentUser.useremail);
     }
     let badge = document.getElementById('nav-notif-badge');
     if (badge) {
-        badge.textContent = "0";
         badge.classList.add('d-none');
     }
-    if (window.location.pathname.includes('dashboard.html')) {
-        if (event) event.preventDefault();
-        let notifEl = document.getElementById('notifications-container');
-        if (notifEl) {
-            notifEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            notifEl.style.boxShadow = "0 0 0 3px rgba(0, 230, 118, 0.4)";
-            setTimeout(() => { notifEl.style.boxShadow = ""; }, 1500);
+    let unreadCountEl = document.getElementById('nav-notif-unread-count');
+    if (unreadCountEl) {
+        unreadCountEl.textContent = '0 New';
+    }
+    renderNavNotifDropdown();
+}
+
+function handleMarkAllNotifsRead(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    let currentUser = getCurrentUser();
+    if (currentUser && currentUser.useremail) {
+        markNotificationsAsRead(currentUser.useremail);
+        updateNavBellBadge();
+        if (window.location.pathname.includes('dashboard.html') && typeof renderDashboard === 'function') {
+            renderDashboard();
         }
     }
+}
+
+function handleClearAllDropdownNotifs(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    let currentUser = getCurrentUser();
+    if (currentUser && currentUser.useremail) {
+        clearNotifications(currentUser.useremail);
+        updateNavBellBadge();
+        if (typeof showToast === 'function') {
+            showToast('All notifications cleared', 'info');
+        }
+        if (window.location.pathname.includes('dashboard.html') && typeof renderDashboard === 'function') {
+            renderDashboard();
+        }
+    }
+}
+
+function handleDeleteSingleNotification(notifId) {
+    let currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.useremail) return;
+    
+    deleteNotification(notifId);
+    updateNavBellBadge();
+    if (window.location.pathname.includes('dashboard.html') && typeof renderDashboard === 'function') {
+        renderDashboard();
+    }
+}
+
+function handleNotifItemClick(notifId) {
+    window.location.href = 'dashboard.html';
 }
 
 // ─── Render Navbar User ──────────────────────────────────────────────────────
@@ -833,6 +1001,50 @@ function initReportPage() {
     if (lostBtn)  lostBtn.onclick  = () => setReportType("lost");
     if (foundBtn) foundBtn.onclick = () => setReportType("found");
 
+    // ── Instant Auth Check for Report Page ──────────────────────
+    let activeUser = getCurrentUser();
+    let currentSearch = window.location.search || '';
+    let reportReturnUrl = encodeURIComponent('report.html' + currentSearch);
+
+    if (!activeUser) {
+        // 1. Immediately trigger the Sign In Required popup modal on page load
+        setTimeout(() => {
+            let authModalEl = document.getElementById("reportAuthModal");
+            if (authModalEl) {
+                let signInBtn = document.getElementById('modal-signin-btn');
+                let signUpBtn = document.getElementById('modal-signup-btn');
+                if (signInBtn) signInBtn.href = `login.html?returnUrl=${reportReturnUrl}`;
+                if (signUpBtn) signUpBtn.href = `signup.html?returnUrl=${reportReturnUrl}`;
+                
+                let modalInst = bootstrap.Modal.getOrCreateInstance(authModalEl);
+                modalInst.show();
+            }
+        }, 250);
+
+        // 2. Render prominent persistent Guest Authentication Banner at top of form
+        let bannerContainer = document.getElementById("report-auth-banner");
+        if (bannerContainer) {
+            bannerContainer.innerHTML = `
+                <div class="alert alert-warning border-0 shadow-sm rounded-4 p-3.5 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background:#fffbeb;border-left:4.5px solid #f59e0b!important;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:40px;height:40px;background:rgba(245,158,11,0.15);color:#d97706;font-size:1.15rem;">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block text-dark small fw-bold" style="font-family:'Sora',sans-serif;">You are browsing as a Guest (Not Signed In)</strong>
+                            <span class="extra-small text-muted">Please sign in to publish this report, enable 5-factor AI matching, and receive real-time alerts.</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="login.html?returnUrl=${reportReturnUrl}" class="btn btn-sm btn-dark rounded-pill px-3.5 py-1.5 fw-semibold extra-small shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-1 text-success"></i>Sign In Now
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
     // ── Dynamic Reporter Profile & Switch Account Logic ────────
     function populateReporterProfile() {
         let activeUser = getCurrentUser();
@@ -852,7 +1064,7 @@ function initReportPage() {
             }
         } else {
             if (nameEl) nameEl.innerHTML = `<span class="text-warning fw-bold">Guest (Not Signed In)</span>`;
-            if (emailEl) emailEl.innerHTML = `<a href="login.html?returnUrl=report.html" class="text-white small text-decoration-underline">Sign in to publish & track report</a>`;
+            if (emailEl) emailEl.innerHTML = `<a href="login.html?returnUrl=${reportReturnUrl}" class="text-white small text-decoration-underline">Sign in to publish & track report</a>`;
             if (avatarEl) avatarEl.innerHTML = `<i class="bi bi-person"></i>`;
         }
 
@@ -1211,6 +1423,11 @@ function initReportPage() {
         let activeUser = getCurrentUser();
         if (!activeUser) {
             showToast('Please sign in before submitting a report.', 'warning');
+            let authModalEl = document.getElementById("reportAuthModal");
+            if (authModalEl) {
+                let modalInst = bootstrap.Modal.getOrCreateInstance(authModalEl);
+                modalInst.show();
+            }
             return;
         }
 
