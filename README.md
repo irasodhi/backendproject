@@ -21,47 +21,47 @@
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-### 🧠 1. Multi-Attribute AI Similarity Match Engine
+###  1. Multi-Attribute AI Similarity Match Engine
 - Evaluates lost and found reports using a **mathematical 6-factor weighted algorithm** (Category, Campus Zone, Item Name/Brand NLP, Color Ontology, Temporal Date Decay, Semantic Description).
 - Ranked confidence tiers: **High Match (70%+)**, **Moderate Match (45–69%)**, and **Low Match (<45%)**.
 - Interactive **Live Matching Simulator** on the homepage to test attribute weightings dynamically.
 
-### 🛡️ 2. Zero-Knowledge Proof Claims
+### 2. Zero-Knowledge Proof Claims
 - Claimants must provide **hidden identifying details** (e.g. engravings, keychain design, lockscreen wallpaper, serial numbers) before finder contact information is revealed.
 - Protects student belongings from false or fraudulent claims.
 
-### 🔒 3. Tamper-Proof QR Handover Pass & Security Authenticator
+###  3. Tamper-Proof QR Handover Pass & Security Authenticator
 - Generates dynamic **digital QR Handover Passes** with 6-digit security verification PINs upon meeting approval.
 - Integrated **Security Authenticator modal** with PIN validation and simulated camera scanner to securely finalize handovers at campus security checkpoints.
 
-### 💬 4. In-App Direct Handover Chat
+###  4. In-App Direct Handover Chat
 - Built-in live messaging modal between Finder and Claimant to coordinate safe on-campus meetings.
 - Live timestamped message threads with system confirmation alerts.
 
-### 🔔 5. Real-Time In-App Notification Center
+###  5. Real-Time In-App Notification Center
 - Animated dropdown flyout with CSS spring entrance physics (`cubic-bezier(0.34, 1.56, 0.64, 1)`).
 - Visual category pills for *Direct Messages*, *Found Item Alerts*, *Claim Approvals*, and *More Info Requests*.
 - Embedded **1-click direct conversation action buttons** and individual/batch clear controls.
 
-### 📊 6. Full-Width Personal Recovery Dashboard
+###  6. Full-Width Personal Recovery Dashboard
 - Centralized command center tracking:
   - **Found Alerts**: Reports matching your lost belongings.
   - **Claims Received**: Review secret proofs submitted for items you found.
   - **My Claims**: Track status, chat with finders, and generate QR passes.
   - **My Reports**: Manage and edit your active posts.
 
-### 🚪 7. Proactive Authentication Gating
+###  7. Proactive Authentication Gating
 - Instant modal gate on report submission preventing guest users from losing form progress before signing in.
 - Automatic preservation of `returnUrl` parameters.
 
-### 👑 8. Campus Administration Portal
+###  8. Campus Administration Portal
 - Real-time campus inventory metrics, audit logs, item status overrides, and quick moderation actions.
 
 ---
 
-## 🧮 Intelligent Matching Engine
+##  Intelligent Matching Engine
 
 The matching core (`js/matching.js`) computes item similarity ($S$) between target report ($A$) and candidate report ($B$) across 6 weighted dimensions:
 
@@ -104,31 +104,6 @@ campuslostandfound/
 └── README.md             # Project documentation
 ```
 
----
-
-## 🔄 User Flow & Handover Security
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Owner as Lost Item Owner
-    actor Finder as Found Item Finder
-    participant Engine as AI Matching Engine
-    participant System as Campus System
-
-    Finder->>System: Reports Found Item (e.g. AirPods in Library)
-    Owner->>System: Reports Lost Item (e.g. AirPods near Main Block)
-    Engine->>System: Computes 89% Match (Adjacent Zone + Category + Name)
-    System->>Owner: Dispatches Real-time Found Item Alert Notification
-    Owner->>Finder: Submits Zero-Knowledge Proof (e.g. "Scratch on left pod, green case")
-    Finder->>Owner: Approves Proof & Schedules Safe Handover Meeting
-    System->>Owner: Issues Secure QR Handover Pass with PIN
-    Owner->>Finder: Presents QR Pass / PIN at Campus Security Booth
-    Finder->>System: Scans QR / Verifies PIN via Authenticator
-    System->>System: Transitions Status to "Handover Completed & Verified"
-```
-
----
 
 ## 💻 Getting Started & Local Setup
 
@@ -166,20 +141,6 @@ Then visit `http://localhost:5500` in your web browser.
 
 ---
 
-## 👥 Default Demo Accounts
-
-The application automatically initializes mock campus student accounts in `localStorage` upon first load:
-
-| Student Name | Email Address | Default Password | Role |
-| :--- | :--- | :--- | :--- |
-| **Ira Sodhi** | `ira@gmail.com` | `password123` | Student / Active Reporter |
-| **Alex Chen** | `alex@campus.edu` | `password123` | Student / Finder |
-| **Priya Sharma** | `priya@campus.edu` | `password123` | Student / Claimant |
-| **Campus Admin** | `admin@campus.edu` | `admin123` | System Administrator |
-
-> 💡 *You can switch accounts instantly using the profile dropdown or add new accounts via the registration page.*
-
----
 
 ## 🛠️ Browser Support & Tech Stack
 
@@ -192,5 +153,4 @@ The application automatically initializes mock campus student accounts in `local
 
 ---
 
-## 📜 License
-This project is open-source and available under the [MIT License](https://opensource.org/licenses/MIT).
+
