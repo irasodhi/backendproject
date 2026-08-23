@@ -1,13 +1,9 @@
-/* ==========================================================================
-   Campus Lost & Found Matching System — style.css
-   TenFore-Inspired Emerald/Mint Theme + Complete Subpage System
-   ========================================================================== */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* ─── Design Tokens ────────────────────────────────────────────────────────── */
 :root {
-    /* Emerald & Mint Palette */
+    
     --emerald-primary:     #00e676;
     --emerald-hover:       #00c853;
     --emerald-glow:        rgba(0, 230, 118, 0.45);
@@ -18,14 +14,12 @@
     --mint-light:          #ecfdf5;
     --mint-border:         #a7f3d0;
 
-    /* Theme Primary (Mapped to Emerald) */
     --primary-color:       #10b981;
     --primary-hover:       #059669;
     --primary-light:       #ecfdf5;
     --primary-dark:        #064e3b;
     --primary-muted:       #34d399;
 
-    /* Dark Hero / Surfaces (TenFore Dark Green/Navy) */
     --bg-hero-dark:        #041512;
     --bg-hero-dark-2:      #07221c;
     --bg-hero-dark-3:      #0c332a;
@@ -35,26 +29,22 @@
     --dark-border:         rgba(0, 230, 118, 0.22);
     --dark-border-subtle:  rgba(255, 255, 255, 0.08);
 
-    /* Semantic: Rose (Lost) */
     --lost-color:          #f43f5e;
     --lost-hover:          #e11d48;
     --lost-bg:             #fff1f2;
     --lost-border:         #fecdd3;
 
-    /* Semantic: Mint/Teal (Found) */
     --found-color:         #00c853;
     --found-hover:         #009624;
     --found-bg:            #e8f5e9;
     --found-border:        #c8e6c9;
 
-    /* Surfaces */
     --bg-main:             #f8fafc;
     --bg-card:             #ffffff;
     --bg-elevated:         #f1f5f9;
     --border-color:        #e2e8f0;
     --border-dark:         #cbd5e1;
 
-    /* Text */
     --text-heading:        #091e19;
     --text-body:           #334155;
     --text-muted:          #64748b;
@@ -62,14 +52,12 @@
     --text-dark-hero:      #e2fbf1;
     --text-dark-muted:     #8ec2b1;
 
-    /* Metrics */
     --radius-sm:           8px;
     --radius-md:           12px;
     --radius-lg:           18px;
     --radius-xl:           26px;
     --radius-pill:         9999px;
 
-    /* Shadows */
     --shadow-xs:           0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-sm:           0 2px 4px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0,0,0,0.04);
     --shadow-md:           0 6px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0,0,0,0.04);
@@ -78,13 +66,11 @@
     --shadow-glow:         0 0 28px rgba(0, 230, 118, 0.45);
     --shadow-glow-sm:      0 0 16px rgba(0, 230, 118, 0.3);
 
-    /* Transition */
     --transition-fast:     all 0.15s ease;
     --transition-base:     all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow:     all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─── Reset & Base ─────────────────────────────────────────────────────────── */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -94,7 +80,6 @@
     user-select: none !important;
 }
 
-/* Allow text selection only in form inputs, textareas, and editable fields */
 input,
 textarea,
 [contenteditable="true"],
@@ -135,7 +120,6 @@ a {
 }
 a:hover { color: var(--primary-hover); }
 
-/* ─── Keyframe Animations ──────────────────────────────────────────────────── */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -203,7 +187,6 @@ a:hover { color: var(--primary-hover); }
     to   { opacity: 0; transform: translateX(110%); }
 }
 
-/* ─── Animation Utility Classes ────────────────────────────────────────────── */
 .fade-in-up {
     animation: fadeInUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -217,7 +200,6 @@ a:hover { color: var(--primary-hover); }
 .delay-5 { animation-delay: 0.40s; }
 .delay-6 { animation-delay: 0.48s; }
 
-/* Scroll reveal trigger class */
 .reveal-item {
     opacity: 0;
     transform: translateY(28px);
@@ -228,7 +210,6 @@ a:hover { color: var(--primary-hover); }
     transform: translateY(0);
 }
 
-/* ─── Navbar ─────────────────────────────────────────────────────────────── */
 .navbar-custom {
     background-color: var(--dark-glass);
     backdrop-filter: blur(16px);
@@ -306,7 +287,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 0 6px var(--emerald-primary);
 }
 
-/* ─── Notification Bell ────────────────────────────────────────────────────── */
 .nav-bell-link {
     position: relative;
     display: inline-flex;
@@ -346,7 +326,6 @@ a:hover { color: var(--primary-hover); }
     pointer-events: none;
 }
 
-/* ─── Subpage Hero Banner (Unified Dark Emerald Theme) ─────────────────────── */
 .subpage-banner {
     background: radial-gradient(circle at 80% 20%, #0c332a 0%, #06231c 50%, #041512 100%);
     color: #ffffff;
@@ -395,7 +374,6 @@ a:hover { color: var(--primary-hover); }
     max-width: 620px;
 }
 
-/* ─── Hero Section (TenFore Emerald Dark Theme on Landing Page) ────────────── */
 .hero-emerald {
     background: radial-gradient(circle at 75% 25%, #0f3d32 0%, #06231c 40%, #041512 85%);
     color: #ffffff;
@@ -494,7 +472,6 @@ a:hover { color: var(--primary-hover); }
     margin-bottom: 2.2rem;
 }
 
-/* ─── Buttons: Iconic Glowing Neon Mint Pills ──────────────────────────────── */
 .btn-emerald-pill {
     background: linear-gradient(135deg, var(--emerald-primary) 0%, #10b981 100%);
     color: #041b16 !important;
@@ -563,7 +540,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 0 20px rgba(0, 230, 118, 0.35);
 }
 
-/* ─── Hero Stats Bar (Dark Glass) ─────────────────────────────────────────── */
 .hero-stat-box {
     background: rgba(8, 31, 25, 0.75);
     border: 1px solid rgba(0, 230, 118, 0.22);
@@ -598,7 +574,6 @@ a:hover { color: var(--primary-hover); }
     letter-spacing: 0.05em;
 }
 
-/* ─── 3D Floating Mockup Suite (Right Column) ──────────────────────────────── */
 .hero-mockup-wrapper {
     position: relative;
     perspective: 1200px;
@@ -745,7 +720,6 @@ a:hover { color: var(--primary-hover); }
     animation: pulseBadgeDot 1.4s infinite;
 }
 
-/* ─── Wave Divider ────────────────────────────────────────────────────────── */
 .wave-divider-wrap {
     position: relative;
     background-color: #02110d;
@@ -760,7 +734,6 @@ a:hover { color: var(--primary-hover); }
     height: 60px;
 }
 
-/* ─── Delivering The Future Section ────────────────────────────────────────── */
 .section-future {
     padding: 5rem 0 4rem;
     background-color: #ffffff;
@@ -787,7 +760,6 @@ a:hover { color: var(--primary-hover); }
     margin-bottom: 1.1rem;
 }
 
-/* ─── 4-Step Pipeline Flow Visualizer ───────────────────────────────────────── */
 .pipeline-flow-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -845,7 +817,6 @@ a:hover { color: var(--primary-hover); }
     border-color: transparent;
 }
 
-/* ─── Interactive 5-Factor Similarity Simulator (Ultra-Animated) ──── */
 .simulator-container {
     position: relative;
     background: linear-gradient(145deg, #051b16 0%, #09261f 50%, #041713 100%);
@@ -861,7 +832,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 32px 70px rgba(0, 0, 0, 0.6), 0 0 65px rgba(0, 230, 118, 0.38);
 }
 
-/* Animated Aurora Conic Border Beam */
 .simulator-container::before {
     content: '';
     position: absolute;
@@ -883,7 +853,6 @@ a:hover { color: var(--primary-hover); }
     pointer-events: none;
 }
 
-/* Inner Card Mask */
 .simulator-container::after {
     content: '';
     position: absolute;
@@ -894,7 +863,6 @@ a:hover { color: var(--primary-hover); }
     pointer-events: none;
 }
 
-/* Ambient Floating Glowing Orbs */
 .sim-ambient-glow {
     position: absolute;
     border-radius: 50%;
@@ -931,7 +899,6 @@ a:hover { color: var(--primary-hover); }
     100% { transform: rotate(360deg); }
 }
 
-/* Header Live Badge */
 .sim-live-badge {
     display: inline-flex;
     align-items: center;
@@ -947,7 +914,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 0 12px rgba(0, 230, 118, 0.2);
 }
 
-/* Scenario Quick Select Pills */
 .sim-scenario-pills {
     display: flex;
     flex-wrap: wrap;
@@ -1006,7 +972,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.25) !important;
 }
 
-/* Holographic SVG Score Ring HUD */
 .sim-hud-center {
     display: flex;
     justify-content: center;
@@ -1083,7 +1048,6 @@ a:hover { color: var(--primary-hover); }
     transition: all 0.35s ease;
 }
 
-/* Glass Breakdown Panel */
 .sim-breakdown-glass-panel {
     background: rgba(255, 255, 255, 0.025);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1150,7 +1114,6 @@ a:hover { color: var(--primary-hover); }
     position: relative;
 }
 
-/* ─── Live Campus Recovery Activity Ticker (Marquee) ────────────────────────── */
 .recovery-ticker-wrap {
     background: linear-gradient(90deg, #02110d 0%, #05261c 50%, #02110d 100%);
     border-top: 1px solid rgba(0, 230, 118, 0.3);
@@ -1197,7 +1160,6 @@ a:hover { color: var(--primary-hover); }
     text-transform: uppercase;
 }
 
-/* ─── Cards & Form Surfaces ────────────────────────────────────────────────── */
 .card-item-emerald {
     background: #ffffff;
     border: 1px solid var(--border-color);
@@ -1224,7 +1186,6 @@ a:hover { color: var(--primary-hover); }
     border-color: var(--mint-border);
 }
 
-/* ─── Badges ──────────────────────────────────────────────────────────────── */
 .badge-lost {
     background-color: var(--lost-bg);
     color: var(--lost-color);
@@ -1250,7 +1211,6 @@ a:hover { color: var(--primary-hover); }
     font-family: 'Sora', sans-serif;
 }
 
-/* ─── Action Buttons ──────────────────────────────────────────────────────── */
 .btn-lost {
     background: linear-gradient(135deg, var(--lost-color), #e11d48);
     color: #fff;
@@ -1306,7 +1266,6 @@ a:hover { color: var(--primary-hover); }
     transform: translateY(-1px);
 }
 
-/* ─── Forms ───────────────────────────────────────────────────────────────── */
 .form-label {
     color: var(--text-heading);
     font-size: 0.875rem;
@@ -1361,7 +1320,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 0 20px rgba(0, 230, 118, 0.35);
 }
 
-/* ─── Match Engine HUD & Futuristic Components ───────────────────────────── */
 .target-radar-hud {
     background: radial-gradient(circle at 85% 30%, #0d382e 0%, #06231c 45%, #041512 90%);
     border: 1.5px solid rgba(0, 230, 118, 0.35);
@@ -1418,7 +1376,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.2);
 }
 
-/* Futuristic Match Candidate Card */
 .match-card-futuristic {
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
@@ -1450,7 +1407,6 @@ a:hover { color: var(--primary-hover); }
     transform: scale(1.06);
 }
 
-/* Neural Match Breakdown Tags */
 .match-factor-chip {
     display: inline-flex;
     align-items: center;
@@ -1465,7 +1421,6 @@ a:hover { color: var(--primary-hover); }
     margin: 0.2rem 0.2rem 0.2rem 0;
 }
 
-/* Score Circle HUD */
 .score-hud-box {
     background: linear-gradient(145deg, #051b16 0%, #09261f 100%);
     border: 1px solid rgba(0, 230, 118, 0.3);
@@ -1497,7 +1452,6 @@ a:hover { color: var(--primary-hover); }
 .tier-med  { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
 .tier-low  { background: rgba(244, 63, 94, 0.2); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.4); }
 
-/* Neon Segmented Progress Bars */
 .neon-progress-item {
     margin-bottom: 0.65rem;
 }
@@ -1525,7 +1479,6 @@ a:hover { color: var(--primary-hover); }
     display: block;
 }
 
-/* ─── Dashboard Tabs ───────────────────────────────────────────────────────── */
 .dash-tabs {
     border-bottom: 2px solid var(--border-color);
     gap: 0.35rem;
@@ -1603,7 +1556,6 @@ a:hover { color: var(--primary-hover); }
     box-shadow: var(--shadow-sm);
 }
 
-/* ─── Notification Items in Dashboard ──────────────────────────────────────── */
 .notification-item {
     background: #ffffff;
     border: 1px solid var(--border-color);
@@ -1623,7 +1575,6 @@ a:hover { color: var(--primary-hover); }
     background: #f0fdf4;
 }
 
-/* ─── Score Badge ──────────────────────────────────────────────────────────── */
 .score-badge {
     background: linear-gradient(135deg, var(--emerald-primary), #059669);
     color: #041512;
@@ -1636,7 +1587,6 @@ a:hover { color: var(--primary-hover); }
     display: inline-block;
 }
 
-/* ─── Toast Notifications ──────────────────────────────────────────────────── */
 #toast-container {
     position: fixed;
     top: 1.25rem;
@@ -1701,7 +1651,6 @@ a:hover { color: var(--primary-hover); }
     animation: toastOut 0.3s ease forwards;
 }
 
-/* ─── Modal Overrides ──────────────────────────────────────────────────────── */
 .modal-content {
     border-radius: var(--radius-xl) !important;
     border: 1.5px solid rgba(0, 230, 118, 0.25) !important;
@@ -1715,7 +1664,6 @@ a:hover { color: var(--primary-hover); }
     padding: 1.25rem 1.5rem !important;
 }
 
-/* ─── Footer ──────────────────────────────────────────────────────────────── */
 footer {
     background: linear-gradient(180deg, #06201a 0%, #03120f 100%);
     color: var(--text-dark-muted);
@@ -1727,7 +1675,6 @@ footer {
 footer a { color: var(--text-dark-hero); transition: var(--transition-fast); }
 footer a:hover { color: var(--emerald-primary); }
 
-/* ─── Dropdown Menu ────────────────────────────────────────────────────────── */
 .dropdown-menu {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-lg);
@@ -1741,7 +1688,6 @@ footer a:hover { color: var(--emerald-primary); }
 }
 .dropdown-item:hover { background: var(--primary-light); color: var(--primary-color); }
 
-/* ─── Enhanced Report Form & Profile Card Styling ────────────────────────── */
 .form-card-emerald {
     background: #ffffff;
     border: 1.5px solid var(--border-color);
@@ -1790,7 +1736,6 @@ footer a:hover { color: var(--emerald-primary); }
     border: 1px solid var(--mint-border);
 }
 
-/* Category Quick Chips */
 .quick-chip-group {
     display: flex;
     flex-wrap: wrap;
@@ -1824,7 +1769,6 @@ footer a:hover { color: var(--emerald-primary); }
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Color Swatches */
 .color-swatch-group {
     display: flex;
     flex-wrap: wrap;
@@ -1862,7 +1806,6 @@ footer a:hover { color: var(--emerald-primary); }
     color: currentColor;
 }
 
-/* Image Upload Dropzone */
 .dropzone-box {
     border: 2px dashed #cbd5e1;
     border-radius: var(--radius-lg);
@@ -1898,7 +1841,6 @@ footer a:hover { color: var(--emerald-primary); }
     color: #ffffff;
 }
 
-/* Confidential Lockbox */
 .secret-lockbox-card {
     background: linear-gradient(145deg, #f0fdf4 0%, #ecfdf5 100%);
     border: 1.5px solid var(--mint-border) !important;
@@ -1916,7 +1858,6 @@ footer a:hover { color: var(--emerald-primary); }
     box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.25);
 }
 
-/* Reporter Contact Profile ID Card */
 .reporter-id-card {
     background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
     border: 1.5px solid #e2e8f0;
@@ -1959,7 +1900,6 @@ footer a:hover { color: var(--emerald-primary); }
     gap: 0.3rem;
 }
 
-/* Character Counter */
 .char-counter-badge {
     font-size: 0.75rem;
     font-weight: 600;
@@ -1968,7 +1908,6 @@ footer a:hover { color: var(--emerald-primary); }
 .char-counter-badge.limit-warning { color: #f59e0b; }
 .char-counter-badge.limit-reached { color: var(--lost-color); font-weight: 700; }
 
-/* Side-by-Side Item Compare Modal */
 .compare-grid-box {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1994,10 +1933,9 @@ footer a:hover { color: var(--emerald-primary); }
 }
 .compare-attr-item:last-child { border-bottom: none; }
 
-/* ─── Handover Chat & Meeting Coordination Drawer/Modal ─────── */
 .meeting-coordination-card {
     background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-/* ─── Modern Student Dashboard Architecture ─────────────────────────────── */
+
 .dash-hero-banner {
     background: linear-gradient(145deg, #03140f 0%, #06281e 50%, #02110c 100%);
     padding: 2.8rem 0 2.4rem;
@@ -2053,7 +1991,6 @@ footer a:hover { color: var(--emerald-primary); }
     margin-top: 2px;
 }
 
-/* Dashboard Panel Cards */
 .dash-panel-card {
     background: #ffffff;
     border: 1px solid var(--border-color);
@@ -2088,7 +2025,6 @@ footer a:hover { color: var(--emerald-primary); }
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
-/* Segmented Tabs Bar */
 .dash-tabs-bar {
     background: #f8fafc;
     padding: 0.75rem 1rem;
@@ -2136,7 +2072,6 @@ footer a:hover { color: var(--emerald-primary); }
     color: #041f17;
 }
 
-/* ─── Redesigned Direct Chat Modal & Beautiful Compact Typography ────────── */
 .dash-chat-modal-content {
     border-radius: var(--radius-xl);
     overflow: hidden;
@@ -2201,7 +2136,6 @@ footer a:hover { color: var(--emerald-primary); }
     font-size: 0.85rem;
 }
 
-/* Chat Conversation Stream & Bubbles (Crisp & Readable) */
 .chat-conversation-container {
     height: 300px;
     overflow-y: auto;
@@ -2313,7 +2247,6 @@ footer a:hover { color: var(--emerald-primary); }
     border: 1px solid #fde68a;
 }
 
-/* Quick Reply Chips */
 .chat-quick-replies {
     display: flex;
     gap: 0.35rem;
@@ -2341,7 +2274,6 @@ footer a:hover { color: var(--emerald-primary); }
     transform: translateY(-1px);
 }
 
-/* Modern Pill Chat Input Bar */
 .dash-chat-input-bar {
     display: flex;
     align-items: center;
@@ -2419,7 +2351,6 @@ footer a:hover { color: var(--emerald-primary); }
     border-color: var(--mint-border);
 }
 
-/* ─── Responsive Tweaks ─────────────────────────────────────────────────────── */
 @media (max-width: 992px) {
     .hero-display-title { font-size: 2.5rem; }
     .hero-mockup-wrapper { margin-top: 2rem; }

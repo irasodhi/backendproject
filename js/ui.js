@@ -1,13 +1,7 @@
-/**
- * ui.js — Campus Lost & Found
- * In-app Toast notification system + Custom Confirm dialog
- * Replaces all native alert() and confirm() calls
- */
 
-/* ─── Toast System ─────────────────────────────────────────────────────────── */
 
 (function () {
-    // Inject toast container into DOM once
+    
     function getOrCreateContainer() {
         let c = document.getElementById('toast-container');
         if (!c) {
@@ -25,12 +19,6 @@
         info:    'bi-info-circle-fill'
     };
 
-    /**
-     * showToast(message, type, duration)
-     * @param {string} message  - Text to display
-     * @param {string} type     - 'success' | 'error' | 'warning' | 'info'
-     * @param {number} duration - Auto-dismiss ms (default 4000)
-     */
     window.showToast = function (message, type = 'info', duration = 4000) {
         const container = getOrCreateContainer();
         const icon = ICONS[type] || ICONS.info;
@@ -46,15 +34,12 @@
             </button>
         `;
 
-        // Dismiss on click anywhere on toast
         toast.addEventListener('click', () => dismissToast(toast));
 
         container.appendChild(toast);
 
-        // Auto dismiss
         const timer = setTimeout(() => dismissToast(toast), duration);
 
-        // Store timer ref to cancel if manually dismissed
         toast._dismissTimer = timer;
 
         return toast;
@@ -66,31 +51,11 @@
         clearTimeout(toast._dismissTimer);
         toast.classList.add('toast-leaving');
         toast.addEventListener('animationend', () => toast.remove(), { once: true });
-        // Fallback removal
+        
         setTimeout(() => { if (toast.parentNode) toast.remove(); }, 400);
     }
 })();
 
-
-/* ─── Custom Confirm Dialog ────────────────────────────────────────────────── */
-
-/**
- * showConfirm(options) → Promise<boolean>
- * @param {object} options
- *   message    {string}  — Main message text
- *   title      {string}  — Dialog title (optional)
- *   icon       {string}  — 'danger' | 'warning' | 'info' (optional)
- *   confirmText {string} — Confirm button text (default 'Yes, Confirm')
- *   cancelText  {string} — Cancel button text (default 'Cancel')
- * @returns Promise resolving to true (confirmed) or false (cancelled)
- *
- * Usage:
- *   const ok = await showConfirm({ message: 'Delete this report?', icon: 'danger' });
- *   if (ok) { ... }
- *
- * Callback style (for non-async contexts):
- *   showConfirm({ message: '...' }, onConfirm, onCancel);
- */
 window.showConfirm = function (options, onConfirm, onCancel) {
     if (typeof options === 'string') {
         options = { message: options };
@@ -135,7 +100,6 @@ window.showConfirm = function (options, onConfirm, onCancel) {
 
     document.body.appendChild(overlay);
 
-    // Prevent body scroll
     document.body.style.overflow = 'hidden';
 
     function cleanup() {
@@ -143,7 +107,6 @@ window.showConfirm = function (options, onConfirm, onCancel) {
         if (overlay.parentNode) overlay.remove();
     }
 
-    // Promise-based
     if (!onConfirm && !onCancel) {
         return new Promise((resolve) => {
             overlay.querySelector('#confirm-ok-btn').addEventListener('click', () => {
@@ -152,11 +115,11 @@ window.showConfirm = function (options, onConfirm, onCancel) {
             overlay.querySelector('#confirm-cancel-btn').addEventListener('click', () => {
                 cleanup(); resolve(false);
             });
-            // Click outside dialog to cancel
+            
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) { cleanup(); resolve(false); }
             });
-            // Escape key
+            
             function onKey(e) {
                 if (e.key === 'Escape') { cleanup(); resolve(false); document.removeEventListener('keydown', onKey); }
             }
@@ -164,7 +127,6 @@ window.showConfirm = function (options, onConfirm, onCancel) {
         });
     }
 
-    // Callback style
     overlay.querySelector('#confirm-ok-btn').addEventListener('click', () => {
         cleanup();
         if (onConfirm) onConfirm();

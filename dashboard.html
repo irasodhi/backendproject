@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard — Campus Lost & Found</title>
     <meta name="description" content="Personal dashboard to manage claims, notifications, and handover meetings for campus lost and found items.">
-    <!-- Bootstrap 5 CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Sora + Inter Fonts -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom Styles -->
+    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="dashboard">
 
-    <!-- Header / Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
         <div class="container">
             <a class="navbar-brand" href="index.html">
@@ -40,14 +39,14 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
                     </li>
-                    <!-- Notification Bell Dropdown -->
+                    
                     <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
                         <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
                             <i class="bi bi-bell-fill"></i>
                             <span id="nav-notif-badge" class="notif-badge d-none">0</span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
-                            <!-- Premium Header -->
+                            
                             <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
                                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
@@ -65,10 +64,9 @@
                                     </button>
                                 </div>
                             </div>
-                            
-                            <!-- Notifications Items List -->
+
                             <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
-                                <!-- Dynamic rich notification items rendered via app.js -->
+                                
                             </div>
                         </div>
                     </li>
@@ -82,7 +80,6 @@
         </div>
     </nav>
 
-    <!-- Subpage Banner (TenFore Emerald Dark) -->
     <section class="subpage-banner text-center">
         <div class="container">
             <div class="subpage-badge fade-in-up">
@@ -97,7 +94,7 @@
 
     <main class="py-4" style="background-color:var(--bg-main);">
         <div class="container">
-            <!-- Executive Summary Metrics Cards -->
+            
             <div class="row g-3 mb-4 fade-in-up">
                 <div class="col-6 col-md-3">
                     <div class="dash-stat-card">
@@ -145,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- Welcome Header Profile Bar -->
             <div class="dash-profile-bar mb-3 p-3 bg-white rounded-3 border shadow-sm fade-in-up delay-1">
                 <div class="d-flex align-items-center gap-3">
                     <div class="dash-user-avatar" id="dash-user-avatar-badge">
@@ -166,9 +162,9 @@
             </div>
 
             <div class="row g-4">
-                <!-- Main Tabbed Content (Full Width) -->
+                
                 <div class="col-12 fade-in-up delay-2">
-                    <!-- Tab Navigation Bar (Pill Segmented Style) -->
+                    
                     <div class="dash-tabs-wrapper mb-3">
                         <ul class="nav nav-pills dash-tabs-pills" id="dashTabs" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -198,9 +194,8 @@
                         </ul>
                     </div>
 
-                    <!-- Tab Panels -->
                     <div class="tab-content">
-                        <!-- Tab 1: Found Alerts -->
+                        
                         <div class="tab-pane fade show active tab-content-panel" id="tab-alerts" role="tabpanel">
                             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                                 <div>
@@ -212,11 +207,10 @@
                                 <small class="badge bg-light text-dark border"><i class="bi bi-shield-lock text-success me-1"></i>Private Verification</small>
                             </div>
                             <div id="found-notices-container">
-                                <!-- Dynamic -->
+                                
                             </div>
                         </div>
 
-                        <!-- Tab 2: Claims Received -->
                         <div class="tab-pane fade tab-content-panel" id="tab-received" role="tabpanel">
                             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                                 <div>
@@ -228,11 +222,10 @@
                                 <small class="badge bg-light text-dark border"><i class="bi bi-calendar-check text-success me-1"></i>Campus Meeting Flow</small>
                             </div>
                             <div id="received-claims-container">
-                                <!-- Dynamic -->
+                                
                             </div>
                         </div>
 
-                        <!-- Tab 3: My Sent Claims -->
                         <div class="tab-pane fade tab-content-panel" id="tab-myclaims" role="tabpanel">
                             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                                 <div>
@@ -244,11 +237,10 @@
                                 <small class="badge bg-light text-dark border"><i class="bi bi-chat-dots text-primary me-1"></i>Direct Messaging</small>
                             </div>
                             <div id="submitted-claims-container">
-                                <!-- Dynamic -->
+                                
                             </div>
                         </div>
 
-                        <!-- Tab 4: My Reports -->
                         <div class="tab-pane fade tab-content-panel" id="tab-reports" role="tabpanel">
                             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
                                 <div>
@@ -262,7 +254,7 @@
                                 </a>
                             </div>
                             <div id="my-lost-container">
-                                <!-- Dynamic -->
+                                
                             </div>
                         </div>
                     </div>
@@ -271,7 +263,6 @@
         </div>
     </main>
 
-    <!-- Schedule Meeting Modal (Expanded Handover Locations + Custom Input) -->
     <div class="modal fade" id="scheduleMeetingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -336,11 +327,10 @@
         </div>
     </div>
 
-    <!-- Handover Chat & Meeting Coordination Modal (Direct Texting & Rescheduling) -->
     <div class="modal fade" id="meetingChatModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <!-- Authentic Messenger Modal Header -->
+                
                 <div class="chat-modal-header p-3 bg-dark text-white d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-2.5">
                         <div class="chat-partner-avatar" id="chat-partner-avatar">
@@ -363,13 +353,11 @@
 
                 <div class="modal-body p-3 p-md-4 style-chat-body">
                     <input type="hidden" id="chat-current-claim-id">
-                    
-                    <!-- Meeting Summary Card & Actions -->
+
                     <div id="chat-meeting-summary-box" class="meeting-coordination-card mb-3">
-                        <!-- Populated dynamically -->
+                        
                     </div>
 
-                    <!-- Inline Reschedule Form (Hidden by default) -->
                     <div id="inline-reschedule-box" class="p-3 mb-3 rounded-3 border d-none fade-in" style="background:#fffbeb;border-color:#fde68a!important;">
                         <h6 class="fw-bold text-dark mb-2" style="font-size:0.88rem;">
                             <i class="bi bi-clock-history text-warning me-1"></i>Request Time / Location Change
@@ -396,7 +384,6 @@
                         </div>
                     </div>
 
-                    <!-- Conversation Header & Thread Bar -->
                     <div class="mb-2 d-flex justify-content-between align-items-center px-1">
                         <span class="extra-small fw-bold text-uppercase text-muted" style="letter-spacing:0.06em;">
                             <i class="bi bi-chat-left-text-fill text-success me-1"></i>Direct Conversation Stream
@@ -406,12 +393,10 @@
                         </span>
                     </div>
 
-                    <!-- Direct Chat Message Stream Container -->
                     <div id="chat-messages-container" class="chat-conversation-container mb-3">
-                        <!-- Populated dynamically with bubbles -->
+                        
                     </div>
 
-                    <!-- Quick Reply Suggestions -->
                     <div class="chat-quick-replies mb-2">
                         <button type="button" class="quick-reply-pill" onclick="sendQuickReply('📍 I have arrived at the handover location')">📍 I have arrived</button>
                         <button type="button" class="quick-reply-pill" onclick="sendQuickReply('🏃 On my way! Arriving in 5 minutes')">🏃 On my way (5 mins)</button>
@@ -420,7 +405,6 @@
                         <button type="button" class="quick-reply-pill" onclick="sendQuickReply('✅ Handover completed! Thank you so much')">✅ Handover complete</button>
                     </div>
 
-                    <!-- Send Message Input Bar -->
                     <form id="chat-send-form" onsubmit="handleSendChatMessage(event)" class="chat-send-input-group d-flex align-items-center gap-2">
                         <div class="chat-input-wrapper flex-grow-1 position-relative">
                             <i class="bi bi-chat-dots chat-input-icon text-muted"></i>
@@ -435,7 +419,6 @@
         </div>
     </div>
 
-    <!-- Provide Hidden Details Modal -->
     <div class="modal fade" id="provideHiddenDetailsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -467,7 +450,6 @@
         </div>
     </div>
 
-    <!-- Lost Owner: Handover Verification QR Pass Modal -->
     <div class="modal fade" id="qrPassModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -487,13 +469,11 @@
                         </div>
                         <h5 class="fw-bold text-dark mb-1" id="qr-pass-item-name" style="font-family:'Sora',sans-serif;">Item Title</h5>
                         <p class="small text-muted mb-3" id="qr-pass-owner-info">Student Name (email@campus.edu)</p>
-                        
-                        <!-- Canvas QR Render Box -->
+
                         <div class="qr-code-wrapper mx-auto p-3 bg-white rounded-3 border shadow-sm mb-3" style="width:200px;height:200px;display:flex;align-items:center;justify-content:center;">
                             <canvas id="qr-pass-canvas" width="180" height="180"></canvas>
                         </div>
-                        
-                        <!-- 6-Digit PIN Backup -->
+
                         <div class="p-2 bg-slate-100 rounded-3 border" style="background:#f1f5f9;">
                             <small class="text-muted d-block extra-small text-uppercase fw-bold mb-1">Manual Security PIN for Founder</small>
                             <span class="fs-3 fw-bold text-success" id="qr-pass-pin" style="font-family:monospace;letter-spacing:5px;">849201</span>
@@ -508,7 +488,6 @@
         </div>
     </div>
 
-    <!-- Founder: Scan & Authenticate Claimant QR Pass Modal -->
     <div class="modal fade" id="qrScannerModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -523,8 +502,7 @@
                 </div>
                 <div class="modal-body p-4 bg-light">
                     <input type="hidden" id="qr-scan-claim-id">
-                    
-                    <!-- Viewfinder Camera Scanner Container -->
+
                     <div id="qr-scanner-camera-box" class="qr-scanner-hud mb-3 position-relative rounded-4 overflow-hidden">
                         <div class="qr-laser-beam"></div>
                         <div class="qr-target-corners">
@@ -540,7 +518,6 @@
                         </div>
                     </div>
 
-                    <!-- Interactive Camera Scan Action Button -->
                     <button type="button" class="btn btn-emerald-pill w-100 py-2.5 fw-bold shadow-sm mb-3 d-flex align-items-center justify-content-center gap-2" onclick="triggerSimulatedQRScan()">
                         <i class="bi bi-camera-reels-fill"></i>
                         <span>Scan Owner's QR Code (Camera Scan)</span>
@@ -548,7 +525,6 @@
 
                     <div class="text-center text-muted extra-small text-uppercase fw-bold mb-2">── OR ENTER OWNER'S 6-DIGIT PIN ──</div>
 
-                    <!-- Manual PIN Input Form -->
                     <form id="qr-pin-form" onsubmit="handleVerifyQRPinSubmit(event)">
                         <div class="input-group mb-3">
                             <input type="text" id="qr-pin-input" class="form-control text-center fw-bold fs-5" placeholder="Enter 6-Digit PIN..." maxlength="6" pattern="[0-9]{6}" required autocomplete="off" style="letter-spacing:4px;">
@@ -558,14 +534,12 @@
                         </div>
                     </form>
 
-                    <!-- Authentication Result Container -->
                     <div id="qr-auth-result-box"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Account Modal -->
     <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -616,14 +590,12 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <div class="container text-center small">
             © 2026 Campus Lost & Found System. Powered by Intelligent Multi-Attribute Matching.
         </div>
     </footer>
 
-    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/matching.js"></script>

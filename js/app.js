@@ -1,9 +1,7 @@
-// Main Application Logic (app.js)
-// Handles page rendering, card displays, user session state, matching views, notifications, and claim approval flow
+
 
 let uploadedImageBase64 = null;
 
-// Image preview and dropzone helper function
 function previewImage(event) {
     let file = (event && event.target && event.target.files) ? event.target.files[0] : (event && event.dataTransfer ? event.dataTransfer.files[0] : null);
     if (file) {
@@ -24,7 +22,6 @@ function previewImage(event) {
     }
 }
 
-// Remove uploaded image helper
 function removeUploadedImage() {
     uploadedImageBase64 = null;
     let input = document.getElementById("itemImage");
@@ -40,7 +37,6 @@ function removeUploadedImage() {
     if (defaultContent) defaultContent.classList.remove("d-none");
 }
 
-// Quick set date today helper
 function setDateToday() {
     let dateInput = document.getElementById("date");
     if (dateInput) {
@@ -65,7 +61,7 @@ function initApp() {
     } else if (path.includes("admin") || pageAttr === "admin") {
         initAdminPage();
     } else if (path.includes("login") || path.includes("signup")) {
-        // Auth pages
+        
     } else {
         initHomePage();
     }
@@ -80,7 +76,6 @@ window.addEventListener("load", () => {
     renderNavbarUser();
 });
 
-// ─── Count-Up Animation ─────────────────────────────────────────────────────
 function animateCountUp(element, target, duration = 900) {
     if (!element) return;
     let start = 0;
@@ -88,7 +83,7 @@ function animateCountUp(element, target, duration = 900) {
     function step(timestamp) {
         if (!startTime) startTime = timestamp;
         let progress = Math.min((timestamp - startTime) / duration, 1);
-        // Ease out cubic
+        
         let eased = 1 - Math.pow(1 - progress, 3);
         element.innerText = Math.round(eased * target);
         if (progress < 1) requestAnimationFrame(step);
@@ -97,7 +92,6 @@ function animateCountUp(element, target, duration = 900) {
     requestAnimationFrame(step);
 }
 
-// ─── Animated Progress Bars ─────────────────────────────────────────────────
 function animateProgressBars() {
     document.querySelectorAll('[data-target-width]').forEach(bar => {
         let targetW = bar.getAttribute('data-target-width');
@@ -109,7 +103,6 @@ function animateProgressBars() {
     });
 }
 
-// ─── Navbar Bell Badge & Dropdown Notification Center ───────────────────────
 function updateNavBellBadge() {
     let currentUser = getCurrentUser();
     let badge = document.getElementById('nav-notif-badge');
@@ -318,7 +311,6 @@ function handleNotifItemClick(notifId) {
     window.location.href = 'dashboard.html';
 }
 
-// ─── Render Navbar User ──────────────────────────────────────────────────────
 function renderNavbarUser() {
     let currentUser = getCurrentUser();
     let allUsers = getUsers();
@@ -554,9 +546,6 @@ function handleLogoutAll() {
     }, 400);
 }
 
-// =============================================================
-// 1. HOME PAGE LOGIC & INTERACTIVE 3D ANIMATIONS
-// =============================================================
 function initHomePage() {
     let currentUser = getCurrentUser();
     let reports = getReports();
@@ -575,14 +564,12 @@ function initHomePage() {
     let lostCount  = reports.filter(r => r.type === "lost").length;
     let foundCount = reports.filter(r => r.type === "found").length;
 
-    // Count-up on load
     animateCountUp(totalEl, total);
     animateCountUp(lostEl,  lostCount,  700);
     animateCountUp(foundEl, foundCount, 1000);
 
     renderRecentCards(reports);
 
-    // Filter listeners
     let searchIn   = document.getElementById("home-search-input");
     let typeSelect = document.getElementById("home-type-filter");
     let catSelect  = document.getElementById("home-category-filter");
@@ -604,7 +591,6 @@ function initHomePage() {
     if (typeSelect) typeSelect.onchange = window.triggerHomeFilter;
     if (catSelect)  catSelect.onchange  = window.triggerHomeFilter;
 
-    // Initialize 3D Parallax Tilt, Scroll Reveal, Navbar Scroll Effect, and Simulator Tilt
     init3DParallaxTilt();
     initScrollReveal();
     initNavbarScroll();
@@ -657,7 +643,6 @@ function selectTypeFilter(type) {
     if (window.triggerHomeFilter) window.triggerHomeFilter();
 }
 
-// ─── 3D Parallax Tilt on Hero Mockup ────────────────────────────────────────
 function init3DParallaxTilt() {
     let container = document.getElementById("hero-mockup-container");
     let mockup = document.getElementById("hero-mockup-element");
@@ -671,8 +656,8 @@ function init3DParallaxTilt() {
         let centerX = rect.width / 2;
         let centerY = rect.height / 2;
 
-        let rotateX = ((y - centerY) / centerY) * -12; // tilt up/down
-        let rotateY = ((x - centerX) / centerX) * 14;  // tilt left/right
+        let rotateX = ((y - centerY) / centerY) * -12; 
+        let rotateY = ((x - centerX) / centerX) * 14;  
 
         mockup.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
     });
@@ -682,7 +667,6 @@ function init3DParallaxTilt() {
     });
 }
 
-// ─── Navbar Scroll Blur / Solid Effect ──────────────────────────────────────
 function initNavbarScroll() {
     let nav = document.getElementById("main-nav");
     if (!nav) return;
@@ -695,7 +679,6 @@ function initNavbarScroll() {
     });
 }
 
-// ─── Scroll Reveal via IntersectionObserver ─────────────────────────────────
 function initScrollReveal() {
     if (!('IntersectionObserver' in window)) return;
     let observer = new IntersectionObserver((entries) => {
@@ -709,7 +692,6 @@ function initScrollReveal() {
     document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
 }
 
-// ─── Global Text Selection Lock ───────────────────────────────────────────────
 document.addEventListener("selectstart", function (e) {
     let tag = e.target.tagName;
     if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable || e.target.classList.contains("user-select-text")) {
@@ -719,7 +701,6 @@ document.addEventListener("selectstart", function (e) {
     return false;
 });
 
-// ─── Interactive AI Matching Simulator Handler (Ultra-Animated) ──────────────
 let currentSimScore = 96;
 
 function animateScoreCount(targetVal, targetColor, textShadow) {
@@ -757,7 +738,7 @@ function updateSvgMeter(scorePct, color1, color2) {
     if (stop2 && color2) stop2.setAttribute("stop-color", color2);
 
     if (svgBar) {
-        let circumference = 414.7; // 2 * PI * 66
+        let circumference = 414.7; 
         let offset = circumference - (scorePct / 100) * circumference;
         svgBar.style.strokeDashoffset = offset;
         svgBar.style.filter = `drop-shadow(0 0 10px ${color1})`;
@@ -765,13 +746,12 @@ function updateSvgMeter(scorePct, color1, color2) {
 }
 
 function switchSimScenario(scenarioKey) {
-    // Update scenario selector dropdown if exists
+    
     let selectEl = document.getElementById("sim-scenario-select");
     if (selectEl && selectEl.value !== scenarioKey) {
         selectEl.value = scenarioKey;
     }
 
-    // Update pill buttons active state
     document.querySelectorAll(".sim-pill-btn").forEach(btn => {
         if (btn.getAttribute("data-scenario") === scenarioKey) {
             btn.classList.add("active");
@@ -795,7 +775,7 @@ function switchSimScenario(scenarioKey) {
     let statusPill = document.getElementById("sim-status-pill");
 
     if (scenarioKey === "high") {
-        // High confidence match
+        
         animateScoreCount(96, "var(--emerald-primary)", "0 0 18px rgba(0,230,118,0.75)");
         updateSvgMeter(96, "#00e676", "#00f0ff");
 
@@ -817,7 +797,7 @@ function switchSimScenario(scenarioKey) {
         if (descVal)  { descVal.innerText  = "9.2 pts (Keywords: XPS, zipper)"; descVal.style.color = "var(--emerald-primary)"; }
         if (descBar)  { descBar.style.width  = "92%"; descBar.style.background = "linear-gradient(90deg, #10b981, #00e676, #00f0ff)"; }
     } else if (scenarioKey === "med") {
-        // Medium confidence match
+        
         animateScoreCount(74, "#38bdf8", "0 0 18px rgba(56,189,248,0.75)");
         updateSvgMeter(74, "#38bdf8", "#818cf8");
 
@@ -839,7 +819,7 @@ function switchSimScenario(scenarioKey) {
         if (descVal)  { descVal.innerText  = "6.5 pts (Partial Model Match)"; descVal.style.color = "#38bdf8"; }
         if (descBar)  { descBar.style.width  = "65%"; descBar.style.background = "linear-gradient(90deg, #0284c7, #38bdf8, #818cf8)"; }
     } else {
-        // Low confidence match
+        
         animateScoreCount(12, "#f43f5e", "0 0 18px rgba(244,63,94,0.75)");
         updateSvgMeter(12, "#f43f5e", "#fb7185");
 
@@ -863,12 +843,10 @@ function switchSimScenario(scenarioKey) {
     }
 }
 
-// Alias for backwards-compatibility with existing inline onchange
 function updateSimulatorScenario(scenarioKey) {
     switchSimScenario(scenarioKey);
 }
 
-// ─── 3D Parallax Tilt for AI Simulator Card ───────────────────────────────
 function initSimulatorTilt() {
     let card = document.getElementById("ai-simulator-card");
     if (!card) return;
@@ -972,8 +950,7 @@ function renderRecentCards(list) {
 }
 
 // =============================================================
-// 2. REPORT ITEM FORM LOGIC + INLINE VALIDATION & ACCOUNT SYNC
-// =============================================================
+
 function initReportPage() {
     let form = document.getElementById("report-form");
     if (!form) return;
@@ -1001,13 +978,12 @@ function initReportPage() {
     if (lostBtn)  lostBtn.onclick  = () => setReportType("lost");
     if (foundBtn) foundBtn.onclick = () => setReportType("found");
 
-    // ── Instant Auth Check for Report Page ──────────────────────
     let activeUser = getCurrentUser();
     let currentSearch = window.location.search || '';
     let reportReturnUrl = encodeURIComponent('report.html' + currentSearch);
 
     if (!activeUser) {
-        // 1. Immediately trigger the Sign In Required popup modal on page load
+        
         setTimeout(() => {
             let authModalEl = document.getElementById("reportAuthModal");
             if (authModalEl) {
@@ -1021,7 +997,6 @@ function initReportPage() {
             }
         }, 250);
 
-        // 2. Render prominent persistent Guest Authentication Banner at top of form
         let bannerContainer = document.getElementById("report-auth-banner");
         if (bannerContainer) {
             bannerContainer.innerHTML = `
@@ -1045,7 +1020,6 @@ function initReportPage() {
         }
     }
 
-    // ── Dynamic Reporter Profile & Switch Account Logic ────────
     function populateReporterProfile() {
         let activeUser = getCurrentUser();
         let nameEl = document.getElementById("report-user-name");
@@ -1130,11 +1104,9 @@ function initReportPage() {
 
     populateReporterProfile();
 
-    // ── Quick Category Chips Sync ───────────────────────────────
     let categorySelect = form.querySelector('#category');
     let categoryChips  = form.querySelectorAll('#category-chips .quick-chip-btn');
-    
-    // ── Dynamic Electronics Specific Device Type Logic ─────────
+
     let electronicsContainer     = form.querySelector('#electronics-spec-container');
     let electronicTypeSelect     = form.querySelector('#electronicType');
     let electronicChips          = form.querySelectorAll('#electronics-device-chips .quick-chip-btn');
@@ -1184,7 +1156,6 @@ function initReportPage() {
         });
     }
 
-    // Wire Electronics Device Chips
     electronicChips.forEach(chip => {
         chip.addEventListener('click', () => {
             let dev = chip.getAttribute('data-device');
@@ -1195,7 +1166,6 @@ function initReportPage() {
             electronicChips.forEach(c => c.classList.remove('active'));
             chip.classList.add('active');
 
-            // Smart placeholder suggestions for item name
             let nameInput = form.querySelector('#itemName');
             if (nameInput && !nameInput.value.trim()) {
                 if (dev === 'Laptop') nameInput.placeholder = 'e.g. Dell XPS 15, MacBook Pro 14 M2, Lenovo ThinkPad';
@@ -1238,7 +1208,6 @@ function initReportPage() {
         });
     }
 
-    // ── Quick Color Swatches Sync ───────────────────────────────
     let colorSelect = form.querySelector('#color');
     let colorSwatches = form.querySelectorAll('#color-swatches .color-swatch-btn, #color-swatches .quick-chip-btn');
     colorSwatches.forEach(swatch => {
@@ -1264,7 +1233,6 @@ function initReportPage() {
         });
     }
 
-    // ── Quick Campus Zone Chips Sync ────────────────────────────
     let zoneSelect = form.querySelector('#zone');
     let zoneChips  = form.querySelectorAll('#zone-chips .quick-chip-btn');
     zoneChips.forEach(chip => {
@@ -1290,7 +1258,6 @@ function initReportPage() {
         });
     }
 
-    // ── Description Character Counter ───────────────────────────
     let descriptionEl = form.querySelector('#description');
     let descCharCount = document.getElementById('desc-char-count');
     if (descriptionEl && descCharCount) {
@@ -1307,7 +1274,6 @@ function initReportPage() {
         });
     }
 
-    // ── Image Upload Dropzone Drag & Drop ───────────────────────
     let dropzone = document.getElementById('image-dropzone');
     if (dropzone) {
         ['dragenter', 'dragover'].forEach(eventName => {
@@ -1333,7 +1299,6 @@ function initReportPage() {
         });
     }
 
-    // ── Inline Validation Helpers ──────────────────────────────
     function setFieldValid(fieldId) {
         let el  = form.querySelector(`#${fieldId}`);
         let err = form.querySelector(`#${fieldId}-error`);
@@ -1353,7 +1318,6 @@ function initReportPage() {
         if (err) { err.textContent = ''; }
     }
 
-    // ── Dynamic 'Other' Input Toggles ─────────────────────────
     function setupOtherToggle(selectId, containerId, inputId) {
         let select = form.querySelector(`#${selectId}`);
         let container = form.querySelector(`#${containerId}`);
@@ -1375,14 +1339,13 @@ function initReportPage() {
             }
         }
         select.addEventListener("change", checkOther);
-        checkOther(); // Initial state check
+        checkOther(); 
     }
 
     setupOtherToggle("category", "other-category-container", "otherCategory");
     setupOtherToggle("color", "other-color-container", "otherColor");
     setupOtherToggle("zone", "other-zone-container", "otherZone");
 
-    // Wire live validation
     let itemNameEl = form.querySelector('#itemName');
     let colorEl    = form.querySelector('#color');
     let zoneEl     = form.querySelector('#zone');
@@ -1416,7 +1379,6 @@ function initReportPage() {
         else               setFieldValid('description');
     });
 
-    // ── Form Submit ────────────────────────────────────────────
     form.onsubmit = function(e) {
         e.preventDefault();
 
@@ -1483,7 +1445,6 @@ function initReportPage() {
         let hiddenVal   = (reportType === "lost" && hiddenInput) ? hiddenInput.value.trim() : "";
         let itemImg     = uploadedImageBase64 || getDefaultImage(cat);
 
-        // Submit animation state
         let submitBtn = document.getElementById("btn-submit-report");
         let submitText = document.getElementById("btn-submit-text");
         let submitIcon = document.getElementById("btn-submit-icon");
@@ -1520,11 +1481,6 @@ function initReportPage() {
     };
 }
 
-// =============================================================
-// 3. MATCHES PAGE LOGIC + ADVANCED MULTI-FACTOR ENGINE & FILTERING
-// =============================================================
-
-// State stored in sessionStorage
 let _matchSortBy      = sessionStorage.getItem('match_sort')   || 'score';
 let _matchCategory    = sessionStorage.getItem('match_cat')    || 'all';
 let _matchConfidence  = sessionStorage.getItem('match_conf')   || 'all';
@@ -1559,11 +1515,9 @@ function initMatchesPage() {
                 if (myOpposite) {
                     targetReport = myOpposite;
                 } else {
-                    // User has NO corresponding report to compare against:
-                    // Enter Direct Claim / Direct Notification Mode directly!
+
                     renderDirectClaimState(requested, currentUser);
 
-                    // If action=claim or notify was requested in URL, open modal automatically
                     let action = urlParams.get("action");
                     if (action === "claim" || action === "notify") {
                         setTimeout(() => openClaimModal(requested.id, requested.id), 300);
@@ -1576,7 +1530,6 @@ function initMatchesPage() {
 
     if (!targetReport && myReports.length > 0) targetReport = myReports[0];
 
-    // Populate report selector
     let selectEl = document.getElementById("target-report-select");
     if (selectEl) {
         selectEl.innerHTML = "";
@@ -1611,7 +1564,6 @@ function initMatchesPage() {
         renderMatchCardsList(targetReport, reports);
     }
 
-    // Wire search, sort and filter controls
     let searchIn   = document.getElementById('match-search-input');
     let sortSelect = document.getElementById('match-sort-select');
     let catFilter  = document.getElementById('match-cat-filter');
@@ -1838,20 +1790,17 @@ function renderMatchCardsList(targetReport, reports) {
 
     let allMatches = findMatches(targetReport, reports);
 
-    // ── Filter by category ──────────────────────────────────────
     let filtered = allMatches;
     if (_matchCategory !== 'all') {
         filtered = filtered.filter(m => m.candidate.category === _matchCategory);
     }
 
-    // ── Filter by confidence tier ───────────────────────────────
     if (_matchConfidence === 'high') {
         filtered = filtered.filter(m => m.score >= 70);
     } else if (_matchConfidence === 'med') {
         filtered = filtered.filter(m => m.score >= 45);
     }
 
-    // ── Filter by keyword search ────────────────────────────────
     if (_matchSearchQuery) {
         filtered = filtered.filter(m => {
             let item = m.candidate;
@@ -1860,7 +1809,6 @@ function renderMatchCardsList(targetReport, reports) {
         });
     }
 
-    // ── Sort ────────────────────────────────────────────────────
     if (_matchSortBy === 'score') {
         filtered.sort((a, b) => b.score - a.score);
     } else if (_matchSortBy === 'name') {
@@ -1995,7 +1943,6 @@ function renderMatchCardsList(targetReport, reports) {
     setTimeout(animateProgressBars, 80);
 }
 
-// ── Side-by-Side Comparison Modal Logic ─────────────────────
 function openCompareModal(targetReportId, candidateItemId) {
     let reports       = getReports();
     let targetReport  = reports.find(r => r.id === targetReportId);
@@ -2103,9 +2050,6 @@ function openCompareModal(targetReportId, candidateItemId) {
     bsModal.show();
 }
 
-// =============================================================
-// 4. INTERACTIVE CLAIM & CONTACT MODAL FLOW
-// =============================================================
 function openClaimModal(targetReportId, candidateItemId) {
     let reports       = getReports();
     let targetReport  = reports.find(r => r.id === targetReportId);
@@ -2320,9 +2264,6 @@ function handleNotifyOwnerSubmit(event, lostReportId, matchingFoundReportId) {
     if (formEl) formEl.style.display = "none";
 }
 
-// =============================================================
-// 5. DASHBOARD LOGIC — TABBED
-// =============================================================
 function initDashboardPage() {
     let currentUser = getCurrentUser();
     if (!currentUser) {
@@ -2363,14 +2304,12 @@ function initDashboardPage() {
         emailEl.innerHTML = `<i class="bi bi-envelope text-success me-1"></i>${currentUser.useremail} • Verified Campus Student`;
     }
 
-    // Update user profile avatar badge initials
     let avatarEl = document.getElementById("dash-user-avatar-badge");
     if (avatarEl && currentUser.username) {
         let initials = currentUser.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
         avatarEl.innerText = initials;
     }
 
-    // Calculate Summary Stats
     let reports = getReports();
     let claims  = getClaims();
     let notifs  = getNotifications(currentUser.useremail);
@@ -2399,11 +2338,9 @@ function initDashboardPage() {
     renderSubmittedClaims(currentUser.useremail);
     renderMyReports(currentUser.useremail);
 
-    // Automatically mark notifications as read on dashboard visit to clear the bell badge
     markNotificationsAsRead(currentUser.useremail);
     updateNavBellBadge();
 
-    // Restore last active tab from sessionStorage
     let lastTab = sessionStorage.getItem('dash_active_tab') || 'tab-alerts';
     let tabEl = document.getElementById(lastTab + '-btn');
     if (tabEl) {
@@ -2411,7 +2348,6 @@ function initDashboardPage() {
         bsTab.show();
     }
 
-    // Save tab on change
     document.querySelectorAll('#dashTabs .nav-link').forEach(btn => {
         btn.addEventListener('shown.bs.tab', () => {
             sessionStorage.setItem('dash_active_tab', btn.id.replace('-btn', ''));
@@ -2978,7 +2914,6 @@ function setQuickMeetingTime(timeStr) {
     }
 }
 
-// ─── Founder: Accept & Schedule Handover ────────────────────
 function openScheduleModal(claimId) {
     let claims = getClaims();
     let claim  = claims.find(c => c.claimId === claimId);
@@ -2994,7 +2929,6 @@ function openScheduleModal(claimId) {
             <div style="color:var(--primary-color);font-weight:700;margin-top:4px;">"${claim.providedProof}"</div>
         </div>`;
 
-    // Pre-populate if already scheduled
     if (claim.meetingDetails) {
         let locSelect = el('meeting-location');
         if (locSelect) {
@@ -3034,7 +2968,6 @@ function handleScheduleSubmit(event) {
     let meetingDetails = { location: locVal, time, note };
     updateClaimStatus(claimId, "Approved & Meeting Scheduled", { meetingDetails, meetingConfirmedBy: "founder_scheduled" });
 
-    // Add initial meeting scheduled system message in chat
     addClaimMessage(claimId, {
         sender: claim.reporter,
         senderEmail: claim.reporterEmail,
@@ -3063,7 +2996,6 @@ function handleScheduleSubmit(event) {
     }, 600);
 }
 
-// ─── Direct Chat & Meeting Coordination Modal Logic ─────────
 function openMeetingChatModal(claimId) {
     let claim = getClaimById(claimId);
     if (!claim) {
@@ -3112,7 +3044,6 @@ function renderMeetingChatContent(claim, currentUser) {
     let isResched   = claim.status === "Reschedule Requested";
     let isScheduled = Boolean(claim.meetingDetails);
 
-    // 1. Render Meeting Summary Header
     if (isScheduled && claim.meetingDetails) {
         let agreementBadge = isConfirmed
             ? `<span class="badge bg-success text-white rounded-pill px-3 py-1"><i class="bi bi-check-all me-1"></i>Time Confirmed by Both Parties</span>`
@@ -3654,8 +3585,7 @@ function initAdminPage() {
 }
 
 // =============================================================
-// HELPERS & HANDOVER QR SECURITY VERIFICATION
-// =============================================================
+
 function getDefaultImage(cat) {
     if (cat === "Bags")        return "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80";
     if (cat === "Electronics") return "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=600&q=80";
@@ -3663,7 +3593,6 @@ function getDefaultImage(cat) {
     return "https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80";
 }
 
-// ─── Inline High-Density 2D Canvas QR Generator ──────────────
 function renderQRCodeCanvas(canvasId, textData) {
     let canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -3708,7 +3637,6 @@ function renderQRCodeCanvas(canvasId, textData) {
     }
 }
 
-// ─── Lost Owner: Display Security QR Pass ────────────────────
 function openQRPassModal(claimId) {
     let claim = getClaimById(claimId);
     if (!claim) {
@@ -3734,7 +3662,6 @@ function openQRPassModal(claimId) {
     if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
 }
 
-// ─── Founder: Open Camera QR Scanner HUD ─────────────────────
 function openQRScannerModal(claimId) {
     let claim = getClaimById(claimId);
     if (!claim) {
@@ -3782,7 +3709,6 @@ function handleVerifyQRPinSubmit(event) {
     verifyHandoverPass(claimId, pin);
 }
 
-// ─── Core Handover Security Authenticator ────────────────────
 function verifyHandoverPass(claimId, tokenOrPin) {
     let claim = getClaimById(claimId);
     if (!claim) return;

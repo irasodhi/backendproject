@@ -1,11 +1,7 @@
-/**
- * Campus Lost & Found System - Form Validation & UI Helpers (validation.js)
- */
+
 
 const ValidationModule = {
-    /**
-     * Validates report submission form data
-     */
+
     validateReportForm(formData) {
         const errors = {};
 
@@ -58,17 +54,11 @@ const ValidationModule = {
         };
     },
 
-    /**
-     * Simple Email pattern validator
-     */
     isValidEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email.trim());
     },
 
-    /**
-     * Password security validator: min 8 chars, 1 letter, 1 number, 1 special char
-     */
     validatePasswordSecurity(password) {
         if (!password) return { isValid: false, reason: "Password is required." };
         const hasMinLength = password.length >= 8;
@@ -87,18 +77,14 @@ const ValidationModule = {
         };
     },
 
-    /**
-     * Show validation error messages in form elements
-     */
     displayFormErrors(errors, formElement) {
-        // Clear previous error messages
+        
         const errorElements = formElement.querySelectorAll('.invalid-feedback');
         errorElements.forEach(el => el.textContent = '');
 
         const inputs = formElement.querySelectorAll('.is-invalid');
         inputs.forEach(el => el.classList.remove('is-invalid'));
 
-        // Highlight fields with errors
         Object.keys(errors).forEach(field => {
             const inputEl = formElement.querySelector(`[name="${field}"]`) || formElement.querySelector(`#${field}`);
             if (inputEl) {
@@ -111,9 +97,6 @@ const ValidationModule = {
         });
     },
 
-    /**
-     * Show Bootstrap Alert or Toast Message
-     */
     showAlert(message, type = 'success', containerId = 'alert-container') {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -131,7 +114,6 @@ const ValidationModule = {
 
         container.appendChild(alertDiv);
 
-        // Auto remove after 4 seconds
         setTimeout(() => {
             if (alertDiv.parentNode) {
                 alertDiv.remove();

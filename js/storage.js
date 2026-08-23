@@ -1,10 +1,7 @@
-// Storage script for Campus Lost & Found System
-// Uses localStorage for reports, users, claims, and notifications
 
-// Initial default sample users list (empty for clean new user experience)
+
 let defaultUsers = [];
 
-// Initial sample reports
 let defaultReports = [
     {
         id: "REP-1001",
@@ -72,7 +69,6 @@ let defaultReports = [
     }
 ];
 
-// Initialize localStorage if empty or if legacy data exists
 function initStorage() {
     let existingUsersStr = localStorage.getItem("users");
     if (!existingUsersStr) {
@@ -81,7 +77,7 @@ function initStorage() {
         try {
             let parsed = JSON.parse(existingUsersStr);
             if (Array.isArray(parsed)) {
-                // Filter out legacy demo mock users so only actual user-registered accounts exist
+                
                 let demoEmails = ["ira.sodhi@example.com", "rohan.verma@example.com", "admin@fluffytails.com"];
                 let cleaned = parsed.filter(u => u && u.useremail && !demoEmails.includes(u.useremail.toLowerCase().trim()));
                 localStorage.setItem("users", JSON.stringify(cleaned));
@@ -116,8 +112,6 @@ function initStorage() {
             localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
         }
     }
-    
-    // Note: Do NOT auto-login to any user. New visitors start as guest (not logged in).
 
     if (!localStorage.getItem("campus_claims")) {
         localStorage.setItem("campus_claims", JSON.stringify([]));
@@ -128,7 +122,6 @@ function initStorage() {
     }
 }
 
-// Get all users from localStorage
 function getUsers() {
     initStorage();
     try {
@@ -139,7 +132,6 @@ function getUsers() {
     }
 }
 
-// Save or update a user in localStorage
 function saveUser(user) {
     if (!user || !user.useremail) return;
     let users = getUsers();
@@ -152,7 +144,6 @@ function saveUser(user) {
     localStorage.setItem("users", JSON.stringify(users));
 }
 
-// Switch active user by email
 function switchUser(email) {
     if (!email) return null;
     let users = getUsers();
@@ -165,7 +156,6 @@ function switchUser(email) {
     return null;
 }
 
-// Add a new user account and make it active
 function addAndSwitchAccount(user) {
     if (!user || !user.useremail) return null;
     saveUser(user);
@@ -174,7 +164,6 @@ function addAndSwitchAccount(user) {
     return user;
 }
 
-// Remove a specific signed-in account from the browser
 function removeUserAccount(email) {
     if (!email) return null;
     let users = getUsers();
@@ -184,12 +173,12 @@ function removeUserAccount(email) {
     let currentUser = getCurrentUser();
     if (currentUser && currentUser.useremail && currentUser.useremail.toLowerCase() === email.toLowerCase().trim()) {
         if (updatedUsers.length > 0) {
-            // Switch to next available account
+            
             localStorage.setItem("current_user", JSON.stringify(updatedUsers[0]));
             localStorage.setItem("isLoggedIn", "true");
             return updatedUsers[0];
         } else {
-            // No more accounts
+            
             localStorage.removeItem("current_user");
             localStorage.removeItem("isLoggedIn");
             return null;
@@ -198,14 +187,12 @@ function removeUserAccount(email) {
     return currentUser;
 }
 
-// Log out of all accounts on this browser
 function logoutAllAccounts() {
     localStorage.setItem("users", JSON.stringify([]));
     localStorage.removeItem("current_user");
     localStorage.removeItem("isLoggedIn");
 }
 
-// Get all reports
 function getReports() {
     initStorage();
     try {
@@ -215,21 +202,18 @@ function getReports() {
     }
 }
 
-// Save a new report
 function saveReport(report) {
     let reports = getReports();
     reports.unshift(report);
     localStorage.setItem("campus_reports", JSON.stringify(reports));
 }
 
-// Delete report by ID
 function deleteReport(id) {
     let reports = getReports();
     let updated = reports.filter(r => r.id !== id);
     localStorage.setItem("campus_reports", JSON.stringify(updated));
 }
 
-// Get claims
 function getClaims() {
     initStorage();
     try {
@@ -239,21 +223,19 @@ function getClaims() {
     }
 }
 
-// Save claim
 function saveClaim(claim) {
     let claims = getClaims();
     claims.unshift(claim);
     localStorage.setItem("campus_claims", JSON.stringify(claims));
 }
 
-// Update claim status & extra details (meetingDetails, founderFeedback, rejectionReason, providedProof)
 function updateClaimStatus(claimId, status, extraData = null) {
     let claims = getClaims();
     let claim = claims.find(c => c.claimId === claimId);
     if (claim) {
         claim.status = status;
         if (extraData) {
-            // Check if extraData is a meetingDetails object directly (has location) or an options object
+            
             if (extraData.location) {
                 claim.meetingDetails = extraData;
             } else {
@@ -268,13 +250,11 @@ function updateClaimStatus(claimId, status, extraData = null) {
     }
 }
 
-// Get specific claim by ID
 function getClaimById(claimId) {
     let claims = getClaims();
     return claims.find(c => c.claimId === claimId) || null;
 }
 
-// Add a direct chat message between founder and claimant for a claim/meeting
 function addClaimMessage(claimId, messageObj) {
     let claims = getClaims();
     let claim = claims.find(c => c.claimId === claimId);
@@ -287,7 +267,7 @@ function addClaimMessage(claimId, messageObj) {
             text: messageObj.text,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             date: new Date().toLocaleDateString(),
-            type: messageObj.type || "text" // "text", "status", "reschedule", "confirmed"
+            type: messageObj.type || "text" 
         };
         claim.messages.push(newMsg);
         localStorage.setItem("campus_claims", JSON.stringify(claims));
@@ -296,7 +276,6 @@ function addClaimMessage(claimId, messageObj) {
     return null;
 }
 
-// Notifications helpers
 function getNotifications(userEmail) {
     if (!userEmail) return [];
     initStorage();
@@ -320,7 +299,6 @@ function sendNotification(notification) {
     }
 }
 
-// Mark all notifications as read for a specific user
 function markNotificationsAsRead(userEmail) {
     if (!userEmail) return;
     initStorage();
@@ -338,7 +316,6 @@ function markNotificationsAsRead(userEmail) {
     }
 }
 
-// Clear all notifications for a specific user
 function clearNotifications(userEmail) {
     if (!userEmail) return;
     initStorage();
@@ -352,7 +329,6 @@ function clearNotifications(userEmail) {
     }
 }
 
-// Delete a single notification by ID
 function deleteNotification(notifId) {
     if (!notifId) return;
     initStorage();
@@ -365,7 +341,6 @@ function deleteNotification(notifId) {
     }
 }
 
-// Get logged in user (returns null if unauthenticated / guest)
 function getCurrentUser() {
     initStorage();
     try {
@@ -380,7 +355,6 @@ function getCurrentUser() {
     }
 }
 
-// Reset sample data helper
 function resetData() {
     localStorage.setItem("users", JSON.stringify(defaultUsers));
     localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
@@ -390,5 +364,4 @@ function resetData() {
     localStorage.setItem("campus_notifications", JSON.stringify([]));
 }
 
-// Initialize on file load
 initStorage();

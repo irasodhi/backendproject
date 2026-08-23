@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Lost & Found — Next Gen AI Recovery System</title>
     <meta name="description" content="Next generation AI-powered campus lost and found management platform with 5-factor multi-attribute similarity matching algorithm.">
-    <!-- Bootstrap 5 CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Sora + Inter Fonts -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom Styles -->
+    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="home">
 
-    <!-- Header / Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top" id="main-nav">
         <div class="container">
             <a class="navbar-brand" href="index.html">
@@ -41,14 +40,13 @@
                         <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
                     </li>
 
-                    <!-- Notification Bell Dropdown -->
                     <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
                         <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
                             <i class="bi bi-bell-fill"></i>
                             <span id="nav-notif-badge" class="notif-badge d-none">0</span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
-                            <!-- Premium Header -->
+                            
                             <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
                                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
@@ -66,15 +64,13 @@
                                     </button>
                                 </div>
                             </div>
-                            
-                            <!-- Notifications Items List -->
+
                             <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
-                                <!-- Dynamic rich notification items rendered via app.js -->
+                                
                             </div>
                         </div>
                     </li>
 
-                    <!-- Dynamic User Account Display / CTA -->
                     <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
                         <a class="btn btn-emerald-pill btn-arrow-slide py-2 px-3 fs-6" href="login.html">
                             <span>Sign In</span> <i class="bi bi-arrow-right"></i>
@@ -86,17 +82,16 @@
     </nav>
 
     <main>
-        <!-- Hero Section (TenFore Emerald Dark Theme) -->
+        
         <section class="hero-emerald" id="hero-section">
-            <!-- Ambient Glowing Orbs -->
+            
             <div class="hero-orb hero-orb-1"></div>
             <div class="hero-orb hero-orb-2"></div>
             <div class="hero-grid-pattern"></div>
 
             <div class="container hero-content">
                 <div class="row align-items-center g-5">
-                    
-                    <!-- Left Hero Content -->
+
                     <div class="col-lg-6">
                         <div class="hero-preheading fade-in-up">
                             <span class="badge-dot"></span> NEXT GENERATION AI INTELLIGENCE
@@ -110,7 +105,6 @@
                             The next-generation intelligence platform engineered to reunite campus communities with lost items instantly. Simple, fast, cloud-based, and powered by 5-factor similarity algorithms.
                         </p>
 
-                        <!-- CTA Actions -->
                         <div class="d-flex flex-wrap gap-3 mb-4 fade-in-up delay-3" id="hero-cta-buttons">
                             <a href="report.html?type=lost" id="hero-main-cta" class="btn btn-emerald-pill btn-arrow-slide shadow-lg">
                                 <span>SCHEDULE A REPORT</span> <i class="bi bi-arrow-right"></i>
@@ -123,7 +117,6 @@
                             </a>
                         </div>
 
-                        <!-- Live Stats Bar (Dark Glass) -->
                         <div class="row g-3 fade-in-up delay-4">
                             <div class="col-4">
                                 <div class="hero-stat-box">
@@ -146,20 +139,17 @@
                         </div>
                     </div>
 
-                    <!-- Right Hero 3D Floating Mockup Suite (Directly Matching Reference Image) -->
                     <div class="col-lg-6">
                         <div class="hero-mockup-wrapper" id="hero-mockup-container">
                             <div class="hero-mockup-3d" id="hero-mockup-element">
-                                
-                                <!-- Floating Real-Time Alert Pill -->
+
                                 <div class="mockup-alert-pill">
                                     <span class="radar-pulse"></span>
                                     <span>✨ Match Found: <strong>Black Nike Backpack (96%)</strong></span>
                                 </div>
 
-                                <!-- Main SaaS Dashboard Mockup -->
                                 <div class="mockup-main-card">
-                                    <!-- Animated Radar Scanning Beam -->
+                                    
                                     <div class="mockup-radar-beam"></div>
 
                                     <div class="mockup-header">
@@ -187,7 +177,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- Mini Live Mockup Table -->
                                         <table class="mockup-table">
                                             <thead>
                                                 <tr>
@@ -247,15 +236,13 @@
                                     </div>
                                 </div>
 
-                                <!-- Floating Match Curve Analytics Card (Matching Reference Image) -->
                                 <div class="mockup-curve-card">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="small fw-bold text-muted text-uppercase" style="font-size:0.7rem;letter-spacing:0.04em;">Match Probability Curve</span>
                                         <span class="badge rounded-pill" style="background:#e8f5e9;color:#059669;font-size:0.68rem;font-weight:700;">+24.8%</span>
                                     </div>
                                     <div class="curve-val mb-2">99.4% <span class="fs-6 text-muted fw-normal">Accuracy</span></div>
-                                    
-                                    <!-- Glowing SVG Area Curve Graph -->
+
                                     <svg viewBox="0 0 200 65" style="width:100%;height:55px;overflow:visible;">
                                         <defs>
                                             <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
@@ -263,11 +250,11 @@
                                                 <stop offset="100%" stop-color="#00e676" stop-opacity="0.0"/>
                                             </linearGradient>
                                         </defs>
-                                        <!-- Shaded Area -->
+                                        
                                         <path d="M0,55 Q40,48 80,32 T160,12 T200,6 L200,65 L0,65 Z" fill="url(#curveGradient)"/>
-                                        <!-- Line -->
+                                        
                                         <path d="M0,55 Q40,48 80,32 T160,12 T200,6" fill="none" stroke="#00e676" stroke-width="3.5" stroke-linecap="round"/>
-                                        <!-- Glowing Pulse Point -->
+                                        
                                         <circle cx="200" cy="6" r="4" fill="#00e676" stroke="#ffffff" stroke-width="2"/>
                                     </svg>
                                     <div class="d-flex justify-content-between small text-muted mt-1" style="font-size:0.65rem;">
@@ -285,7 +272,6 @@
             </div>
         </section>
 
-        <!-- Live Recovery Activity Ticker (Deep Dark High-Contrast Bar) -->
         <div class="recovery-ticker-wrap">
             <div class="recovery-ticker-track">
                 <div class="ticker-item">
@@ -304,7 +290,7 @@
                     <span class="ticker-badge">HANDOVER</span>
                     <span>🤝 Verified handover scheduled for <strong>Casio Calculator</strong> at Admin Block</span>
                 </div>
-                <!-- Duplicate items for seamless infinite marquee loop -->
+                
                 <div class="ticker-item">
                     <span class="ticker-badge">LIVE RECOVERY</span>
                     <span>🎉 Sophia S. verified & recovered <strong>MacBook Air M2</strong> from Library</span>
@@ -316,14 +302,12 @@
             </div>
         </div>
 
-        <!-- Wave Divider (Curved Organic Split from Dark Ticker to Clean White Section) -->
         <div class="wave-divider-wrap">
             <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
                 <path fill="#ffffff" d="M0,32 C240,75 480,85 720,50 C960,15 1200,5 1440,32 L1440,80 L0,80 Z"></path>
             </svg>
         </div>
 
-        <!-- "Delivering The Future" Section (Matching Reference Image) -->
         <section class="section-future">
             <div class="container">
                 <div class="text-center max-w-700 mx-auto mb-5 reveal-item">
@@ -334,7 +318,6 @@
                     </p>
                 </div>
 
-                <!-- 4-Step Pipeline Flow Visualizer -->
                 <div class="pipeline-flow-grid mb-5">
                     <div class="pipeline-card reveal-item delay-1">
                         <span class="step-number">01</span>
@@ -365,9 +348,8 @@
                     </div>
                 </div>
 
-                <!-- Interactive 6-Factor Similarity Simulator -->
                 <div class="simulator-container reveal-item mt-5" id="ai-simulator-card">
-                    <!-- Ambient Background Lighting -->
+                    
                     <div class="sim-ambient-glow sim-glow-1"></div>
                     <div class="sim-ambient-glow sim-glow-2"></div>
 
@@ -389,7 +371,6 @@
                                 Select sample comparisons below to watch our 6-factor neural engine calculate real-time similarity in 3D.
                             </p>
 
-                            <!-- Interactive Scenario Quick Pill Switcher -->
                             <div class="sim-scenario-pills mb-3">
                                 <button type="button" class="sim-pill-btn active" id="pill-scenario-high" data-scenario="high" onclick="switchSimScenario('high')">
                                     <span class="sim-pill-dot dot-emerald"></span> Scenario A (96%)
@@ -402,7 +383,6 @@
                                 </button>
                             </div>
 
-                            <!-- Dropdown Selector -->
                             <div class="mb-4">
                                 <select id="sim-scenario-select" class="form-select sim-select-custom" onchange="switchSimScenario(this.value)">
                                     <option value="high">Scenario A: Nike Backpack (High Confidence Match - 96%)</option>
@@ -411,10 +391,9 @@
                                 </select>
                             </div>
 
-                            <!-- Futuristic Holographic SVG Progress Ring HUD -->
                             <div class="sim-hud-center">
                                 <div class="sim-score-ring" id="sim-score-ring-wrap">
-                                    <!-- SVG Radial Meter -->
+                                    
                                     <svg class="sim-svg-meter" viewBox="0 0 160 160">
                                         <defs>
                                             <linearGradient id="simMeterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -426,13 +405,12 @@
                                                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
                                             </filter>
                                         </defs>
-                                        <!-- Background Circle -->
+                                        
                                         <circle cx="80" cy="80" r="66" class="sim-svg-bg" />
-                                        <!-- Animated Progress Stroke -->
+                                        
                                         <circle cx="80" cy="80" r="66" class="sim-svg-bar" id="sim-svg-progress" style="stroke-dasharray: 414.7; stroke-dashoffset: 16.59;" />
                                     </svg>
 
-                                    <!-- Central Digital HUD Readout -->
                                     <div class="sim-hud-core">
                                         <div class="sim-num" id="sim-score-num">96%</div>
                                         <span class="sim-conf-label">CONFIDENCE</span>
@@ -442,7 +420,6 @@
                             </div>
                         </div>
 
-                        <!-- 6-Factor Weight Breakdown Bars -->
                         <div class="col-lg-7">
                             <div class="sim-breakdown-glass-panel">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -452,7 +429,6 @@
                                     <span class="badge rounded-pill" style="background:rgba(0,230,118,0.15);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);font-size:0.7rem;">100% Total</span>
                                 </div>
 
-                                <!-- Brand / Name -->
                                 <div class="sim-weight-bar-item" data-factor="brand">
                                     <div class="sim-weight-header">
                                         <span><i class="bi bi-award-fill text-success me-1"></i>Brand & Name NLP (25% max)</span>
@@ -463,7 +439,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Campus Zone -->
                                 <div class="sim-weight-bar-item" data-factor="zone">
                                     <div class="sim-weight-header">
                                         <span><i class="bi bi-geo-alt-fill text-success me-1"></i>Campus Zone Proximity (20% max)</span>
@@ -474,7 +449,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Category -->
                                 <div class="sim-weight-bar-item" data-factor="cat">
                                     <div class="sim-weight-header">
                                         <span><i class="bi bi-tag-fill text-success me-1"></i>Category & Device (20% max)</span>
@@ -485,7 +459,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Color -->
                                 <div class="sim-weight-bar-item" data-factor="color">
                                     <div class="sim-weight-header">
                                         <span><i class="bi bi-palette-fill text-success me-1"></i>Color Similarity (15% max)</span>
@@ -496,7 +469,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Date Interval -->
                                 <div class="sim-weight-bar-item" data-factor="date">
                                     <div class="sim-weight-header">
                                         <span><i class="bi bi-calendar-event-fill text-success me-1"></i>Date Interval (10% max)</span>
@@ -507,7 +479,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Description Semantic NLP -->
                                 <div class="sim-weight-bar-item mb-0" data-factor="desc">
                                     <div class="sim-weight-header">
                                         <span><i class="bi bi-body-text text-success me-1"></i>Semantic Description NLP (10% max)</span>
@@ -525,10 +496,9 @@
             </div>
         </section>
 
-        <!-- Quick Items Search & Recent Feed -->
         <section class="py-5" style="background-color:var(--bg-main);">
             <div class="container">
-                <!-- Section Header -->
+                
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 gap-3 reveal-item">
                     <div>
                         <span class="badge rounded-pill mb-1" style="background:var(--mint-light);color:#059669;font-weight:700;">LIVE INVENTORY</span>
@@ -548,7 +518,6 @@
                     </div>
                 </div>
 
-                <!-- Modern Interactive Filters Bar (Search & Type Switcher) -->
                 <div class="card p-3 mb-3 border-0 shadow-sm rounded-4 reveal-item delay-1" style="background:#ffffff;border:1px solid var(--border-color)!important;">
                     <div class="row g-3 align-items-center">
                         <div class="col-md-7 col-lg-8">
@@ -574,7 +543,7 @@
                                 <option value="lost">Lost</option>
                                 <option value="found">Found</option>
                             </select>
-                            <!-- Hidden category select for synchronized filter state -->
+                            
                             <select id="home-category-filter" class="d-none">
                                 <option value="all" selected>All Categories</option>
                                 <option value="Electronics">Electronics</option>
@@ -589,7 +558,6 @@
                     </div>
                 </div>
 
-                <!-- Interactive Category Quick Explorer Strip (Below Recent Campus) -->
                 <div class="mb-4 reveal-item delay-2">
                     <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                         <div class="d-flex align-items-center gap-2">
@@ -634,17 +602,15 @@
                     </div>
                 </div>
 
-                <!-- Reports Grid -->
                 <div class="row g-4" id="recent-reports-grid">
-                    <!-- Dynamic rendering via app.js -->
+                    
                 </div>
             </div>
         </section>
 
-        <!-- Feature Trust Ecosystem (Animated Green Contrast Theme) -->
         <section class="ecosystem-section-emerald">
             <div class="container">
-                <!-- Section Title with High-Contrast Header -->
+                
                 <div class="text-center mb-5 reveal-item">
                     <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3" style="background:rgba(0,230,118,0.12);border:1px solid rgba(0,230,118,0.35);box-shadow:0 0 20px rgba(0,230,118,0.2);">
                         <i class="bi bi-shield-fill-check text-success"></i>
@@ -659,7 +625,7 @@
                 </div>
 
                 <div class="row g-4">
-                    <!-- Card 1: Zero-Knowledge Claims -->
+                    
                     <div class="col-md-6 col-lg-3 reveal-item delay-1">
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon-box">
@@ -675,7 +641,6 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: Campus Zone Proximity -->
                     <div class="col-md-6 col-lg-3 reveal-item delay-2">
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon-box">
@@ -691,7 +656,6 @@
                         </div>
                     </div>
 
-                    <!-- Card 3: Instant Notifications -->
                     <div class="col-md-6 col-lg-3 reveal-item delay-3">
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon-box">
@@ -707,7 +671,6 @@
                         </div>
                     </div>
 
-                    <!-- Card 4: Handover Scheduler -->
                     <div class="col-md-6 col-lg-3 reveal-item delay-4">
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon-box">
@@ -727,7 +690,6 @@
         </section>
     </main>
 
-    <!-- Add Account Modal -->
     <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -778,7 +740,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="row g-4 align-items-center justify-content-between mb-4">
@@ -804,7 +765,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/matching.js"></script>
