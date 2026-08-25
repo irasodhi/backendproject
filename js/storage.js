@@ -90,7 +90,7 @@ function initStorage() {
     }
 
     let existingReportsStr = localStorage.getItem("campus_reports");
-    if (!existingReportsStr) {
+    if (existingReportsStr === null) {
         localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
     } else {
         try {
@@ -104,7 +104,7 @@ function initStorage() {
                     let isUnwanted = unwantedNames.some(u => name.includes(u)) || unwantedPosters.some(p => poster.includes(p));
                     return !isUnwanted;
                 });
-                localStorage.setItem("campus_reports", JSON.stringify(cleanedReports.length > 0 ? cleanedReports : defaultReports));
+                localStorage.setItem("campus_reports", JSON.stringify(cleanedReports));
             } else {
                 localStorage.setItem("campus_reports", JSON.stringify(defaultReports));
             }
@@ -209,8 +209,9 @@ function saveReport(report) {
 }
 
 function deleteReport(id) {
+    if (!id) return;
     let reports = getReports();
-    let updated = reports.filter(r => r.id !== id);
+    let updated = reports.filter(r => String(r.id).trim() !== String(id).trim());
     localStorage.setItem("campus_reports", JSON.stringify(updated));
 }
 

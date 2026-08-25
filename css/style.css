@@ -1884,6 +1884,90 @@ a:hover { color: var(--primary-hover); }
     animation: toastOut 0.3s ease forwards;
 }
 
+/* ============================================================
+   CONFIRM DIALOG & OVERLAY
+   ============================================================ */
+#confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 15, 29, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 10050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    animation: confirmFadeIn 0.2s ease forwards;
+}
+
+#confirm-dialog {
+    background: #ffffff;
+    border-radius: var(--radius-lg, 16px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 0, 0, 0.15);
+    max-width: 440px;
+    width: 100%;
+    padding: 2rem 1.75rem 1.75rem;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    animation: confirmPopIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    position: relative;
+}
+
+.confirm-icon-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 1.75rem;
+}
+
+.confirm-icon-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 2px solid rgba(239, 68, 68, 0.25);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.2);
+}
+
+.confirm-icon-warning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 2px solid rgba(245, 158, 11, 0.25);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
+}
+
+.confirm-icon-info {
+    background: rgba(0, 230, 118, 0.12);
+    color: var(--emerald-dark, #059669);
+    border: 2px solid rgba(0, 230, 118, 0.25);
+    box-shadow: 0 0 16px rgba(0, 230, 118, 0.2);
+}
+
+@keyframes confirmFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes confirmPopIn {
+    from {
+        opacity: 0;
+        transform: scale(0.88) translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+
 .modal-content {
     border-radius: var(--radius-xl) !important;
     border: 1.5px solid rgba(0, 230, 118, 0.25) !important;

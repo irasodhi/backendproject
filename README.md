@@ -1,4 +1,4 @@
-# 🎓 CampusLost&Found — Intelligent Campus Recovery System
+# 🎓 CampusFind — Intelligent Campus Recovery System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-00e676.svg)](https://opensource.org/licenses/MIT)
 [![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5.3.2-purple.svg)](https://getbootstrap.com/)

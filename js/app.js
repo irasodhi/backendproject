@@ -3527,18 +3527,34 @@ function renderMyReports(userEmail) {
 }
 
 async function removeReport(id) {
+    if (!id) return;
     let confirmed = await showConfirm({
-        message: 'Delete this report? This action cannot be undone.',
+        message: 'Are you sure you want to delete this report? This action cannot be undone.',
         title: 'Delete Report',
         icon: 'danger',
         confirmText: 'Yes, Delete'
     });
     if (confirmed) {
         deleteReport(id);
-        showToast('Report deleted.', 'success');
-        setTimeout(() => window.location.reload(), 500);
+        showToast('Report deleted successfully.', 'success');
+
+        let currentUser = getCurrentUser();
+        if (currentUser && currentUser.useremail && document.getElementById("my-lost-container")) {
+            renderMyReports(currentUser.useremail);
+            let elMyReports = document.getElementById("dash-stat-myreports");
+            if (elMyReports) {
+                let reports = getReports();
+                let myReportsCount = reports.filter(r => r.postedByEmail?.toLowerCase().trim() === currentUser.useremail.toLowerCase().trim()).length;
+                elMyReports.textContent = myReportsCount;
+            }
+        } else if (document.getElementById("admin-table-body")) {
+            initAdminPage();
+        } else {
+            setTimeout(() => window.location.reload(), 400);
+        }
     }
 }
+window.removeReport = removeReport;
 
 // =============================================================
 // 6. ADMIN LOGIC
@@ -3735,7 +3751,7 @@ function verifyHandoverPass(claimId, tokenOrPin) {
             senderName: claim.reporter,
             senderEmail: claim.reporterEmail,
             itemName: claim.itemName,
-            message: `🎉 Handover Completed & Verified! QR Security Pass for "${claim.itemName}" was authenticated by Founder (${claim.reporter}). Thank you for using Campus Lost & Found!`,
+            message: `🎉 Handover Completed & Verified! QR Security Pass for "${claim.itemName}" was authenticated by Founder (${claim.reporter}). Thank you for using CampusFind!`,
             date: now,
             type: "chat_message", claimId
         });

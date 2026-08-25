@@ -102,8 +102,11 @@ window.showConfirm = function (options, onConfirm, onCancel) {
 
     document.body.style.overflow = 'hidden';
 
+    let onKey = null;
+
     function cleanup() {
         document.body.style.overflow = '';
+        if (onKey) document.removeEventListener('keydown', onKey);
         if (overlay.parentNode) overlay.remove();
     }
 
@@ -120,9 +123,9 @@ window.showConfirm = function (options, onConfirm, onCancel) {
                 if (e.target === overlay) { cleanup(); resolve(false); }
             });
             
-            function onKey(e) {
-                if (e.key === 'Escape') { cleanup(); resolve(false); document.removeEventListener('keydown', onKey); }
-            }
+            onKey = function (e) {
+                if (e.key === 'Escape') { cleanup(); resolve(false); }
+            };
             document.addEventListener('keydown', onKey);
         });
     }
@@ -138,4 +141,8 @@ window.showConfirm = function (options, onConfirm, onCancel) {
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) { cleanup(); if (onCancel) onCancel(); }
     });
+    onKey = function (e) {
+        if (e.key === 'Escape') { cleanup(); if (onCancel) onCancel(); }
+    };
+    document.addEventListener('keydown', onKey);
 };
