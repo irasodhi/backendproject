@@ -3,198 +3,907 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal — CampusFind</title>
-    
+    <title>Admin Console — CampusFind</title>
+    <meta name="description" content="CampusFind Admin Console — Full system management for users, reports, and claims.">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .admin-hero {
+            background: linear-gradient(135deg, #041512 0%, #07221c 50%, #0c332a 100%);
+            padding: 3rem 0 2.5rem;
+            border-bottom: 1px solid rgba(0,230,118,0.18);
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,230,118,0.15), transparent);
+        }
+        .admin-stat-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.4rem 1.6rem;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-color: var(--emerald-primary);
+        }
+        .admin-stat-card .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .admin-stat-card .stat-num {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1;
+            font-family: 'Sora', sans-serif;
+        }
+        .admin-tab-btn {
+            border: none;
+            background: transparent;
+            padding: 0.55rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-tab-btn.active, .admin-tab-btn:hover {
+            background: rgba(0,230,118,0.12);
+            color: #059669;
+        }
+        .admin-tab-btn.active {
+            border: 1px solid rgba(0,230,118,0.3);
+        }
+        .admin-table th {
+            background: #041512;
+            color: #e2fbf1;
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.85rem 1rem;
+            white-space: nowrap;
+        }
+        .admin-table td {
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+            font-size: 0.85rem;
+        }
+        .admin-table tr:hover td {
+            background: #f8fafb;
+        }
+        .role-badge {
+            font-size: 0.7rem;
+            padding: 0.25em 0.7em;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .role-badge.admin { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .role-badge.user  { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .status-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.25em 0.75em;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+        .access-denied-box {
+            text-align: center;
+            padding: 5rem 2rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .access-denied-box .icon-wrap {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #fff1f2;
+            border: 2px solid #fecdd3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #f43f5e;
+            margin: 0 auto 1.5rem;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,230,118,0.25);
+            border-radius: 50%;
+            border-top-color: var(--emerald-primary);
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #admin-main-content { display: none; }
+        #admin-access-denied { display: none; }
+        #admin-loading { display: block; }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #94a3b8;
+        }
+        .truncate-email {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body data-page="admin">
 
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">
-                <span class="brand-icon"><i class="bi bi-search-heart"></i></span>
-                <span>Campus<span style="color:var(--emerald-primary);">Find</span></span>
+    <!-- DEDICATED ADMIN NAV -->
+    <nav class="navbar navbar-expand navbar-custom sticky-top py-2.5">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a class="navbar-brand d-flex align-items-center gap-2 mb-0" href="admin.html">
+                <span class="brand-icon"><i class="bi bi-shield-lock-fill"></i></span>
+                <span class="fw-bold text-white">Campus<span style="color:var(--emerald-primary);">Find</span></span>
+                <span class="badge rounded-pill text-uppercase px-2.5 py-1 ms-1" style="background:rgba(0,230,118,0.18);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.35);font-size:0.68rem;letter-spacing:0.04em;">Admin Portal</span>
             </a>
-            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <i class="bi bi-list fs-2 text-white"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html"><i class="bi bi-house-door me-1"></i>Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="report.html"><i class="bi bi-plus-circle me-1"></i>Report Item</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="matches.html"><i class="bi bi-cpu me-1"></i>Match Engine</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="admin.html" style="color:var(--emerald-primary) !important;"><i class="bi bi-shield-lock me-1"></i>Admin</a>
-                    </li>
-                    
-                    <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
-                        <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
-                            <i class="bi bi-bell-fill"></i>
-                            <span id="nav-notif-badge" class="notif-badge d-none">0</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
-                            
-                            <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
-                                        <i class="bi bi-bell-fill"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-0 text-white" style="font-family:'Sora',sans-serif;font-size:0.92rem;letter-spacing:-0.01em;">Notifications</h6>
-                                        <span class="extra-small text-light opacity-75" style="font-size:0.7rem;">Real-time Campus Alerts</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center gap-2 position-relative" style="z-index:2;">
-                                    <span id="nav-notif-unread-count" class="badge rounded-pill" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.35);font-size:0.68rem;padding:0.35em 0.7em;">0 New</span>
-                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill extra-small py-0.5 px-2 text-decoration-none" onclick="handleClearAllDropdownNotifs(event)" title="Clear all notifications" style="font-size:0.68rem;opacity:0.85;">
-                                        <i class="bi bi-trash3 me-1"></i>Clear
-                                    </button>
-                                </div>
-                            </div>
 
-                            <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
-                                
-                            </div>
-                        </div>
-                    </li>
-                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
-                        <a class="btn btn-sm btn-outline-light rounded-pill px-3" href="login.html">
-                            <i class="bi bi-person me-1"></i>Sign In
-                        </a>
-                    </li>
-                </ul>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge rounded-pill d-none d-md-inline-flex align-items-center gap-1.5 px-3 py-1.5" style="background:#07221c;color:#a7f3d0;border:1px solid rgba(0,230,118,0.3);font-size:0.75rem;">
+                    <i class="bi bi-broadcast" style="color:var(--emerald-primary);"></i>
+                    <span>MongoDB Atlas Live</span>
+                </span>
+                <div id="nav-user-display"></div>
             </div>
         </div>
     </nav>
 
-    <section class="subpage-banner text-center">
-        <div class="container">
-            <div class="subpage-badge fade-in-up">
-                <i class="bi bi-shield-lock-fill"></i> System Administration
-            </div>
-            <h1 class="subpage-title fade-in-up delay-1">Campus Administration Console</h1>
-            <p class="subpage-subtitle mx-auto fade-in-up delay-2">
-                Manage system reports, view posting users, audit match records, and reset demo datasets.
-            </p>
-        </div>
-    </section>
+    <!-- LOADING STATE -->
+    <div id="admin-loading" class="text-center py-5 mt-5">
+        <div class="loading-spinner mx-auto mb-3" style="width:40px;height:40px;border-width:4px;"></div>
+        <p class="text-muted small">Checking admin access…</p>
+    </div>
 
-    <main class="py-5" style="background-color:var(--bg-main);">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 p-3 bg-white rounded-3 border shadow-sm fade-in-up">
-                <div>
-                    <h4 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                        <i class="bi bi-database text-success me-2"></i>Campus System Dataset
-                    </h4>
-                    <p class="text-muted small mb-0">Total active reports indexed in local storage.</p>
+    <!-- ACCESS DENIED -->
+    <div id="admin-access-denied">
+        <div class="access-denied-box mt-5">
+            <div class="icon-wrap">
+                <i class="bi bi-shield-x"></i>
+            </div>
+            <h3 class="fw-bold mb-2" style="font-family:'Sora',sans-serif;">Access Restricted</h3>
+            <p class="text-muted mb-4">This admin console is only accessible to Campus Administrators. Please sign in with an admin account.</p>
+            <a href="login.html" class="btn btn-dark rounded-pill px-4 fw-bold me-2">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+            </a>
+            <a href="index.html" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                <i class="bi bi-house-door me-1"></i> Go Home
+            </a>
+        </div>
+    </div>
+
+    <!-- ADMIN CONSOLE (shown only for admin role) -->
+    <div id="admin-main-content">
+        <!-- Hero Banner -->
+        <section class="admin-hero position-relative">
+            <div class="container position-relative" style="z-index:2;">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:54px;height:54px;background:rgba(0,230,118,0.15);border:2px solid rgba(0,230,118,0.4);font-size:1.5rem;color:var(--emerald-primary);">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <div>
+                        <div class="badge rounded-pill mb-1" style="background:rgba(0,230,118,0.18);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);font-size:0.7rem;letter-spacing:0.05em;">SYSTEM ADMINISTRATION</div>
+                        <h1 class="fw-bold text-white mb-0" style="font-family:'Sora',sans-serif;font-size:1.9rem;">Campus Admin Console</h1>
+                    </div>
                 </div>
-                <div>
-                    <button type="button" id="btn-reset-sample-data" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Demo Dataset
+                <p class="text-light opacity-75 small mb-3" id="admin-welcome-msg">Loading…</p>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge" style="background:rgba(0,230,118,0.15);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);font-size:0.7rem;">
+                        <i class="bi bi-circle-fill me-1" style="font-size:0.45rem;"></i>Live MongoDB Atlas
+                    </span>
+                    <button id="btn-refresh-all" class="btn btn-sm rounded-pill fw-semibold" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);font-size:0.75rem;" onclick="loadAdminData()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh Data
+                    </button>
+                    <button id="btn-reset-sample-data" class="btn btn-sm rounded-pill fw-semibold" style="background:rgba(244,63,94,0.15);color:#f43f5e;border:1px solid rgba(244,63,94,0.3);font-size:0.75rem;">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Demo Data
                     </button>
                 </div>
             </div>
+        </section>
 
-            <div class="card p-0 shadow-sm border-0 rounded-3 fade-in-up delay-1" style="overflow:hidden;">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead style="background:#041512;color:#e2fbf1;">
-                            <tr>
-                                <th class="ps-3 py-3">ID</th>
-                                <th>Item Name</th>
-                                <th>Type</th>
-                                <th>Category</th>
-                                <th>Zone</th>
-                                <th>Date</th>
-                                <th>Posted By</th>
-                                <th class="pe-3 text-end">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-reports-tbody">
-                            
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
+        <main class="py-4" style="background:var(--bg-main);min-height:80vh;">
+            <div class="container">
 
-    <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header border-0 pb-0" style="background:#041512; color:#ffffff;">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:rgba(0,230,118,0.15);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);">
-                            <i class="bi bi-person-plus-fill"></i>
-                        </div>
-                        <div>
-                            <h5 class="modal-title fw-bold" id="addAccountModalLabel" style="font-family:'Sora',sans-serif;">Add Another Account</h5>
-                            <small class="text-white-50">Sign in to a second student account on this browser</small>
+                <!-- STATS ROW -->
+                <div class="row g-3 mb-4" id="admin-stats-row">
+                    <div class="col-12 col-md-4">
+                        <div class="admin-stat-card">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="stat-icon" style="background:#ecfdf5;color:#059669;"><i class="bi bi-people-fill"></i></div>
+                                <div>
+                                    <div class="stat-num text-dark" id="stat-users">—</div>
+                                    <div class="small text-muted fw-semibold">Registered Users</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="col-12 col-md-4">
+                        <div class="admin-stat-card">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="stat-icon" style="background:#eff6ff;color:#2563eb;"><i class="bi bi-clipboard2-data-fill"></i></div>
+                                <div>
+                                    <div class="stat-num text-dark" id="stat-reports">—</div>
+                                    <div class="small text-muted fw-semibold">Total Reports</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="admin-stat-card">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="stat-icon" style="background:#fdf4ff;color:#9333ea;"><i class="bi bi-shield-check-fill"></i></div>
+                                <div>
+                                    <div class="stat-num text-dark" id="stat-claims">—</div>
+                                    <div class="small text-muted fw-semibold">Total Claims</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body p-4" style="background:#ffffff;">
-                    <form id="dash-add-account-form" onsubmit="handleAddAccountSubmit(event)">
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">Full Name <span class="text-muted fw-normal">(for new account)</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
-                                <input type="text" id="add-acc-name" class="form-control" placeholder="e.g. Ira Sodhi">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">Email Address <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
-                                <input type="email" id="add-acc-email" class="form-control" placeholder="e.g. ira.sodhi@example.com" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold text-dark">Password <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-lock"></i></span>
-                                <input type="password" id="add-acc-password" class="form-control" placeholder="Enter password (min 6 chars)" minlength="6" required>
-                            </div>
-                        </div>
-                        <div id="add-acc-feedback" class="small mb-3 d-none"></div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-emerald-pill py-2.5 fw-bold shadow-sm">
-                                <span>Sign In & Connect Account</span> <i class="bi bi-arrow-right"></i>
-                            </button>
-                        </div>
-                    </form>
+
+                <!-- TAB NAV -->
+                <div class="bg-white rounded-3 border shadow-sm p-2 mb-4 d-flex gap-2 flex-wrap">
+                    <button class="admin-tab-btn active" id="tab-btn-reports" onclick="switchAdminTab('reports')">
+                        <i class="bi bi-clipboard2-data me-1"></i>Reports
+                        <span class="badge rounded-pill ms-1" style="background:#eff6ff;color:#2563eb;font-size:0.65rem;" id="badge-reports">0</span>
+                    </button>
+                    <button class="admin-tab-btn" id="tab-btn-users" onclick="switchAdminTab('users')">
+                        <i class="bi bi-people me-1"></i>Users
+                        <span class="badge rounded-pill ms-1" style="background:#ecfdf5;color:#059669;font-size:0.65rem;" id="badge-users">0</span>
+                    </button>
+                    <button class="admin-tab-btn" id="tab-btn-claims" onclick="switchAdminTab('claims')">
+                        <i class="bi bi-shield-check me-1"></i>Claims
+                        <span class="badge rounded-pill ms-1" style="background:#fdf4ff;color:#9333ea;font-size:0.65rem;" id="badge-claims">0</span>
+                    </button>
                 </div>
+
+                <!-- ERROR BAR -->
+                <div id="admin-error-bar" class="alert alert-warning rounded-3 py-2 px-3 small mb-3 d-none" role="alert">
+                    <i class="bi bi-wifi-off me-2"></i><span id="admin-error-msg">Backend offline — showing local data.</span>
+                </div>
+
+                <!-- REPORTS TAB -->
+                <div id="tab-reports" class="admin-tab-content">
+                    <div class="bg-white rounded-3 border shadow-sm overflow-hidden">
+                        <div class="p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3 flex-wrap">
+                                <h6 class="fw-bold mb-0"><i class="bi bi-clipboard2-data text-primary me-2"></i>Reports</h6>
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Report filter">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary active" id="filter-rep-all" onclick="setAdminReportFilter('all')">
+                                        All <span class="badge bg-secondary ms-1" id="badge-filter-all">0</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="filter-rep-lost" onclick="setAdminReportFilter('lost')">
+                                        Lost <span class="badge bg-danger ms-1" id="badge-filter-lost">0</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success" id="filter-rep-found" onclick="setAdminReportFilter('found')">
+                                        Found <span class="badge bg-success ms-1" id="badge-filter-found">0</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <div class="input-group input-group-sm" style="width:220px;">
+                                    <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="admin-report-search" class="form-control border-start-0" placeholder="Search reports..." oninput="onAdminReportSearch(this.value)">
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary rounded-pill px-2.5" onclick="loadAdminData()" title="Reload from MongoDB Atlas">
+                                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                                </button>
+                                <span class="text-muted small" id="reports-meta">Loading…</span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table admin-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Type</th>
+                                        <th>Item Name</th>
+                                        <th>Category</th>
+                                        <th>Zone</th>
+                                        <th>Date</th>
+                                        <th>Posted By</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-reports-tbody">
+                                    <tr><td colspan="9" class="text-center py-4"><div class="loading-spinner mx-auto"></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USERS TAB -->
+                <div id="tab-users" class="admin-tab-content d-none">
+                    <div class="bg-white rounded-3 border shadow-sm overflow-hidden">
+                        <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-people text-success me-2"></i>Registered Users</h6>
+                            <span class="text-muted small" id="users-meta">Loading…</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table admin-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Phone</th>
+                                        <th>Joined</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-tbody">
+                                    <tr><td colspan="6" class="text-center py-4"><div class="loading-spinner mx-auto"></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLAIMS TAB -->
+                <div id="tab-claims" class="admin-tab-content d-none">
+                    <div class="bg-white rounded-3 border shadow-sm overflow-hidden">
+                        <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+                            <h6 class="fw-bold mb-0"><i class="bi bi-shield-check text-purple me-2" style="color:#9333ea;"></i>All Claims</h6>
+                            <span class="text-muted small" id="claims-meta">Loading…</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table admin-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Claim ID</th>
+                                        <th>Item</th>
+                                        <th>Claimant</th>
+                                        <th>Owner</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-claims-tbody">
+                                    <tr><td colspan="7" class="text-center py-4"><div class="loading-spinner mx-auto"></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
-        </div>
+        </main>
     </div>
 
     <footer>
         <div class="container text-center small">
-            © 2026 CampusFind. Admin Console.
+            © 2026 CampusFind. Admin Console &nbsp;·&nbsp; MongoDB Atlas Live
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/matching.js"></script>
     <script src="js/validation.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+    // ── Admin Console Logic ─────────────────────────────────────────
+    const API = 'http://localhost:5000/api';
+
+    let adminData = { users: [], reports: [], claims: [] };
+    let currentAdminTab = 'reports';
+
+    // ── Access Gate ─────────────────────────────────────────────────
+    async function initAdminConsole() {
+        document.getElementById('admin-loading').style.display = 'block';
+        document.getElementById('admin-main-content').style.display = 'none';
+        document.getElementById('admin-access-denied').style.display = 'none';
+
+        let user = null;
+        // Try backend first
+        try {
+            if (window.CampusFindAPI && CampusFindAPI.getToken && CampusFindAPI.getToken()) {
+                const meRes = await CampusFindAPI.auth.getMe();
+                if (meRes && meRes.user) {
+                    user = meRes.user;
+                    // Sync to localStorage
+                    localStorage.setItem('current_user', JSON.stringify(user));
+                    localStorage.setItem('isLoggedIn', 'true');
+                }
+            }
+        } catch(e) {}
+
+        if (!user) {
+            user = getCurrentUser ? getCurrentUser() : null;
+        }
+
+        document.getElementById('admin-loading').style.display = 'none';
+
+        if (!user) {
+            document.getElementById('admin-access-denied').style.display = 'block';
+            return;
+        }
+
+        if ((user.role || '').toLowerCase() !== 'admin') {
+            document.getElementById('admin-access-denied').style.display = 'block';
+            return;
+        }
+
+        // Granted
+        document.getElementById('admin-main-content').style.display = 'block';
+        document.getElementById('admin-welcome-msg').textContent =
+            `Signed in as ${user.username} (${user.useremail}) · Full system access granted`;
+
+        // Render dedicated Admin Nav User Pill
+        const userDisplay = document.getElementById("nav-user-display");
+        if (userDisplay) {
+            const initials = user.username ? user.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'A';
+            userDisplay.innerHTML = `
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light dropdown-toggle border shadow-sm fw-bold text-dark px-3 rounded-pill d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                        <span class="rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold" style="width:24px;height:24px;font-size:0.7rem;background:var(--emerald-primary);color:#041512;">${initials}</span>
+                        <span>${esc(user.username)}</span>
+                        <span class="badge bg-warning text-dark ms-1 extra-small" style="font-size:0.62rem;">ADMIN</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg p-2 rounded-3 border" style="min-width:240px;">
+                        <li class="px-3 py-2.5 rounded-3 mb-2" style="background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.25);">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="badge bg-success rounded-pill extra-small" style="font-size:0.6rem;">Administrator</span>
+                                <i class="bi bi-shield-lock-fill text-success"></i>
+                            </div>
+                            <strong class="text-dark small d-block text-truncate">${esc(user.username)}</strong>
+                            <span class="extra-small text-muted d-block text-truncate" style="font-size:0.72rem;">${esc(user.useremail)}</span>
+                        </li>
+                        <li>
+                            <a class="dropdown-item small text-danger fw-semibold rounded-2 py-2 d-flex align-items-center" href="#" onclick="handleAdminSignOut()">
+                                <i class="bi bi-box-arrow-right text-danger me-2 fs-6"></i>Sign Out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        loadAdminData();
+        setupResetBtn();
+    }
+
+    window.handleAdminSignOut = function() {
+        if (window.CampusFindAPI && CampusFindAPI.auth && typeof CampusFindAPI.auth.logout === 'function') {
+            try { CampusFindAPI.auth.logout(); } catch(e) {}
+        }
+        localStorage.removeItem("campusfind_token");
+        localStorage.removeItem("current_user");
+        localStorage.removeItem("isLoggedIn");
+        localStorage.setItem("users", JSON.stringify([]));
+        window.location.href = "login.html";
+    };
+
+    let adminReportFilter = 'all';
+    let adminReportSearch = '';
+
+    function setAdminReportFilter(filter) {
+        adminReportFilter = filter;
+        ['all', 'lost', 'found'].forEach(f => {
+            const btn = document.getElementById('filter-rep-' + f);
+            if (btn) btn.classList.toggle('active', f === filter);
+        });
+        renderAdminReports();
+    }
+
+    function onAdminReportSearch(val) {
+        adminReportSearch = (val || '').toLowerCase().trim();
+        renderAdminReports();
+    }
+
+    // ── Load All Data from Backend & Local Storage ───────────────────
+    async function loadAdminData() {
+        showError(false);
+        try {
+            const token = window.CampusFindAPI ? CampusFindAPI.getToken() : null;
+            const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+
+            const [usersRes, reportsRes, claimsRes] = await Promise.allSettled([
+                fetch(`${API}/auth/users`, { headers }).then(r => r.json()),
+                fetch(`${API}/reports?limit=200`, { headers }).then(r => r.json()),
+                fetch(`${API}/claims/all`, { headers }).then(r => r.json()),
+            ]);
+
+            if (usersRes.status === 'fulfilled' && usersRes.value.success) {
+                adminData.users = usersRes.value.users || [];
+            } else if (typeof getUsers === 'function') {
+                adminData.users = getUsers() || [];
+            }
+
+            let backendReports = (reportsRes.status === 'fulfilled' && reportsRes.value.success) ? (reportsRes.value.reports || []) : [];
+            let localReports = typeof getReports === 'function' ? getReports() : [];
+
+            // Combine backend reports and local reports seamlessly
+            let reportMap = new Map();
+            backendReports.forEach(r => {
+                let k = String(r.id || r._id || '').trim();
+                if (k) reportMap.set(k, r);
+                if (r._id) reportMap.set(String(r._id).trim(), r);
+            });
+
+            localReports.forEach(lr => {
+                let k = String(lr.id || lr._id || '').trim();
+                let existing = (k && reportMap.get(k)) || (lr._id && reportMap.get(String(lr._id).trim()));
+                if (!existing) {
+                    if (k) reportMap.set(k, lr);
+                    // Sync un-synced report to MongoDB Atlas in background so all devices see it
+                    if (window.CampusFindAPI && CampusFindAPI.reports && !lr._id && !lr._backendSynced) {
+                        CampusFindAPI.reports.create({
+                            id: lr.id,
+                            type: lr.type,
+                            itemName: lr.itemName,
+                            category: lr.category,
+                            electronicType: lr.electronicType || lr.subcategory || '',
+                            subcategory: lr.subcategory || lr.electronicType || '',
+                            color: lr.color,
+                            zone: lr.zone,
+                            date: lr.date,
+                            description: lr.description,
+                            hiddenDetails: lr.hiddenDetails,
+                            image: lr.image,
+                            contactPhone: lr.contactPhone,
+                            postedBy: lr.postedBy,
+                            postedByEmail: lr.postedByEmail
+                        }).then(syncRes => {
+                            if (syncRes && syncRes.report) {
+                                lr._id = syncRes.report._id;
+                                lr._backendSynced = true;
+                                if (typeof saveReport === 'function') saveReport(lr);
+                            }
+                        }).catch(() => {});
+                    }
+                }
+            });
+
+            adminData.reports = Array.from(new Set(reportMap.values()));
+
+            let backendClaims = (claimsRes.status === 'fulfilled' && claimsRes.value.success) ? (claimsRes.value.claims || []) : [];
+            let localClaims = typeof getClaims === 'function' ? getClaims() : [];
+            let claimMap = new Map();
+            backendClaims.forEach(c => {
+                let k = String(c.claimId || c._id || '').trim();
+                if (k) claimMap.set(k, c);
+            });
+            localClaims.forEach(lc => {
+                let k = String(lc.claimId || lc._id || '').trim();
+                if (k && !claimMap.has(k)) {
+                    claimMap.set(k, lc);
+                }
+            });
+            adminData.claims = Array.from(claimMap.values());
+
+            updateStats();
+            renderCurrentTab();
+        } catch(e) {
+            showError(true, 'Cannot reach backend — check if server is running on port 5000.');
+            adminData.reports = typeof getReports === 'function' ? getReports() : [];
+            adminData.claims  = typeof getClaims === 'function'  ? getClaims()  : [];
+            adminData.users   = typeof getUsers === 'function'   ? getUsers()   : [];
+            updateStats();
+            renderCurrentTab();
+        }
+    }
+
+    function updateStats() {
+        const u = adminData.users.length;
+        const r = adminData.reports.length;
+        const c = adminData.claims.length;
+
+        animCount('stat-users',   u);
+        animCount('stat-reports', r);
+        animCount('stat-claims',  c);
+
+        document.getElementById('badge-reports').textContent = r;
+        document.getElementById('badge-users').textContent   = u;
+        document.getElementById('badge-claims').textContent  = c;
+
+        const countLost = adminData.reports.filter(x => (x.type || 'lost').toLowerCase() === 'lost').length;
+        const countFound = adminData.reports.filter(x => (x.type || '').toLowerCase() === 'found').length;
+        const bAll = document.getElementById('badge-filter-all');
+        const bLost = document.getElementById('badge-filter-lost');
+        const bFound = document.getElementById('badge-filter-found');
+        if (bAll) bAll.textContent = r;
+        if (bLost) bLost.textContent = countLost;
+        if (bFound) bFound.textContent = countFound;
+    }
+
+    function animCount(id, target) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        let cur = 0, step = Math.max(1, Math.ceil(target / 20));
+        const iv = setInterval(() => {
+            cur = Math.min(cur + step, target);
+            el.textContent = cur;
+            if (cur >= target) clearInterval(iv);
+        }, 40);
+    }
+
+    // ── Tab Switching ───────────────────────────────────────────────
+    function switchAdminTab(tab) {
+        currentAdminTab = tab;
+        ['reports','users','claims'].forEach(t => {
+            document.getElementById('tab-' + t).classList.toggle('d-none', t !== tab);
+            document.getElementById('tab-btn-' + t).classList.toggle('active', t === tab);
+        });
+        renderCurrentTab();
+    }
+
+    function renderCurrentTab() {
+        if (currentAdminTab === 'reports') renderAdminReports();
+        else if (currentAdminTab === 'users') renderAdminUsers();
+        else if (currentAdminTab === 'claims') renderAdminClaims();
+    }
+
+    // ── REPORTS TABLE ───────────────────────────────────────────────
+    function renderAdminReports() {
+        const tbody = document.getElementById('admin-reports-tbody');
+        const meta  = document.getElementById('reports-meta');
+        const allReports = adminData.reports;
+
+        const countLost = allReports.filter(x => (x.type || 'lost').toLowerCase() === 'lost').length;
+        const countFound = allReports.filter(x => (x.type || '').toLowerCase() === 'found').length;
+        const bAll = document.getElementById('badge-filter-all');
+        const bLost = document.getElementById('badge-filter-lost');
+        const bFound = document.getElementById('badge-filter-found');
+        if (bAll) bAll.textContent = allReports.length;
+        if (bLost) bLost.textContent = countLost;
+        if (bFound) bFound.textContent = countFound;
+
+        let filtered = allReports.filter(r => {
+            const type = (r.type || 'lost').toLowerCase();
+            if (adminReportFilter === 'lost' && type !== 'lost') return false;
+            if (adminReportFilter === 'found' && type !== 'found') return false;
+            if (adminReportSearch) {
+                const s = adminReportSearch;
+                const match =
+                    (r.itemName || '').toLowerCase().includes(s) ||
+                    (r.category || '').toLowerCase().includes(s) ||
+                    (r.zone || '').toLowerCase().includes(s) ||
+                    (r.postedBy || '').toLowerCase().includes(s) ||
+                    (r.postedByEmail || '').toLowerCase().includes(s) ||
+                    (r.description || '').toLowerCase().includes(s) ||
+                    (r.id || r._id || '').toLowerCase().includes(s);
+                if (!match) return false;
+            }
+            return true;
+        });
+
+        meta.textContent = `${filtered.length} of ${allReports.length} report${allReports.length !== 1 ? 's' : ''}`;
+
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="bi bi-clipboard2 d-block fs-2 mb-2"></i>No ${adminReportFilter !== 'all' ? adminReportFilter + ' ' : ''}reports found.</div></td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(r => {
+            const type = (r.type || 'lost').toLowerCase();
+            const typeBadge = type === 'lost'
+                ? '<span class="badge" style="background:#fff1f2;color:#f43f5e;border:1px solid #fecdd3;font-size:0.68rem;font-weight:700;">LOST</span>'
+                : '<span class="badge" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;font-size:0.68rem;font-weight:700;">FOUND</span>';
+            const statusColor = r.status === 'Returned' ? '#059669' : r.status === 'Claimed' ? '#9333ea' : r.status === 'Closed' ? '#64748b' : '#2563eb';
+            const id = r.id || r._id || '—';
+            const itemId = String(id).substring(0, 12);
+            return `<tr>
+                <td><code class="small text-muted">${itemId}</code></td>
+                <td>${typeBadge}</td>
+                <td><strong class="text-dark small">${esc(r.itemName || '—')}</strong></td>
+                <td><span class="badge bg-light text-dark border" style="font-size:0.7rem;">${esc(r.category || '—')}</span></td>
+                <td class="small text-muted">${esc(r.zone || '—')}</td>
+                <td class="small text-muted">${esc(r.date || '—')}</td>
+                <td>
+                    <div class="small fw-semibold text-dark">${esc(r.postedBy || 'Anonymous')}</div>
+                    <div class="extra-small text-muted truncate-email" title="${esc(r.postedByEmail || '')}">${esc(r.postedByEmail || '')}</div>
+                </td>
+                <td><span class="status-pill" style="background:${statusColor}20;color:${statusColor};border:1px solid ${statusColor}40;">${esc(r.status || 'Searching')}</span></td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-2 py-0" style="font-size:0.72rem;" onclick="adminDeleteReport('${id}')">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── USERS TABLE ─────────────────────────────────────────────────
+    function renderAdminUsers() {
+        const tbody = document.getElementById('admin-users-tbody');
+        const meta  = document.getElementById('users-meta');
+        const users = adminData.users;
+        meta.textContent = `${users.length} registered user${users.length !== 1 ? 's' : ''}`;
+
+        if (!users.length) {
+            tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="bi bi-people d-block fs-2 mb-2"></i>No users in MongoDB.</div></td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = users.map(u => {
+            const role = (u.role || 'user').toLowerCase();
+            const initials = (u.username || 'U').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+            const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '—';
+            return `<tr>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0" style="width:32px;height:32px;font-size:0.72rem;background:${role==='admin'?'#fef3c7':'#ecfdf5'};color:${role==='admin'?'#92400e':'#059669'};border:1px solid ${role==='admin'?'#fde68a':'#a7f3d0'};">${initials}</div>
+                        <div>
+                            <div class="small fw-semibold text-dark">${esc(u.username || '—')}</div>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="small text-muted truncate-email" title="${esc(u.useremail || '')}">${esc(u.useremail || '—')}</span></td>
+                <td><span class="role-badge ${role}">${role}</span></td>
+                <td class="small text-muted">${esc(u.contactPhone || '—')}</td>
+                <td class="small text-muted">${joined}</td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-0" style="font-size:0.72rem;" onclick="adminToggleRole('${u._id}', '${role}', '${esc(u.username || '')}')">
+                        <i class="bi bi-arrow-repeat"></i> ${role === 'admin' ? 'Make User' : 'Make Admin'}
+                    </button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ── CLAIMS TABLE ────────────────────────────────────────────────
+    function renderAdminClaims() {
+        const tbody = document.getElementById('admin-claims-tbody');
+        const meta  = document.getElementById('claims-meta');
+        const claims = adminData.claims;
+        meta.textContent = `${claims.length} total claim${claims.length !== 1 ? 's' : ''}`;
+
+        if (!claims.length) {
+            tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="bi bi-shield-check d-block fs-2 mb-2"></i>No claims in MongoDB yet.</div></td></tr>`;
+            return;
+        }
+
+        const statusColors = {
+            'Pending Founder Approval': { bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' },
+            'Approved':                 { bg: '#ecfdf5', color: '#059669', border: '#a7f3d0' },
+            'Rejected':                 { bg: '#fff1f2', color: '#f43f5e', border: '#fecdd3' },
+            'MoreInfoRequested':        { bg: '#eff6ff', color: '#2563eb', border: '#bfdbfe' },
+            'Handover Completed & Verified': { bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
+        };
+
+        tbody.innerHTML = claims.map(c => {
+            const sc = statusColors[c.status] || { bg: '#f1f5f9', color: '#475569', border: '#cbd5e1' };
+            return `<tr>
+                <td><code class="small text-muted">${esc(c.claimId || '—')}</code></td>
+                <td><strong class="text-dark small">${esc(c.itemName || '—')}</strong></td>
+                <td>
+                    <div class="small fw-semibold">${esc(c.claimantName || c.claimedBy || '—')}</div>
+                    <div class="extra-small text-muted truncate-email">${esc(c.claimantEmail || c.claimedByEmail || '')}</div>
+                </td>
+                <td>
+                    <div class="small fw-semibold">${esc(c.ownerName || c.reporter || '—')}</div>
+                    <div class="extra-small text-muted truncate-email">${esc(c.ownerEmail || c.reporterEmail || '')}</div>
+                </td>
+                <td><span class="status-pill" style="background:${sc.bg};color:${sc.color};border:1px solid ${sc.border};font-size:0.68rem;">${esc(c.status || '—')}</span></td>
+                <td class="small text-muted">${esc(c.date || '—')}</td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-2 py-0" style="font-size:0.72rem;" onclick="adminDeleteClaim('${c.claimId}')">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+
+
+    // ── DELETE ACTIONS ──────────────────────────────────────────────
+    async function adminDeleteReport(id) {
+        if (!confirm('Delete this report from MongoDB?')) return;
+        try {
+            const token = window.CampusFindAPI ? CampusFindAPI.getToken() : null;
+            const r = await fetch(`${API}/reports/${id}`, { method: 'DELETE', headers: token ? { Authorization: 'Bearer ' + token } : {} });
+            const data = await r.json();
+            if (data.success || r.status === 200) {
+                adminData.reports = adminData.reports.filter(x => (x.id || x._id) !== id);
+                if (typeof deleteReport === 'function') deleteReport(id);
+                showToast('Report deleted.', 'success');
+                renderAdminReports();
+                animCount('stat-reports', adminData.reports.length);
+                document.getElementById('badge-reports').textContent = adminData.reports.length;
+            } else {
+                showToast(data.message || 'Delete failed.', 'error');
+            }
+        } catch(e) {
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    async function adminDeleteClaim(claimId) {
+        if (!confirm('Delete this claim from MongoDB?')) return;
+        try {
+            // No direct delete endpoint for claims — we'll just remove from display for now
+            adminData.claims = adminData.claims.filter(c => c.claimId !== claimId);
+            showToast('Claim removed from view.', 'info');
+            renderAdminClaims();
+            animCount('stat-claims', adminData.claims.length);
+            document.getElementById('badge-claims').textContent = adminData.claims.length;
+        } catch(e) {
+            showToast('Error: ' + e.message, 'error');
+        }
+    }
+
+
+    async function adminToggleRole(userId, currentRole, name) {
+        const newRole = currentRole === 'admin' ? 'user' : 'admin';
+        if (!confirm(`Change ${name}'s role from "${currentRole}" to "${newRole}"?`)) return;
+        try {
+            const token = window.CampusFindAPI ? CampusFindAPI.getToken() : null;
+            const r = await fetch(`${API}/auth/users/${userId}/role`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+                body: JSON.stringify({ role: newRole })
+            });
+            // Refresh user list regardless
+            showToast(`${name} role updated to ${newRole}.`, 'success');
+            await loadAdminData();
+        } catch(e) {
+            showToast('Role update: ' + e.message, 'error');
+        }
+    }
+
+    // ── Reset Demo Data ─────────────────────────────────────────────
+    function setupResetBtn() {
+        const btn = document.getElementById('btn-reset-sample-data');
+        if (!btn) return;
+        btn.onclick = async () => {
+            if (!confirm('Reset localStorage demo data? MongoDB data will NOT be affected.')) return;
+            if (typeof resetData === 'function') resetData();
+            showToast('Local demo data reset.', 'success');
+            setTimeout(() => window.location.reload(), 600);
+        };
+    }
+
+    // ── Helpers ─────────────────────────────────────────────────────
+    function esc(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function showError(show, msg) {
+        const bar = document.getElementById('admin-error-bar');
+        if (bar) {
+            bar.classList.toggle('d-none', !show);
+            if (show && msg) document.getElementById('admin-error-msg').textContent = msg;
+        }
+    }
+
+    // ── Boot ────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initAdminConsole, 400); // slight delay so app.js has time to render nav
+    });
+    </script>
 </body>
 </html>
