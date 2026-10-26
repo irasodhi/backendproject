@@ -316,12 +316,18 @@ function calculateMatchScore(targetItem, candidateItem) {
 function findMatches(targetItem, allReports) {
     if (!targetItem) return [];
 
-    let oppositeType = targetItem.type === "lost" ? "found" : "lost";
+    let targetId = String(targetItem.id || targetItem._id || '').trim();
+    let oppositeType = (targetItem.type || '').toLowerCase() === "lost" ? "found" : "lost";
 
-    let candidates = allReports.filter(r =>
-        r.type === oppositeType &&
-        r.id !== targetItem.id
-    );
+    let candidates = (allReports || []).filter(r => {
+        if (!r) return false;
+        let rType = (r.type || '').toLowerCase();
+        let rId = String(r.id || r._id || '').trim();
+
+        let isOpposite = rType === oppositeType;
+        let isNotSelf = targetId ? (rId !== targetId) : (r !== targetItem);
+        return isOpposite && isNotSelf;
+    });
 
     let results = candidates.map(c => calculateMatchScore(targetItem, c));
     results.sort((a, b) => b.score - a.score);
