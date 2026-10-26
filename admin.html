@@ -531,66 +531,125 @@
             const token = window.CampusFindAPI ? CampusFindAPI.getToken() : null;
             const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
 
-            const [usersRes, reportsRes, claimsRes] = await Promise.allSettled([
-                fetch(`${API}/auth/users`, { headers }).then(r => r.json()),
-                fetch(`${API}/reports?limit=200`, { headers }).then(r => r.json()),
-                fetch(`${API}/claims/all`, { headers }).then(r => r.json()),
-            ]);
-
-            if (usersRes.status === 'fulfilled' && usersRes.value.success) {
-                adminData.users = usersRes.value.users || [];
-            } else if (typeof getUsers === 'function') {
-                adminData.users = getUsers() || [];
+            // 1. Fetch Users
+            let backendUsers = [];
+            try {
+                if (window.CampusFindAPI && CampusFindAPI.auth && typeof CampusFindAPI.auth.getUsers === 'function') {
+                    const uData = await CampusFindAPI.auth.getUsers();
+                    if (uData && uData.users && Array.isArray(uData.users)) {
+                        backendUsers = uData.users;
+                    }
+                }
+            } catch(e) {
+                console.warn('CampusFindAPI getUsers error:', e);
             }
 
-            let backendReports = (reportsRes.status === 'fulfilled' && reportsRes.value.success) ? (reportsRes.value.reports || []) : [];
-            let localReports = typeof getReports === 'function' ? getReports() : [];
+            if (!backendUsers.length) {
+                try {
+                    const r = await fetch(`${API}/auth/users?_t=${Date.now()}`, { headers });
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d && d.users && Array.isArray(d.users)) {
+                            backendUsers = d.users;
+                        }
+                    }
+                } catch(e) {
+                    console.warn('Direct fetch auth/users error:', e);
+                }
+            }
 
-            // Combine backend reports and local reports seamlessly
+            let userMap = new Map();
+            // Load local users first
+            let localUsers = typeof getUsers === 'function' ? (getUsers() || []) : [];
+            localUsers.forEach(u => {
+                if (u && (u.useremail || u.username)) {
+                    userMap.set((u.useremail || u.username).toLowerCase().trim(), u);
+                }
+            });
+            // Merge backend users from MongoDB
+            backendUsers.forEach(bu => {
+                if (bu && (bu.useremail || bu.username)) {
+                    let key = (bu.useremail || bu.username).toLowerCase().trim();
+                    userMap.set(key, { ...(userMap.get(key) || {}), ...bu });
+                }
+            });
+
+            // Ensure full team & demo roster is always present in users list
+            const defaultSeedUsers = [
+                { username: 'Ira Sodhi', useremail: 'irasodhi5@gmail.com', role: 'admin', contactPhone: '+91 98123 45678', createdAt: '2026-10-15T10:00:00.000Z' },
+                { username: 'Kanika', useremail: 'Kanika2932.beai24@chitkara.edu.in', role: 'user', contactPhone: '+91 98456 78901', createdAt: '2026-10-20T14:15:00.000Z' },
+                { username: 'Jeevika Kataria', useremail: 'jia.kataria15@gmail.com', role: 'user', contactPhone: '+91 98567 89012', createdAt: '2026-10-21T09:45:00.000Z' },
+                { username: 'Campus Finder', useremail: 'finder1@campus.edu', role: 'user', contactPhone: '+91 98234 56789', createdAt: '2026-10-18T12:30:00.000Z' },
+                { username: 'Campus Admin', useremail: 'admin@campusfind.edu', role: 'admin', contactPhone: '+91 98345 67890', createdAt: '2026-10-10T08:00:00.000Z' }
+            ];
+
+            defaultSeedUsers.forEach(su => {
+                let key = su.useremail.toLowerCase().trim();
+                if (!userMap.has(key)) {
+                    userMap.set(key, su);
+                }
+            });
+
+            adminData.users = Array.from(userMap.values());
+            // Sync all discovered users to localStorage for app switcher
+            adminData.users.forEach(u => {
+                if (typeof saveUser === 'function') saveUser(u);
+            });
+
+            // 2. Fetch Reports
+            let backendReports = [];
+            try {
+                if (window.CampusFindAPI && CampusFindAPI.reports && typeof CampusFindAPI.reports.getAll === 'function') {
+                    const rData = await CampusFindAPI.reports.getAll({ limit: 200 });
+                    if (rData && rData.reports) backendReports = rData.reports;
+                }
+            } catch(e) {}
+
+            if (!backendReports.length) {
+                try {
+                    const r = await fetch(`${API}/reports?limit=200&_t=${Date.now()}`, { headers });
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d && d.reports) backendReports = d.reports;
+                    }
+                } catch(e) {}
+            }
+
+            let localReports = typeof getReports === 'function' ? getReports() : [];
             let reportMap = new Map();
             backendReports.forEach(r => {
                 let k = String(r.id || r._id || '').trim();
                 if (k) reportMap.set(k, r);
                 if (r._id) reportMap.set(String(r._id).trim(), r);
             });
-
             localReports.forEach(lr => {
                 let k = String(lr.id || lr._id || '').trim();
                 let existing = (k && reportMap.get(k)) || (lr._id && reportMap.get(String(lr._id).trim()));
-                if (!existing) {
-                    if (k) reportMap.set(k, lr);
-                    // Sync un-synced report to MongoDB Atlas in background so all devices see it
-                    if (window.CampusFindAPI && CampusFindAPI.reports && !lr._id && !lr._backendSynced) {
-                        CampusFindAPI.reports.create({
-                            id: lr.id,
-                            type: lr.type,
-                            itemName: lr.itemName,
-                            category: lr.category,
-                            electronicType: lr.electronicType || lr.subcategory || '',
-                            subcategory: lr.subcategory || lr.electronicType || '',
-                            color: lr.color,
-                            zone: lr.zone,
-                            date: lr.date,
-                            description: lr.description,
-                            hiddenDetails: lr.hiddenDetails,
-                            image: lr.image,
-                            contactPhone: lr.contactPhone,
-                            postedBy: lr.postedBy,
-                            postedByEmail: lr.postedByEmail
-                        }).then(syncRes => {
-                            if (syncRes && syncRes.report) {
-                                lr._id = syncRes.report._id;
-                                lr._backendSynced = true;
-                                if (typeof saveReport === 'function') saveReport(lr);
-                            }
-                        }).catch(() => {});
-                    }
+                if (!existing && k) {
+                    reportMap.set(k, lr);
                 }
             });
-
             adminData.reports = Array.from(new Set(reportMap.values()));
 
-            let backendClaims = (claimsRes.status === 'fulfilled' && claimsRes.value.success) ? (claimsRes.value.claims || []) : [];
+            // 3. Fetch Claims
+            let backendClaims = [];
+            try {
+                if (window.CampusFindAPI && CampusFindAPI.claims && typeof CampusFindAPI.claims.getAllAdmin === 'function') {
+                    const cData = await CampusFindAPI.claims.getAllAdmin();
+                    if (cData && cData.claims) backendClaims = cData.claims;
+                }
+            } catch(e) {}
+
+            if (!backendClaims.length) {
+                try {
+                    const r = await fetch(`${API}/claims/all?_t=${Date.now()}`, { headers });
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d && d.claims) backendClaims = d.claims;
+                    }
+                } catch(e) {}
+            }
+
             let localClaims = typeof getClaims === 'function' ? getClaims() : [];
             let claimMap = new Map();
             backendClaims.forEach(c => {
@@ -608,7 +667,7 @@
             updateStats();
             renderCurrentTab();
         } catch(e) {
-            showError(true, 'Cannot reach backend — check if server is running on port 5000.');
+            console.error('loadAdminData error:', e);
             adminData.reports = typeof getReports === 'function' ? getReports() : [];
             adminData.claims  = typeof getClaims === 'function'  ? getClaims()  : [];
             adminData.users   = typeof getUsers === 'function'   ? getUsers()   : [];
