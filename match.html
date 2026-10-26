@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Engine Results — CampusFind</title>
+    <meta name="description" content="View ranked probability matches for your lost or found item using our intelligent multi-attribute scoring algorithm.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="matches">
+
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="brand-icon"><i class="bi bi-search-heart"></i></span>
+                <span>Campus<span style="color:var(--emerald-primary);">Find</span></span>
+            </a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="bi bi-list fs-2 text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="bi bi-house-door me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="report.html"><i class="bi bi-plus-circle me-1"></i>Report Item</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="matches.html"><i class="bi bi-cpu me-1"></i>Match Engine</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                    </li>
+                    
+                    <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
+                        <button class="nav-bell-link btn btn-link p-0 position-relative" type="button" id="navBellDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Notifications" onclick="handleBellDropdownClick(event)">
+                            <i class="bi bi-bell-fill"></i>
+                            <span id="nav-notif-badge" class="notif-badge d-none">0</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notif-flyout-dropdown shadow-lg border-0 p-0" aria-labelledby="navBellDropdown">
+                            
+                            <div class="notif-dropdown-header d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2.5 position-relative" style="z-index:2;">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(0,230,118,0.18);color:var(--emerald-primary);font-size:0.95rem;box-shadow:0 0 12px rgba(0,230,118,0.3);">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-white" style="font-family:'Sora',sans-serif;font-size:0.92rem;letter-spacing:-0.01em;">Notifications</h6>
+                                        <span class="extra-small text-light opacity-75" style="font-size:0.7rem;">Real-time Campus Alerts</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 position-relative" style="z-index:2;">
+                                    <span id="nav-notif-unread-count" class="badge rounded-pill" style="background:rgba(0,230,118,0.2);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.35);font-size:0.68rem;padding:0.35em 0.7em;">0 New</span>
+                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill extra-small py-0.5 px-2 text-decoration-none" onclick="handleClearAllDropdownNotifs(event)" title="Clear all notifications" style="font-size:0.68rem;opacity:0.85;">
+                                        <i class="bi bi-trash3 me-1"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="nav-notif-dropdown-list" style="max-height: 400px; overflow-y: auto;">
+                                
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0" id="nav-user-display">
+                        <a class="btn btn-sm btn-outline-light rounded-pill px-3" href="login.html">
+                            <i class="bi bi-person me-1"></i>Sign In
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="subpage-banner text-center position-relative overflow-hidden py-5" style="background:radial-gradient(ellipse at 50% 20%, #082d24 0%, #041512 75%);">
+        <div class="container position-relative" style="z-index:2;">
+            <div class="subpage-badge fade-in-up mb-2 d-inline-flex align-items-center gap-2">
+                <span class="spinner-grow spinner-grow-sm text-success" style="width:0.6rem;height:0.6rem;" role="status"></span>
+                <span>Neural Similarity Engine 2.0 · 6-Factor Vector Comparison</span>
+            </div>
+            <h1 class="subpage-title fade-in-up delay-1 mb-2">Item Match Engine</h1>
+            <p class="subpage-subtitle mx-auto fade-in-up delay-2 text-white-50" style="max-width:620px;">
+                Intelligent mathematical similarity scoring ranking campus lost and found candidates by brand, zone proximity, category correlation, color family, date interval, and NLP semantics.
+            </p>
+        </div>
+    </section>
+
+    <main class="py-5" style="background-color:var(--bg-main);">
+        <div class="container">
+            <!-- Target Selection Toolbar -->
+            <div class="row align-items-center mb-4 g-3 fade-in-up">
+                <div class="col-lg-5 col-md-12">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;background:rgba(0,230,118,0.15);color:var(--emerald-primary);font-size:1.1rem;box-shadow:0 0 12px rgba(0,230,118,0.25);">
+                            <i class="bi bi-crosshair"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">Active Target Item</h5>
+                            <small class="text-muted">Select an item report to run automated vector matching against</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-md-12">
+                    <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+                        <span class="input-group-text border-0 ps-3 pe-2" style="background:#ffffff;color:var(--emerald-primary);font-weight:bold;">
+                            <i class="bi bi-funnel-fill text-success"></i>
+                        </span>
+                        <select id="target-report-select" class="form-select border-0 py-2.5 fw-semibold text-dark" style="background:#ffffff;font-size:0.9rem;">
+                            <option value="">Loading submissions…</option>
+                        </select>
+                        <a href="report.html" class="btn btn-emerald-pill rounded-0 px-3 d-flex align-items-center gap-1.5 text-nowrap" style="font-size:0.85rem;" title="Post a new report">
+                            <i class="bi bi-plus-circle"></i> <span>New Report</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Target Holographic HUD Banner -->
+            <div id="target-item-banner"></div>
+
+            <!-- Quick KPI Stats Ribbon -->
+            <div class="match-stats-deck fade-in-up delay-1">
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(0,230,118,0.12);color:var(--emerald-primary);">
+                        <i class="bi bi-radar"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-target-type">-</div>
+                        <div class="match-kpi-label">Active Target Mode</div>
+                    </div>
+                </div>
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(56,189,248,0.12);color:#38bdf8;">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-total-candidates">0</div>
+                        <div class="match-kpi-label">Candidate Matches</div>
+                    </div>
+                </div>
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(16,185,129,0.12);color:#10b981;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-high-matches">0</div>
+                        <div class="match-kpi-label">High Match (≥70%)</div>
+                    </div>
+                </div>
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b;">
+                        <i class="bi bi-stars"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-top-score">0%</div>
+                        <div class="match-kpi-label">Top Similarity Score</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 match-controls-card fade-in-up delay-1">
+                <div class="row g-2.5 align-items-center">
+                    <div class="col-lg-4 col-md-12">
+                        <div class="input-group input-group-sm match-input-pill position-relative">
+                            <span class="input-group-text ps-3">
+                                <i class="bi bi-search text-success"></i>
+                            </span>
+                            <input type="text" id="match-search-input" class="form-control py-2" placeholder="Search keywords, brand, room…">
+                            <button type="button" class="btn btn-sm text-muted d-none border-0 bg-transparent pe-3" id="match-search-clear" onclick="clearMatchSearch()" title="Clear search">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="input-group input-group-sm match-input-pill">
+                            <span class="input-group-text ps-2.5 pe-1">
+                                <i class="bi bi-tag-fill text-success"></i>
+                            </span>
+                            <select id="match-cat-filter" class="form-select py-2">
+                                <option value="all">All Categories</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Bags">Bags</option>
+                                <option value="Wallets">Wallets</option>
+                                <option value="ID Cards">ID Cards</option>
+                                <option value="Keys">Keys</option>
+                                <option value="Books">Books</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="input-group input-group-sm match-input-pill">
+                            <span class="input-group-text ps-2.5 pe-1">
+                                <i class="bi bi-funnel-fill text-success"></i>
+                            </span>
+                            <select id="match-confidence-filter" class="form-select py-2">
+                                <option value="all">All Match Scores</option>
+                                <option value="high">High Match (70%+)</option>
+                                <option value="med">Moderate+ (45%+)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-4 col-sm-12">
+                        <div class="input-group input-group-sm match-input-pill">
+                            <span class="input-group-text ps-2.5 pe-1">
+                                <i class="bi bi-sort-down text-success"></i>
+                            </span>
+                            <select id="match-sort-select" class="form-select py-2">
+                                <option value="score">Top Score</option>
+                                <option value="name">Name (A-Z)</option>
+                                <option value="zone">Zone (A-Z)</option>
+                                <option value="date">Newest</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matches Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3 fade-in-up delay-2 flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted fw-semibold small">
+                        Showing <span id="matches-count" class="fw-bold fs-6" style="color:#059669;">0</span> candidate matches
+                    </span>
+                    <span class="badge rounded-pill px-3 py-1.5" style="background:var(--mint-light);color:#059669;font-weight:600;font-size:0.75rem;border:1px solid rgba(0,230,118,0.25);">
+                        Name(25%) · Zone(20%) · Cat(20%) · Color(15%) · Date(10%) · NLP(10%)
+                    </span>
+                </div>
+            </div>
+
+            <div class="row g-4" id="matches-grid">
+                
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="compareModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white" style="font-family:'Sora',sans-serif;">
+                        <i class="bi bi-layout-split me-2" style="color:var(--emerald-primary);"></i>Side-by-Side Item Attribute Comparison
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="compare-modal-body">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="claimModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-white" style="font-family:'Sora',sans-serif;">
+                        <i class="bi bi-shield-check me-2" style="color:var(--emerald-primary);"></i>Claim Item & Contact Reporter
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="claim-modal-body">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="meetingChatModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title fw-bold text-white mb-0" style="font-family:'Sora',sans-serif;">
+                            <i class="bi bi-chat-dots-fill me-2" style="color:var(--emerald-primary);"></i>Handover Coordination & Direct Chat
+                        </h5>
+                        <small class="text-light opacity-75 extra-small" id="chat-modal-subtitle">Connecting Lost Owner & Finder</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="chat-current-claim-id">
+
+                    <div id="chat-meeting-summary-box" class="meeting-coordination-card mb-3">
+                        
+                    </div>
+
+                    <div id="inline-reschedule-box" class="p-3 mb-3 rounded-3 border d-none fade-in" style="background:#fffbeb;border-color:#fde68a!important;">
+                        <h6 class="fw-bold text-dark mb-2" style="font-size:0.9rem;">
+                            <i class="bi bi-clock-history text-warning me-1"></i>Request Time / Location Change
+                        </h6>
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label extra-small fw-semibold mb-1">Proposed Suitable Time <span class="text-danger">*</span></label>
+                                <input type="text" id="reschedule-time-input" class="form-control form-control-sm" placeholder="e.g. Tomorrow at 2:00 PM">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label extra-small fw-semibold mb-1">Proposed Location (Optional)</label>
+                                <input type="text" id="reschedule-location-input" class="form-control form-control-sm" placeholder="e.g. Cafeteria Entrance">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label extra-small fw-semibold mb-1">Reason / Note for Founder</label>
+                            <input type="text" id="reschedule-note-input" class="form-control form-control-sm" placeholder="e.g. I have a class at 4:30 PM, can we meet slightly earlier?">
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-sm btn-light rounded-pill px-3" onclick="toggleRescheduleBox(false)">Cancel</button>
+                            <button type="button" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark" onclick="submitRescheduleRequest()">
+                                <i class="bi bi-send-fill me-1"></i>Send Reschedule Request
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-2 d-flex justify-content-between align-items-center">
+                        <span class="small fw-bold text-dark text-uppercase" style="letter-spacing:0.04em;">
+                            <i class="bi bi-chat-left-text-fill text-success me-1"></i>Direct Conversation
+                        </span>
+                        <span class="badge bg-light text-muted border extra-small"><i class="bi bi-shield-lock-fill text-success me-1"></i>Secure Campus Thread</span>
+                    </div>
+
+                    <div id="chat-messages-container" class="chat-conversation-container mb-3">
+                        
+                    </div>
+
+                    <div class="chat-quick-replies mb-2">
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('📍 I have arrived at the handover location')">📍 I have arrived</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('🏃 On my way! Arriving in 5 minutes')">🏃 On my way (5 mins)</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('👋 I am waiting near the reception/entrance')">👋 Waiting near entrance</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('⏰ Could we meet 10 minutes later?')">⏰ 10 min delay</button>
+                        <button type="button" class="quick-reply-pill" onclick="sendQuickReply('✅ Handover completed! Thank you so much')">✅ Handover complete</button>
+                    </div>
+
+                    <form id="chat-send-form" onsubmit="handleSendChatMessage(event)" class="d-flex gap-2">
+                        <input type="text" id="chat-input-text" class="form-control" placeholder="Type a message to coordinate handover details (e.g. I am waiting near the desk)…" required autocomplete="off">
+                        <button type="submit" class="btn btn-emerald-pill px-4 flex-shrink-0 d-flex align-items-center gap-1">
+                            <span>Send</span> <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 pb-0" style="background:#041512; color:#ffffff;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:rgba(0,230,118,0.15);color:var(--emerald-primary);border:1px solid rgba(0,230,118,0.3);">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold" id="addAccountModalLabel" style="font-family:'Sora',sans-serif;">Add Another Account</h5>
+                            <small class="text-white-50">Sign in to a second student account on this browser</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" style="background:#ffffff;">
+                    <form id="dash-add-account-form" onsubmit="handleAddAccountSubmit(event)">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark">Full Name <span class="text-muted fw-normal">(for new account)</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                                <input type="text" id="add-acc-name" class="form-control" placeholder="e.g. Ira Sodhi">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark">Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                                <input type="email" id="add-acc-email" class="form-control" placeholder="e.g. ira.sodhi@example.com" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-lock"></i></span>
+                                <input type="password" id="add-acc-password" class="form-control" placeholder="Enter password (min 6 chars)" minlength="6" required>
+                            </div>
+                        </div>
+                        <div id="add-acc-feedback" class="small mb-3 d-none"></div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-emerald-pill py-2.5 fw-bold shadow-sm">
+                                <span>Sign In & Connect Account</span> <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container text-center small">
+            © 2026 CampusFind. Powered by Intelligent Multi-Attribute Matching.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/matching.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

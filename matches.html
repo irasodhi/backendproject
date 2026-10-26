@@ -6,12 +6,14 @@
     <title>Match Engine Results — CampusFind</title>
     <meta name="description" content="View ranked probability matches for your lost or found item using our intelligent multi-attribute scoring algorithm.">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="matches">
@@ -80,51 +82,103 @@
         </div>
     </nav>
 
-    <section class="subpage-banner text-center">
-        <div class="container">
-            <div class="subpage-badge fade-in-up">
-                <i class="bi bi-cpu"></i> 5-Factor Similarity Scoring
+    <section class="subpage-banner text-center position-relative overflow-hidden py-5" style="background:radial-gradient(ellipse at 50% 20%, #082d24 0%, #041512 75%);">
+        <div class="container position-relative" style="z-index:2;">
+            <div class="subpage-badge fade-in-up mb-2 d-inline-flex align-items-center gap-2">
+                <span class="spinner-grow spinner-grow-sm text-success" style="width:0.6rem;height:0.6rem;" role="status"></span>
+                <span>Neural Similarity Engine 2.0 · 6-Factor Vector Comparison</span>
             </div>
-            <h1 class="subpage-title fade-in-up delay-1">Probable Match Engine</h1>
-            <p class="subpage-subtitle mx-auto fade-in-up delay-2">
-                Multi-attribute mathematical vector comparison ranking candidates by calculated similarity score.
+            <h1 class="subpage-title fade-in-up delay-1 mb-2">Item Match Engine</h1>
+            <p class="subpage-subtitle mx-auto fade-in-up delay-2 text-white-50" style="max-width:620px;">
+                Intelligent mathematical similarity scoring ranking campus lost and found candidates by brand, zone proximity, category correlation, color family, date interval, and NLP semantics.
             </p>
         </div>
     </section>
 
     <main class="py-5" style="background-color:var(--bg-main);">
         <div class="container">
-            
+                       <!-- Target Selection Toolbar -->
             <div class="row align-items-center mb-4 g-3 fade-in-up">
-                <div class="col-md-5">
-                    <h4 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">
-                        <i class="bi bi-crosshair text-success me-2"></i>Active Target Item
-                    </h4>
-                    <p class="text-muted small mb-0">Select which of your submissions to run matching against.</p>
+                <div class="col-lg-5 col-md-12">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;background:rgba(0,230,118,0.15);color:var(--emerald-primary);font-size:1.1rem;box-shadow:0 0 12px rgba(0,230,118,0.25);">
+                            <i class="bi bi-crosshair"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark" style="font-family:'Sora',sans-serif;">Active Target Item</h5>
+                            <small class="text-muted">Select an item report to run automated vector matching against</small>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-7">
-                    <div class="input-group">
-                        <span class="input-group-text border-0 text-dark" style="background:var(--emerald-primary);font-weight:bold;">
-                            <i class="bi bi-funnel-fill"></i>
+                <div class="col-lg-7 col-md-12">
+                    <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+                        <span class="input-group-text border-0 ps-3 pe-2" style="background:#ffffff;color:var(--emerald-primary);font-weight:bold;">
+                            <i class="bi bi-funnel-fill text-success"></i>
                         </span>
-                        <select id="target-report-select" class="form-select border-0 shadow-sm fw-semibold">
-                            
+                        <select id="target-report-select" class="form-select border-0 py-2.5 fw-semibold text-dark" style="background:#ffffff;font-size:0.9rem;">
+                            <option value="">Loading submissions…</option>
                         </select>
+                        <a href="report.html" class="btn btn-emerald-pill rounded-0 px-3 d-flex align-items-center gap-1.5 text-nowrap" style="font-size:0.85rem;" title="Post a new report">
+                            <i class="bi bi-plus-circle"></i> <span>New Report</span>
+                        </a>
                     </div>
                 </div>
             </div>
 
+            <!-- Active Target Holographic HUD Banner -->
             <div id="target-item-banner"></div>
+
+            <!-- Quick KPI Stats Ribbon -->
+            <div class="match-stats-deck fade-in-up delay-1">
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(0,230,118,0.12);color:var(--emerald-primary);">
+                        <i class="bi bi-radar"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-target-type">-</div>
+                        <div class="match-kpi-label">Active Target Mode</div>
+                    </div>
+                </div>
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(56,189,248,0.12);color:#38bdf8;">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-total-candidates">0</div>
+                        <div class="match-kpi-label">Candidate Matches</div>
+                    </div>
+                </div>
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(16,185,129,0.12);color:#10b981;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-high-matches">0</div>
+                        <div class="match-kpi-label">High Match (≥70%)</div>
+                    </div>
+                </div>
+                <div class="match-kpi-pill">
+                    <div class="match-kpi-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b;">
+                        <i class="bi bi-stars"></i>
+                    </div>
+                    <div>
+                        <div class="match-kpi-val" id="kpi-top-score">0%</div>
+                        <div class="match-kpi-label">Top Similarity Score</div>
+                    </div>
+                </div>
+            </div>
 
             <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 match-controls-card fade-in-up delay-1">
                 <div class="row g-2.5 align-items-center">
-                    
                     <div class="col-lg-4 col-md-12">
-                        <div class="input-group input-group-sm match-input-pill">
+                        <div class="input-group input-group-sm match-input-pill position-relative">
                             <span class="input-group-text ps-3">
                                 <i class="bi bi-search text-success"></i>
                             </span>
                             <input type="text" id="match-search-input" class="form-control py-2" placeholder="Search keywords, brand, room…">
+                            <button type="button" class="btn btn-sm text-muted d-none border-0 bg-transparent pe-3" id="match-search-clear" onclick="clearMatchSearch()" title="Clear search">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -177,13 +231,16 @@
                 </div>
             </div>
 
+            <!-- Matches Header -->
             <div class="d-flex justify-content-between align-items-center mb-3 fade-in-up delay-2 flex-wrap gap-2">
-                <span class="text-muted fw-semibold small">
-                    Showing <span id="matches-count" class="fw-bold fs-6" style="color:#059669;">0</span> candidate matches
-                </span>
-                <span class="badge rounded-pill px-3 py-2" style="background:var(--mint-light);color:#059669;font-weight:600;font-size:0.75rem;">
-                    Brand/Name(25%) · Zone(20%) · Category(20%) · Color(15%) · Date(10%) · NLP(10%)
-                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted fw-semibold small">
+                        Showing <span id="matches-count" class="fw-bold fs-6" style="color:#059669;">0</span> candidate matches
+                    </span>
+                    <span class="badge rounded-pill px-3 py-1.5" style="background:var(--mint-light);color:#059669;font-weight:600;font-size:0.75rem;border:1px solid rgba(0,230,118,0.25);">
+                        Name(25%) · Zone(20%) · Cat(20%) · Color(15%) · Date(10%) · NLP(10%)
+                    </span>
+                </div>
             </div>
 
             <div class="row g-4" id="matches-grid">
@@ -358,6 +415,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/matching.js"></script>
     <script src="js/validation.js"></script>
