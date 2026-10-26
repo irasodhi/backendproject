@@ -101,6 +101,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/validation.js"></script>
   <script src="js/ui.js"></script>
@@ -145,7 +146,7 @@
       }
     });
 
-    let handleSubmit = (event) => {
+    let handleSubmit = async (event) => {
       event.preventDefault();
       let email = document.getElementById("email").value.trim();
       let pass  = document.getElementById("password").value.trim();
@@ -162,29 +163,27 @@
       let urlParams = new URLSearchParams(window.location.search);
       let returnUrl = urlParams.get("returnUrl") || "index.html";
 
-      let users         = getUsers();
-      let verified_user = users.find(el => el.useremail?.toLowerCase() === email.toLowerCase());
+      // Disable submit button during request
+      const submitBtn = document.querySelector('#loginForm [type=submit]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing In…'; }
 
-      if (verified_user) {
-        if (verified_user.userpassword && verified_user.userpassword !== pass) {
-          showToast(`Incorrect password for <strong>${verified_user.username}</strong>. Please check your credentials.`, "error");
-          return;
+      try {
+        const data = await CampusFindAPI.auth.login(email, pass);
+        // Store user info for compatibility with app.js / getCurrentUser() and multi-account switcher
+        if (typeof saveUser === 'function') {
+          saveUser(data.user);
         }
-        localStorage.setItem("current_user", JSON.stringify(verified_user));
+        localStorage.setItem("current_user", JSON.stringify(data.user));
         localStorage.setItem("isLoggedIn", "true");
-        showToast(`Welcome back, <strong>${verified_user.username}</strong>! Redirecting…`, "success");
-        setTimeout(() => { window.location.href = returnUrl; }, 800);
-      } else {
-        let derivedName = formatNameFromEmail(email);
-        let newUser = {
-          username: derivedName, useremail: email, userpassword: pass,
-          contactPhone: "+91 98" + Math.floor(10000000 + Math.random() * 90000000)
-        };
-        saveUser(newUser);
-        localStorage.setItem("current_user", JSON.stringify(newUser));
-        localStorage.setItem("isLoggedIn", "true");
-        showToast(`Welcome, <strong>${derivedName}</strong>! Your account has been registered. Redirecting…`, "success");
-        setTimeout(() => { window.location.href = returnUrl; }, 800);
+
+        const isAdmin = (data.user && (data.user.role || '').toLowerCase() === 'admin');
+        const targetUrl = isAdmin ? "admin.html" : returnUrl;
+
+        showToast(`Welcome back, <strong>${data.user.username}</strong>! Redirecting…`, "success");
+        setTimeout(() => { window.location.href = targetUrl; }, 600);
+      } catch (err) {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'Sign In <i class="bi bi-arrow-right ms-1"></i>'; }
+        showToast(err.message || "Login failed. Please check your credentials.", "error");
       }
     };
   </script>
