@@ -151,6 +151,11 @@ function switchUser(email) {
     if (found) {
         localStorage.setItem("current_user", JSON.stringify(found));
         localStorage.setItem("isLoggedIn", "true");
+        if (found.token) {
+            localStorage.setItem("campusfind_token", found.token);
+        } else {
+            localStorage.removeItem("campusfind_token");
+        }
         return found;
     }
     return null;
@@ -181,6 +186,7 @@ function removeUserAccount(email) {
             
             localStorage.removeItem("current_user");
             localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("campusfind_token");
             return null;
         }
     }
@@ -191,6 +197,7 @@ function logoutAllAccounts() {
     localStorage.setItem("users", JSON.stringify([]));
     localStorage.removeItem("current_user");
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("campusfind_token");
 }
 
 function getReports() {
@@ -203,16 +210,61 @@ function getReports() {
 }
 
 function saveReport(report) {
+    if (!report) return;
+    if (!report.id && report._id) report.id = report._id;
     let reports = getReports();
-    reports.unshift(report);
+    let existingIdx = reports.findIndex(r => 
+        (report.id && r.id === report.id) || 
+        (report._id && (r._id === report._id || r.id === report._id))
+    );
+    if (existingIdx >= 0) {
+        reports[existingIdx] = Object.assign({}, reports[existingIdx], report);
+    } else {
+        reports.unshift(report);
+    }
     localStorage.setItem("campus_reports", JSON.stringify(reports));
+
+    // Only sync to backend API if this report does NOT already have a backend _id and wasn't already synced
+    if (!report._id && !report._backendSynced && window.CampusFindAPI && CampusFindAPI.reports && typeof CampusFindAPI.reports.create === 'function') {
+        CampusFindAPI.reports.create({
+            id: report.id,
+            type: report.type,
+            itemName: report.itemName,
+            category: report.category,
+            electronicType: report.electronicType || report.subcategory || '',
+            subcategory: report.subcategory || report.electronicType || '',
+            color: report.color,
+            zone: report.zone,
+            date: report.date,
+            description: report.description,
+            hiddenDetails: report.hiddenDetails,
+            image: report.image,
+            contactPhone: report.contactPhone,
+            postedBy: report.postedBy,
+            postedByEmail: report.postedByEmail
+        }).then(res => {
+            if (res && res.report) {
+                report._id = res.report._id;
+                report.id = res.report.id || report.id || res.report._id;
+                report._backendSynced = true;
+                let currentReps = getReports();
+                let idx = currentReps.findIndex(r => r.id === report.id || (r._id && r._id === report._id));
+                if (idx >= 0) currentReps[idx] = Object.assign({}, currentReps[idx], report);
+                localStorage.setItem("campus_reports", JSON.stringify(currentReps));
+            }
+        }).catch(err => console.debug("Backend report sync notice:", err.message));
+    }
 }
 
 function deleteReport(id) {
     if (!id) return;
     let reports = getReports();
-    let updated = reports.filter(r => String(r.id).trim() !== String(id).trim());
+    let updated = reports.filter(r => String(r.id).trim() !== String(id).trim() && String(r._id || '').trim() !== String(id).trim());
     localStorage.setItem("campus_reports", JSON.stringify(updated));
+
+    if (window.CampusFindAPI && CampusFindAPI.reports && CampusFindAPI.getToken && CampusFindAPI.getToken()) {
+        CampusFindAPI.reports.delete(id).catch(err => console.debug("Backend delete notice:", err.message));
+    }
 }
 
 function getClaims() {
@@ -225,9 +277,36 @@ function getClaims() {
 }
 
 function saveClaim(claim) {
+    if (!claim) return;
     let claims = getClaims();
-    claims.unshift(claim);
+    let cId = claim.claimId || ("CLM-" + Math.floor(1000 + Math.random() * 9000));
+    claim.claimId = cId;
+    let existingIdx = claims.findIndex(c => c.claimId === cId);
+    if (existingIdx >= 0) {
+        claims[existingIdx] = Object.assign({}, claims[existingIdx], claim);
+    } else {
+        claims.unshift(claim);
+    }
     localStorage.setItem("campus_claims", JSON.stringify(claims));
+
+    if (window.CampusFindAPI && CampusFindAPI.claims && typeof CampusFindAPI.claims.create === 'function') {
+        CampusFindAPI.claims.create({
+            claimId: claim.claimId,
+            reportId: claim.reportId || claim.itemId || '',
+            itemId: claim.itemId || claim.reportId || '',
+            itemName: claim.itemName || '',
+            reportType: claim.reportType || 'lost',
+            claimantName: claim.claimedBy || claim.claimantName || '',
+            claimantEmail: claim.claimedByEmail || claim.claimantEmail || '',
+            claimantPhone: claim.claimantPhone || '',
+            ownerName: claim.reporter || claim.ownerName || '',
+            ownerEmail: claim.reporterEmail || claim.ownerEmail || '',
+            proofDetails: claim.providedProof || claim.proofDetails || claim.itemDetails || '',
+            providedProof: claim.providedProof || claim.proofDetails || '',
+            status: claim.status || 'Pending Founder Approval',
+            date: claim.date || new Date().toLocaleDateString()
+        }).catch(err => console.debug("Backend claim sync notice:", err.message));
+    }
 }
 
 function updateClaimStatus(claimId, status, extraData = null) {
@@ -236,7 +315,6 @@ function updateClaimStatus(claimId, status, extraData = null) {
     if (claim) {
         claim.status = status;
         if (extraData) {
-            
             if (extraData.location) {
                 claim.meetingDetails = extraData;
             } else {
@@ -248,6 +326,15 @@ function updateClaimStatus(claimId, status, extraData = null) {
             }
         }
         localStorage.setItem("campus_claims", JSON.stringify(claims));
+
+        if (window.CampusFindAPI && CampusFindAPI.claims && typeof CampusFindAPI.claims.updateStatus === 'function') {
+            CampusFindAPI.claims.updateStatus(claimId, {
+                status,
+                rejectionReason: extraData?.rejectionReason,
+                meetingDetails: extraData?.meetingDetails || (extraData?.location ? extraData : undefined),
+                founderFeedback: extraData?.founderFeedback
+            }).catch(err => console.debug("Backend claim update notice:", err.message));
+        }
     }
 }
 
@@ -272,6 +359,11 @@ function addClaimMessage(claimId, messageObj) {
         };
         claim.messages.push(newMsg);
         localStorage.setItem("campus_claims", JSON.stringify(claims));
+
+        if (window.CampusFindAPI && CampusFindAPI.claims && typeof CampusFindAPI.claims.sendMessage === 'function') {
+            CampusFindAPI.claims.sendMessage(claimId, messageObj.text, messageObj.type || 'text')
+                .catch(err => console.debug("Backend message sync notice:", err.message));
+        }
         return newMsg;
     }
     return null;
@@ -290,6 +382,7 @@ function getNotifications(userEmail) {
 }
 
 function sendNotification(notification) {
+    if (!notification) return;
     initStorage();
     try {
         let all = JSON.parse(localStorage.getItem("campus_notifications")) || [];
@@ -363,6 +456,73 @@ function resetData() {
     localStorage.removeItem("current_user");
     localStorage.setItem("campus_claims", JSON.stringify([]));
     localStorage.setItem("campus_notifications", JSON.stringify([]));
+    if (window.CampusFindAPI && CampusFindAPI.clearToken) {
+        CampusFindAPI.clearToken();
+    }
+}
+
+// ─── Background sync with CampusFind backend REST API (Concurrent & Non-blocking) ──
+async function syncWithBackend() {
+    if (!window.CampusFindAPI) return;
+
+    let user = getCurrentUser();
+    let userEmail = user ? (user.useremail || '') : '';
+
+    try {
+        // Run reports and claims sync simultaneously in parallel
+        const [repResult, claimResult] = await Promise.allSettled([
+            CampusFindAPI.reports.getAll({ limit: 100 }),
+            (userEmail && CampusFindAPI.claims) ? CampusFindAPI.claims.getMyClaims(userEmail) : Promise.resolve(null)
+        ]);
+
+        let hasNewReports = false;
+        if (repResult.status === "fulfilled" && repResult.value && Array.isArray(repResult.value.reports)) {
+            let local = getReports();
+            let merged = repResult.value.reports.map(r => {
+                let copy = Object.assign({}, r);
+                copy.id = copy.id || copy._id;
+                return copy;
+            });
+            local.forEach(lr => {
+                const lrId = String(lr.id || lr._id || '');
+                if (!merged.some(mr => String(mr.id || mr._id || '') === lrId)) {
+                    merged.push(lr);
+                }
+            });
+            if (JSON.stringify(merged) !== JSON.stringify(local)) {
+                localStorage.setItem("campus_reports", JSON.stringify(merged));
+                hasNewReports = true;
+            }
+        }
+
+        if (claimResult.status === "fulfilled" && claimResult.value && Array.isArray(claimResult.value.claims)) {
+            let localClaims = JSON.parse(localStorage.getItem("campus_claims")) || [];
+            let mergedClaims = [...claimResult.value.claims];
+            localClaims.forEach(lc => {
+                const lcId = String(lc.claimId || lc._id || '');
+                if (!mergedClaims.some(mc => String(mc.claimId || mc._id || '') === lcId)) {
+                    mergedClaims.push(lc);
+                }
+            });
+            localStorage.setItem("campus_claims", JSON.stringify(mergedClaims));
+        }
+
+        // Only dispatch sync event if reports actually changed, preventing infinite re-render loops
+        if (hasNewReports) {
+            window.dispatchEvent(new CustomEvent('campusfind:synced', { detail: { reports: getReports() } }));
+        }
+    } catch (e) {
+        // Fail silently and keep using local storage data without lag
+    }
 }
 
 initStorage();
+if (typeof window !== "undefined") {
+    // Run sync asynchronously after initial page load & paint so UI is instantly responsive
+    const triggerSync = () => setTimeout(() => syncWithBackend(), 100);
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", triggerSync);
+    } else {
+        triggerSync();
+    }
+}
