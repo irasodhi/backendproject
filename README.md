@@ -83,6 +83,13 @@ $$\text{Similarity Score} = w_1 S_{\text{Name}} + w_2 S_{\text{Category}} + w_3 
 ```
 campuslostandfound/
 │
+├── backend/              # Node.js + Express REST API Server
+│   ├── models/           # Mongoose schemas (User, Report, Claim, Notification)
+│   ├── routes/           # REST endpoints (/auth, /reports, /claims, /notifications)
+│   ├── middleware/       # JWT auth protector middleware
+│   ├── server.js         # Express app entrypoint & DB connector
+│   └── .env              # Environment config (MONGO_URI, JWT_SECRET, PORT)
+│
 ├── index.html            # Landing page with AI simulator, live feed & category explorer
 ├── dashboard.html        # Personal recovery dashboard with full-width tabs
 ├── report.html           # Multi-step item reporting form with instant auth checks
@@ -95,9 +102,10 @@ campuslostandfound/
 │   └── style.css         # Complete TenFore-inspired dark emerald design system & animations
 │
 ├── js/
+│   ├── api.js            # CampusFind REST API client (window.CampusFindAPI)
 │   ├── app.js            # Main application controller, UI event bindings & rendering
 │   ├── matching.js       # 6-factor multi-attribute similarity matching algorithm
-│   ├── storage.js        # LocalStorage persistence layer, models & seed data
+│   ├── storage.js        # Data persistence layer with seamless backend sync & local fallback
 │   ├── validation.js     # Form validation engine & input sanity rules
 │   └── ui.js             # Notification toasts, image dropzones & dynamic chips
 │
@@ -107,24 +115,44 @@ campuslostandfound/
 
 ## 💻 Getting Started & Local Setup
 
-This project is built using standard **HTML5**, **CSS3**, and **ES6 JavaScript** with client-side persistence in `localStorage`. No database setup or build tools are required!
+### 1. Run the Frontend (Static Web App)
+You can launch the frontend immediately with any web server (or VS Code Live Server):
 
-### Option 1: Run with VS Code Live Server
-1. Clone or download this repository:
-   ```bash
-   git clone https://github.com/irasodhi/backendproject.git
-   cd backendproject
-   ```
-2. Open the folder in **Visual Studio Code**.
-3. Install the **Live Server** extension (if not already installed).
-4. Right-click `index.html` and select **"Open with Live Server"**.
+**Option A: VS Code Live Server**
+1. Open the project folder in **Visual Studio Code**.
+2. Right-click [`index.html`](file:///c:/Users/hp/OneDrive/Documents/Desktop/campuslostandfound/index.html) and choose **"Open with Live Server"**.
 
-### Option 2: Run with Python HTTP Server
+**Option B: Python HTTP Server**
 ```bash
-# Python 3
 python -m http.server 5500
 ```
 Then visit `http://localhost:5500` in your web browser.
+
+---
+
+### 2. Run the Backend API (Optional & Recommended)
+The app comes with a full **Node.js + Express + MongoDB** REST API that seamlessly enhances data storage across devices.
+
+1. **Navigate to the backend directory and install dependencies:**
+   ```bash
+   cd backend
+   npm install
+   ```
+2. **Configure your environment variables in [`backend/.env`](file:///c:/Users/hp/OneDrive/Documents/Desktop/campuslostandfound/backend/.env):**
+   ```env
+   MONGO_URI=your_mongodb_atlas_connection_string
+   JWT_SECRET=campusfind_super_secret_jwt_key_2026
+   PORT=5000
+   ```
+3. **Start the server:**
+   ```bash
+   npm start
+   # Or for development with auto-reload:
+   npm run dev
+   ```
+4. Verify the server is running at `http://localhost:5000/`.
+
+> **Note**: Even if the backend server is offline or MongoDB is not yet configured, CampusFind continues to work seamlessly using local storage with 100% functionality!
 
 ---
 
