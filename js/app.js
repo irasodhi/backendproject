@@ -47,14 +47,23 @@ function setDateToday() {
 }
 
 function initApp() {
-    renderNavbarUser();
-
     let path = (window.location.pathname || "").toLowerCase();
     let pageAttr = document.body ? (document.body.getAttribute("data-page") || "").toLowerCase() : "";
 
+    let currentUser = getCurrentUser();
+    let isAdmin = currentUser && (currentUser.role || '').toLowerCase() === 'admin';
+
+    // Lock Admin strictly to admin.html — don't show regular student/user pages
+    if (isAdmin && !path.includes("admin") && pageAttr !== "admin" && !path.includes("login") && !path.includes("signup")) {
+        window.location.href = "admin.html";
+        return;
+    }
+
+    renderNavbarUser();
+
     if (path.includes("report") || pageAttr === "report") {
         initReportPage();
-    } else if (path.includes("matches") || pageAttr === "matches") {
+    } else if (path.includes("match") || pageAttr === "matches" || pageAttr === "match") {
         initMatchesPage();
     } else if (path.includes("dashboard") || pageAttr === "dashboard") {
         initDashboardPage();
@@ -197,7 +206,26 @@ function renderNavNotifDropdown() {
         let timeStr = n.date || 'Just now';
 
         let actionBtnHtml = '';
-        if (n.claimId) {
+        if (isOwnerAlert) {
+            actionBtnHtml = `
+                <div class="mt-2 d-flex align-items-center gap-1.5 flex-wrap">
+                    <button type="button" class="btn btn-sm btn-emerald-pill py-1 px-2.5 extra-small fw-bold shadow-sm" onclick="openProvideHiddenDetailsModal('${n.id}'); event.stopPropagation();">
+                        <i class="bi bi-shield-lock-fill me-1"></i>Provide Hidden Details
+                    </button>
+                </div>
+            `;
+        } else if (n.type === "claim_request") {
+            actionBtnHtml = `
+                <div class="mt-2 d-flex align-items-center gap-1.5 flex-wrap">
+                    <button type="button" class="btn btn-sm btn-emerald-pill py-1 px-2.5 extra-small fw-bold shadow-sm" onclick="openScheduleModal('${n.claimId}'); event.stopPropagation();">
+                        <i class="bi bi-calendar-check-fill me-1"></i>Schedule Meeting
+                    </button>
+                    <button type="button" class="notif-action-btn" onclick="openMeetingChatModal('${n.claimId}'); event.stopPropagation();">
+                        <i class="bi bi-chat-dots-fill"></i> Chat
+                    </button>
+                </div>
+            `;
+        } else if (n.claimId) {
             actionBtnHtml = `
                 <div class="mt-2 d-flex align-items-center gap-1.5 flex-wrap">
                     <button type="button" class="notif-action-btn" onclick="openMeetingChatModal('${n.claimId}'); event.stopPropagation();">
@@ -332,6 +360,41 @@ function renderNavbarUser() {
         return;
     }
 
+    let activeInitials = currentUser.username ? currentUser.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'A';
+
+    // If Admin, render clean admin pill without student options
+    if ((currentUser.role || '').toLowerCase() === 'admin') {
+        userDisplay.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light dropdown-toggle border shadow-sm fw-bold text-dark px-3 rounded-pill d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                        <span class="rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold" style="width:24px;height:24px;font-size:0.7rem;background:var(--emerald-primary);color:#041512;">${activeInitials}</span>
+                        <span>${currentUser.username}</span>
+                        <span class="badge bg-warning text-dark ms-1 extra-small" style="font-size:0.62rem;">ADMIN</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg p-2 rounded-3 border" style="min-width:240px;">
+                        <li class="px-3 py-2.5 rounded-3 mb-2" style="background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.25);">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="badge bg-success rounded-pill extra-small" style="font-size:0.6rem;">Administrator</span>
+                                <i class="bi bi-shield-lock-fill text-success"></i>
+                            </div>
+                            <strong class="text-dark small d-block text-truncate">${currentUser.username}</strong>
+                            <span class="extra-small text-muted d-block text-truncate" style="font-size:0.72rem;">${currentUser.useremail}</span>
+                        </li>
+                        <li>
+                            <a class="dropdown-item small text-danger fw-semibold rounded-2 py-2 d-flex align-items-center" href="#" onclick="handleLogout()">
+                                <i class="bi bi-box-arrow-right text-danger me-2 fs-6"></i>Sign Out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        let bellBadge = document.getElementById("nav-notif-badge");
+        if (bellBadge) bellBadge.classList.add("d-none");
+        return;
+    }
+
     let otherUsers = allUsers.filter(u => u && u.useremail && u.useremail.toLowerCase().trim() !== currentUser.useremail.toLowerCase().trim());
 
     let switchAccountsHtml = "";
@@ -364,7 +427,7 @@ function renderNavbarUser() {
         `;
     }
 
-    let activeInitials = currentUser.username ? currentUser.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'U';
+    activeInitials = currentUser.username ? currentUser.username.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'U';
 
     userDisplay.innerHTML = `
         <div class="dropdown">
@@ -516,34 +579,39 @@ function handleRemoveAccount(email) {
 
 function handleLogout() {
     let currentUser = getCurrentUser();
+    let isAdmin = currentUser && (currentUser.role || '').toLowerCase() === 'admin';
 
-    if (currentUser && currentUser.useremail) {
-        let remainingUser = removeUserAccount(currentUser.useremail);
-        if (remainingUser) {
-            showToast(`Signed out of <strong>${currentUser.username}</strong>. Active session switched to <strong>${remainingUser.username}</strong>.`, "info", 3000);
-            setTimeout(() => {
-                window.location.reload();
-            }, 400);
-            return;
-        }
+    // Clear backend token
+    if (window.CampusFindAPI && CampusFindAPI.auth && typeof CampusFindAPI.auth.logout === 'function') {
+        try { CampusFindAPI.auth.logout(); } catch(e) {}
     }
-
-    // No other accounts remain on device
+    localStorage.removeItem("campusfind_token");
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("current_user");
-    localStorage.setItem("users", JSON.stringify([]));
+
+    if (currentUser && currentUser.useremail) {
+        removeUserAccount(currentUser.useremail);
+    }
+    if (isAdmin) {
+        localStorage.setItem("users", JSON.stringify([]));
+    }
+
     showToast("Logged out successfully.", "info");
     setTimeout(() => {
-        window.location.href = "index.html";
-    }, 400);
+        window.location.href = "login.html";
+    }, 300);
 }
 
 function handleLogoutAll() {
+    if (window.CampusFindAPI && CampusFindAPI.auth && typeof CampusFindAPI.auth.logout === 'function') {
+        try { CampusFindAPI.auth.logout(); } catch(e) {}
+    }
+    localStorage.removeItem("campusfind_token");
     logoutAllAccounts();
     showToast("Signed out of all accounts.", "info");
     setTimeout(() => {
-        window.location.href = "index.html";
-    }, 400);
+        window.location.href = "login.html";
+    }, 300);
 }
 
 function initHomePage() {
@@ -574,22 +642,44 @@ function initHomePage() {
     let typeSelect = document.getElementById("home-type-filter");
     let catSelect  = document.getElementById("home-category-filter");
 
-    window.triggerHomeFilter = function() {
-        let q = searchIn ? searchIn.value.toLowerCase().trim() : "";
-        let t = typeSelect ? typeSelect.value : "all";
-        let c = catSelect  ? catSelect.value  : "all";
-        let filtered = reports.filter(item => {
-            let matchQ = item.itemName.toLowerCase().includes(q) || (item.description && item.description.toLowerCase().includes(q)) || (item.zone && item.zone.toLowerCase().includes(q));
-            let matchT = t === "all" || item.type === t;
-            let matchC = c === "all" || item.category === c;
-            return matchQ && matchT && matchC;
-        });
-        renderRecentCards(filtered);
+    let _filterTimer = null;
+    window.triggerHomeFilter = function(immediate = false) {
+        if (_filterTimer) clearTimeout(_filterTimer);
+        const exec = () => {
+            let q = searchIn ? searchIn.value.toLowerCase().trim() : "";
+            let t = typeSelect ? typeSelect.value : "all";
+            let c = catSelect  ? catSelect.value  : "all";
+            let currentReports = getReports();
+            let filtered = currentReports.filter(item => {
+                let matchQ = item.itemName.toLowerCase().includes(q) || (item.description && item.description.toLowerCase().includes(q)) || (item.zone && item.zone.toLowerCase().includes(q));
+                let matchT = t === "all" || item.type === t;
+                let matchC = c === "all" || item.category === c;
+                return matchQ && matchT && matchC;
+            });
+            renderRecentCards(filtered);
+        };
+        if (immediate) exec();
+        else _filterTimer = setTimeout(exec, 120);
     };
 
-    if (searchIn)   searchIn.oninput    = window.triggerHomeFilter;
-    if (typeSelect) typeSelect.onchange = window.triggerHomeFilter;
-    if (catSelect)  catSelect.onchange  = window.triggerHomeFilter;
+    if (searchIn)   searchIn.oninput    = () => window.triggerHomeFilter(false);
+    if (typeSelect) typeSelect.onchange = () => window.triggerHomeFilter(true);
+    if (catSelect)  catSelect.onchange  = () => window.triggerHomeFilter(true);
+
+    if (!window._homeSyncBound) {
+        window._homeSyncBound = true;
+        window.addEventListener('campusfind:synced', () => {
+            let refreshed = getReports();
+            let totalEl  = document.getElementById("stat-total");
+            let lostEl   = document.getElementById("stat-lost");
+            let foundEl  = document.getElementById("stat-found");
+            if (totalEl) totalEl.innerText = refreshed.length;
+            if (lostEl)  lostEl.innerText  = refreshed.filter(r => r.type === "lost").length;
+            if (foundEl) foundEl.innerText = refreshed.filter(r => r.type === "found").length;
+            renderRecentCards(refreshed);
+            renderNavbarUser();
+        });
+    }
 
     init3DParallaxTilt();
     initScrollReveal();
@@ -611,7 +701,7 @@ function selectCategoryChip(cat) {
         catSelect.value = cat;
     }
 
-    if (window.triggerHomeFilter) window.triggerHomeFilter();
+    if (window.triggerHomeFilter) window.triggerHomeFilter(true);
 }
 
 function syncCategorySelect(cat) {
@@ -623,7 +713,7 @@ function syncCategorySelect(cat) {
         }
     });
 
-    if (window.triggerHomeFilter) window.triggerHomeFilter();
+    if (window.triggerHomeFilter) window.triggerHomeFilter(true);
 }
 
 function selectTypeFilter(type) {
@@ -640,51 +730,71 @@ function selectTypeFilter(type) {
         typeSelect.value = type;
     }
 
-    if (window.triggerHomeFilter) window.triggerHomeFilter();
+    if (window.triggerHomeFilter) window.triggerHomeFilter(true);
 }
 
 function init3DParallaxTilt() {
+    if (window._tiltBound) return;
     let container = document.getElementById("hero-mockup-container");
     let mockup = document.getElementById("hero-mockup-element");
     if (!container || !mockup) return;
+    window._tiltBound = true;
 
+    let rafId = null;
     container.addEventListener("mousemove", (e) => {
-        let rect = container.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            let rect = container.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
 
-        let centerX = rect.width / 2;
-        let centerY = rect.height / 2;
+            let centerX = rect.width / 2;
+            let centerY = rect.height / 2;
 
-        let rotateX = ((y - centerY) / centerY) * -12; 
-        let rotateY = ((x - centerX) / centerX) * 14;  
+            let rotateX = ((y - centerY) / centerY) * -12; 
+            let rotateY = ((x - centerX) / centerX) * 14;  
 
-        mockup.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            mockup.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
     });
 
     container.addEventListener("mouseleave", () => {
+        if (rafId) cancelAnimationFrame(rafId);
         mockup.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
     });
 }
 
 function initNavbarScroll() {
+    if (window._navScrollBound) return;
     let nav = document.getElementById("main-nav");
     if (!nav) return;
+    window._navScrollBound = true;
+
+    let ticking = false;
     window.addEventListener("scroll", () => {
-        if (window.scrollY > 40) {
-            nav.classList.add("navbar-scrolled");
-        } else {
-            nav.classList.remove("navbar-scrolled");
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                if (window.scrollY > 40) {
+                    nav.classList.add("navbar-scrolled");
+                } else {
+                    nav.classList.remove("navbar-scrolled");
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
-    });
+    }, { passive: true });
 }
 
 function initScrollReveal() {
-    if (!('IntersectionObserver' in window)) return;
+    if (window._scrollRevealBound || !('IntersectionObserver' in window)) return;
+    window._scrollRevealBound = true;
+
     let observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add("is-revealed");
+                observer.unobserve(entry.target);
             }
         });
     }, { threshold: 0.12 });
@@ -848,23 +958,30 @@ function updateSimulatorScenario(scenarioKey) {
 }
 
 function initSimulatorTilt() {
+    if (window._simTiltBound) return;
     let card = document.getElementById("ai-simulator-card");
     if (!card) return;
+    window._simTiltBound = true;
 
+    let simRaf = null;
     card.addEventListener("mousemove", (e) => {
-        let rect = card.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
-        let centerX = rect.width / 2;
-        let centerY = rect.height / 2;
+        if (simRaf) cancelAnimationFrame(simRaf);
+        simRaf = requestAnimationFrame(() => {
+            let rect = card.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            let centerX = rect.width / 2;
+            let centerY = rect.height / 2;
 
-        let rotateX = ((y - centerY) / centerY) * -5;
-        let rotateY = ((x - centerX) / centerX) * 5;
+            let rotateX = ((y - centerY) / centerY) * -5;
+            let rotateY = ((x - centerX) / centerX) * 5;
 
-        card.style.transform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+            card.style.transform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+        });
     });
 
     card.addEventListener("mouseleave", () => {
+        if (simRaf) cancelAnimationFrame(simRaf);
         card.style.transform = "perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0px)";
     });
 }
@@ -916,7 +1033,7 @@ function renderRecentCards(list) {
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="modern-item-card fade-in-up ${delay}">
                     <div class="modern-item-card-media">
-                        <img src="${imgSrc}" class="modern-item-card-img" alt="${item.itemName}" onerror="this.src='${defaultImg}'">
+                        <img src="${imgSrc}" class="modern-item-card-img" alt="${item.itemName}" loading="lazy" decoding="async" onerror="this.src='${defaultImg}'">
                         <span class="floating-type-badge ${isLost ? 'type-lost' : 'type-found'}">
                             <i class="bi ${isLost ? 'bi-exclamation-circle-fill' : 'bi-check-circle-fill'} me-1"></i>${isLost ? 'Lost Item' : 'Found Item'}
                         </span>
@@ -1379,7 +1496,7 @@ function initReportPage() {
         else               setFieldValid('description');
     });
 
-    form.onsubmit = function(e) {
+    form.onsubmit = async function(e) {
         e.preventDefault();
 
         let activeUser = getCurrentUser();
@@ -1466,25 +1583,77 @@ function initReportPage() {
             hiddenDetails: hiddenVal,
             postedBy:     activeUser.username,
             postedByEmail: activeUser.useremail,
-            contactPhone: "+91 98765 43210",
+            contactPhone: activeUser.contactPhone || "+91 98765 43210",
             image:        itemImg,
             status:       "Searching"
         };
+
+        // Try direct backend API call to persist report to MongoDB Atlas
+        if (window.CampusFindAPI && CampusFindAPI.reports && typeof CampusFindAPI.reports.create === "function") {
+            try {
+                let apiRes = await CampusFindAPI.reports.create({
+                    id: newReport.id,
+                    type: newReport.type,
+                    itemName: newReport.itemName,
+                    category: newReport.category,
+                    electronicType: newReport.electronicType || newReport.subcategory || '',
+                    subcategory: newReport.subcategory || newReport.electronicType || '',
+                    color: newReport.color,
+                    zone: newReport.zone,
+                    date: newReport.date,
+                    description: newReport.description,
+                    hiddenDetails: newReport.hiddenDetails,
+                    image: newReport.image,
+                    contactPhone: newReport.contactPhone,
+                    postedBy: newReport.postedBy,
+                    postedByEmail: newReport.postedByEmail
+                });
+                if (apiRes && apiRes.report) {
+                    newReport._id = apiRes.report._id;
+                    newReport.id = apiRes.report.id || newReport.id || apiRes.report._id;
+                    newReport._backendSynced = true; // Prevent double-save in saveReport
+                }
+            } catch (err) {
+                console.warn("Notice: created report offline/locally (backend unreachable):", err.message);
+            }
+        }
 
         saveReport(newReport);
         uploadedImageBase64 = null;
 
         showToast(`Report for "${newReport.itemName}" submitted! Running vector match engine…`, 'success', 3000);
         setTimeout(() => {
-            window.location.href = "matches.html?id=" + newReport.id;
+            window.location.href = "matches.html?id=" + (newReport.id || newReport._id);
         }, 750);
     };
 }
 
-let _matchSortBy      = sessionStorage.getItem('match_sort')   || 'score';
-let _matchCategory    = sessionStorage.getItem('match_cat')    || 'all';
-let _matchConfidence  = sessionStorage.getItem('match_conf')   || 'all';
+let _matchSortBy      = sessionStorage.getItem('match_sort')        || 'score';
+let _matchCategory    = sessionStorage.getItem('match_cat')         || 'all';
+let _matchConfidence  = sessionStorage.getItem('match_conf')        || 'all';
 let _matchSearchQuery = '';
+
+function setMatchViewMode() {
+    // Deprecated: view switcher removed in favor of unified responsive match cards
+}
+
+function clearMatchSearch() {
+    let searchIn = document.getElementById('match-search-input');
+    let clearBtn = document.getElementById('match-search-clear');
+    if (searchIn) searchIn.value = '';
+    if (clearBtn) clearBtn.classList.add('d-none');
+    _matchSearchQuery = '';
+    let reports = getReports();
+    let urlParams = new URLSearchParams(window.location.search);
+    let urlTargetId = urlParams.get("id");
+    let target = null;
+    if (urlTargetId) {
+        let cleanId = String(urlTargetId).trim();
+        target = reports.find(r => String(r.id || '').trim() === cleanId || String(r._id || '').trim() === cleanId);
+    }
+    if (!target && reports.length > 0) target = reports[0];
+    if (target) renderMatchCardsList(target, reports);
+}
 
 function initMatchesPage() {
     let reports    = getReports();
@@ -1504,39 +1673,36 @@ function initMatchesPage() {
     let targetReport = null;
 
     if (urlTargetId) {
-        let requested = reports.find(r => r.id === urlTargetId);
+        let cleanTargetId = String(urlTargetId).trim();
+        let requested = reports.find(r => 
+            String(r.id || '').trim() === cleanTargetId || 
+            String(r._id || '').trim() === cleanTargetId
+        );
         if (requested) {
-            let isMine = currentUser && requested.postedByEmail && currentUser.useremail &&
-                         requested.postedByEmail.toLowerCase().trim() === currentUser.useremail.toLowerCase().trim();
-            if (isMine) {
-                targetReport = requested;
-            } else {
-                let myOpposite = myReports.find(r => r.type !== requested.type);
-                if (myOpposite) {
-                    targetReport = myOpposite;
-                } else {
-
-                    renderDirectClaimState(requested, currentUser);
-
-                    let action = urlParams.get("action");
-                    if (action === "claim" || action === "notify") {
-                        setTimeout(() => openClaimModal(requested.id, requested.id), 300);
-                    }
-                    return;
-                }
+            let action = urlParams.get("action");
+            if (action === "claim" || action === "notify") {
+                renderDirectClaimState(requested, currentUser);
+                setTimeout(() => openClaimModal(requested.id || requested._id, requested.id || requested._id), 300);
+                return;
             }
+            targetReport = requested;
         }
     }
 
     if (!targetReport && myReports.length > 0) targetReport = myReports[0];
+    if (!targetReport && reports.length > 0) targetReport = reports[0];
 
     let selectEl = document.getElementById("target-report-select");
     if (selectEl) {
         selectEl.innerHTML = "";
+        let curTargetKey = targetReport ? String(targetReport.id || targetReport._id || '').trim() : '';
+
         if (myReports.length > 0) {
             let g = `<optgroup label="⭐ My Reports (${currentUser ? currentUser.username : 'You'})">`;
             myReports.forEach(r => {
-                g += `<option value="${r.id}" ${targetReport && r.id === targetReport.id ? 'selected' : ''}>[${r.type.toUpperCase()}] ${r.itemName} (Mine)</option>`;
+                let rKey = String(r.id || r._id || '').trim();
+                let isSel = curTargetKey && rKey === curTargetKey;
+                g += `<option value="${rKey}" ${isSel ? 'selected' : ''}>[${(r.type || 'item').toUpperCase()}] ${r.itemName} (Mine)</option>`;
             });
             g += `</optgroup>`;
             selectEl.innerHTML += g;
@@ -1544,17 +1710,42 @@ function initMatchesPage() {
         if (otherReports.length > 0) {
             let g = `<optgroup label="🏫 Other Campus Reports">`;
             otherReports.forEach(r => {
-                g += `<option value="${r.id}" ${targetReport && r.id === targetReport.id ? 'selected' : ''}>[${r.type.toUpperCase()}] ${r.itemName} (by ${r.postedBy})</option>`;
+                let rKey = String(r.id || r._id || '').trim();
+                let isSel = curTargetKey && rKey === curTargetKey;
+                g += `<option value="${rKey}" ${isSel ? 'selected' : ''}>[${(r.type || 'item').toUpperCase()}] ${r.itemName} (by ${r.postedBy || 'Student'})</option>`;
             });
             g += `</optgroup>`;
             selectEl.innerHTML += g;
         }
+
+        // Instant in-memory target switching without slow full-page reload
         selectEl.onchange = (e) => {
-            if (e.target.value) window.location.href = "matches.html?id=" + e.target.value;
+            let selectedVal = e.target.value;
+            if (!selectedVal) return;
+            let cleanVal = String(selectedVal).trim();
+            let newTarget = reports.find(r => 
+                String(r.id || '').trim() === cleanVal || 
+                String(r._id || '').trim() === cleanVal
+            );
+            if (newTarget) {
+                targetReport = newTarget;
+                try {
+                    window.history.replaceState({}, '', 'matches.html?id=' + encodeURIComponent(cleanVal));
+                } catch (err) {}
+                renderTargetBanner(targetReport, currentUser);
+                renderMatchCardsList(targetReport, reports);
+            }
         };
     }
 
-    if (!targetReport && myReports.length === 0) {
+    if (!window._matchesSyncBound) {
+        window._matchesSyncBound = true;
+        window.addEventListener('campusfind:synced', () => {
+            initMatchesPage();
+        });
+    }
+
+    if (!targetReport && reports.length === 0) {
         renderNoUserReportsState(currentUser);
         return;
     }
@@ -1565,14 +1756,20 @@ function initMatchesPage() {
     }
 
     let searchIn   = document.getElementById('match-search-input');
+    let clearBtn   = document.getElementById('match-search-clear');
     let sortSelect = document.getElementById('match-sort-select');
     let catFilter  = document.getElementById('match-cat-filter');
     let confFilter = document.getElementById('match-confidence-filter');
 
+    let _matchInputTimer = null;
     if (searchIn) {
         searchIn.addEventListener('input', () => {
-            _matchSearchQuery = searchIn.value.toLowerCase().trim();
-            if (targetReport) renderMatchCardsList(targetReport, reports);
+            if (clearBtn) clearBtn.classList.toggle('d-none', !searchIn.value);
+            if (_matchInputTimer) clearTimeout(_matchInputTimer);
+            _matchInputTimer = setTimeout(() => {
+                _matchSearchQuery = searchIn.value.toLowerCase().trim();
+                if (targetReport) renderMatchCardsList(targetReport, reports);
+            }, 100);
         });
     }
 
@@ -1746,14 +1943,24 @@ function renderTargetBanner(item, currentUser) {
     let isMyReport = currentUser && item.postedByEmail && currentUser.useremail &&
                      item.postedByEmail.toLowerCase().trim() === currentUser.useremail.toLowerCase().trim();
 
+    let isLost = (item.type || '').toLowerCase() === 'lost';
+    let defaultImg = getDefaultImage(item.category);
+    let imgSrc = item.image || defaultImg;
+
+    // Update KPI card: Target Type
+    let kpiTargetType = document.getElementById('kpi-target-type');
+    if (kpiTargetType) {
+        kpiTargetType.innerHTML = `<span style="color:${isLost ? '#f43f5e' : 'var(--emerald-primary)'};">${item.type.toUpperCase()} ITEM</span>`;
+    }
+
     banner.innerHTML = `
         <div class="target-radar-hud fade-in-up">
             <div class="row align-items-center g-4">
-                <div class="col-md-2 text-center">
-                    <div style="position:relative;display:inline-block;">
-                        <img src="${item.image || getDefaultImage(item.category)}" class="img-fluid rounded-3 border" style="max-height:105px;width:105px;object-fit:cover;border-color:var(--emerald-primary)!important;box-shadow:0 0 16px rgba(0,230,118,0.3);">
-                        <span class="badge ${item.type === 'lost' ? 'badge-lost' : 'badge-found'}" style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);font-size:0.65rem;white-space:nowrap;">
-                            ${item.type.toUpperCase()}
+                <div class="col-md-auto text-center">
+                    <div class="target-radar-img-wrap">
+                        <img src="${imgSrc}" loading="lazy" decoding="async" onerror="this.src='${defaultImg}'" alt="${item.itemName}">
+                        <span class="badge ${isLost ? 'badge-lost' : 'badge-found'}" style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);font-size:0.68rem;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,0.5);">
+                            ${item.type.toUpperCase()} ITEM
                         </span>
                     </div>
                 </div>
@@ -1763,21 +1970,22 @@ function renderTargetBanner(item, currentUser) {
                             <i class="bi bi-radar me-1"></i>Active Vector Target
                         </span>
                         ${isMyReport
-                            ? `<span class="badge rounded-pill text-white" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);font-size:0.75rem;"><i class="bi bi-person-check-fill text-success me-1"></i>You (${currentUser.username})</span>`
-                            : `<span class="badge rounded-pill text-white" style="background:rgba(255,255,255,0.1);font-size:0.75rem;"><i class="bi bi-person me-1"></i>${item.postedBy}</span>`
+                            ? `<span class="badge rounded-pill text-white" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);font-size:0.75rem;"><i class="bi bi-person-check-fill text-success me-1"></i>Your Submission (${currentUser.username})</span>`
+                            : `<span class="badge rounded-pill text-white" style="background:rgba(255,255,255,0.1);font-size:0.75rem;"><i class="bi bi-person me-1"></i>Reported by: ${item.postedBy}</span>`
                         }
                     </div>
-                    <h3 class="fw-bold mb-2 text-white" style="font-family:'Sora',sans-serif;">${item.itemName}</h3>
-                    <div class="d-flex flex-wrap gap-2 small">
-                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-tag text-success me-1"></i>${item.category}</span>
-                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-geo-alt text-success me-1"></i>${item.zone}</span>
-                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-palette text-success me-1"></i>${item.color}</span>
-                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-calendar text-success me-1"></i>${item.date}</span>
+                    <h4 class="fw-bold mb-2 text-white" style="font-family:'Sora',sans-serif;letter-spacing:-0.01em;font-size:1.25rem;">${item.itemName}</h4>
+                    <div class="d-flex flex-wrap gap-2 small mb-2">
+                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-tag-fill text-success me-1"></i>${item.category}</span>
+                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-geo-alt-fill text-success me-1"></i>${item.zone}</span>
+                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-palette-fill text-success me-1"></i>${item.color || 'Standard'}</span>
+                        <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-calendar3 text-success me-1"></i>${item.date}</span>
                     </div>
+                    <p class="text-light opacity-75 small mb-0 line-clamp-2" style="max-width:680px;">${item.description || 'No additional details provided.'}</p>
                 </div>
-                <div class="col-md-3 text-md-end">
-                    <a href="report.html" class="btn btn-glass-pill btn-arrow-slide py-2 px-3 fs-6">
-                        <span>Post New Report</span> <i class="bi bi-plus-circle"></i>
+                <div class="col-md text-md-end">
+                    <a href="report.html" class="btn btn-emerald-pill btn-arrow-slide py-2 px-3 fs-6 shadow">
+                        <span>New Report</span> <i class="bi bi-plus-circle"></i>
                     </a>
                 </div>
             </div>
@@ -1822,12 +2030,21 @@ function renderMatchCardsList(targetReport, reports) {
     let countEl = document.getElementById("matches-count");
     if (countEl) countEl.innerText = filtered.length;
 
+    // Update KPI stats ribbon
+    let kpiTotal = document.getElementById('kpi-total-candidates');
+    let kpiHigh  = document.getElementById('kpi-high-matches');
+    let kpiTop   = document.getElementById('kpi-top-score');
+    if (kpiTotal) kpiTotal.innerText = filtered.length;
+    if (kpiHigh)  kpiHigh.innerText  = filtered.filter(m => m.score >= 70).length;
+    let maxScore = filtered.length > 0 ? Math.max(...filtered.map(m => m.score)) : 0;
+    if (kpiTop)   kpiTop.innerText   = maxScore + '%';
+
     if (filtered.length === 0) {
         container.innerHTML = `
-            <div class="col-12 text-center py-5 text-muted bg-white rounded-3 border fade-in-up shadow-sm">
-                <i class="bi bi-search fs-2 d-block mb-2 text-success opacity-50"></i>
+            <div class="col-12 text-center py-5 text-muted bg-white rounded-4 border fade-in-up shadow-sm">
+                <i class="bi bi-search fs-2 d-block mb-3 text-success opacity-50"></i>
                 <h5 class="fw-bold text-dark" style="font-family:'Sora',sans-serif;">No Candidate Matches Found</h5>
-                <p class="small mb-0">Try clearing filters or post a corresponding item report.</p>
+                <p class="small mb-0 text-muted">Try clearing search filters or submit another campus report to match against.</p>
             </div>`;
         return;
     }
@@ -1846,69 +2063,78 @@ function renderMatchCardsList(targetReport, reports) {
         let tierText  = m.score >= 75 ? 'High Confidence Match' : (m.score >= 50 ? 'Probable Match' : 'Low Similarity');
         let delay = idx < 4 ? `delay-${idx + 1}` : '';
 
+        let defaultImg = getDefaultImage(item.category);
+        let imgSrc = item.image || defaultImg;
+        let targetId = targetReport ? (targetReport.id || targetReport._id) : '';
+        let itemId = item.id || item._id;
+
+        const breakdownRows = [
+            { label: 'Item Name & Brand (25%)', pts: b.name ? b.name.pts : 0,        max: 25 },
+            { label: 'Campus Zone (20%)',       pts: b.location ? b.location.pts : 0, max: 20 },
+            { label: 'Category (20%)',          pts: b.category ? b.category.pts : 0, max: 20 },
+            { label: 'Color Match (15%)',       pts: b.color ? b.color.pts : 0,       max: 15 },
+            { label: 'Date Interval (10%)',     pts: b.date ? b.date.pts : 0,         max: 10 },
+            { label: 'Description NLP (10%)',   pts: b.description ? b.description.pts : 0, max: 10 }
+        ];
+
         container.innerHTML += `
-            <div class="col-12 mb-4">
-                <div class="card match-card-futuristic fade-in-up ${delay}">
-                    <div class="row g-0">
-                        <!-- Image Column -->
-                        <div class="col-md-3">
-                            <div class="card-img-wrap position-relative">
-                                <img src="${item.image || getDefaultImage(item.category)}">
-                                <span class="badge ${item.type === 'lost' ? 'badge-lost' : 'badge-found'}" style="position:absolute;top:12px;left:12px;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
-                                    ${item.type.toUpperCase()} ITEM
+            <div class="col-lg-6 col-12 mb-4">
+                <div class="match-card-grid-item fade-in-up ${delay}">
+                    <!-- Top Header with Media, Meta & Score Ring -->
+                    <div class="card-top-header">
+                        <div class="d-flex align-items-center gap-3 overflow-hidden">
+                            <div class="match-card-media">
+                                <img src="${imgSrc}" loading="lazy" decoding="async" onerror="this.src='${defaultImg}'" alt="${item.itemName}">
+                                <span class="badge ${item.type === 'lost' ? 'badge-lost' : 'badge-found'}" style="position:absolute;bottom:3px;left:3px;font-size:0.55rem;padding:0.18em 0.45em;letter-spacing:0.03em;">
+                                    ${item.type.toUpperCase()}
                                 </span>
-                                ${m.brandMatch ? `<span class="badge rounded-pill bg-dark text-white border border-light position-absolute" style="bottom:12px;left:12px;font-size:0.65rem;"><i class="bi bi-award-fill text-warning me-1"></i>${m.brandMatch}</span>` : ''}
+                            </div>
+                            <div class="overflow-hidden">
+                                <div class="d-flex align-items-center gap-1.5 mb-1 flex-wrap">
+                                    <span class="badge bg-light text-dark border extra-small" style="font-size:0.65rem;"><i class="bi bi-tag-fill text-success me-1"></i>${item.category}</span>
+                                    ${m.brandMatch ? `<span class="badge bg-dark text-warning border extra-small" style="font-size:0.65rem;"><i class="bi bi-award-fill me-1"></i>${m.brandMatch}</span>` : ''}
+                                </div>
+                                <div class="match-card-title text-truncate" title="${item.itemName}">${item.itemName}</div>
+                                <div class="text-muted extra-small" style="font-size:0.74rem;">
+                                    <i class="bi bi-geo-alt-fill text-success me-1"></i>${item.zone} &nbsp;·&nbsp;
+                                    <i class="bi bi-calendar3 me-1"></i>${item.date}
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Info & Neural Match Factors Column -->
-                        <div class="col-md-5 p-4 d-flex flex-column justify-content-between">
-                            <div>
-                                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                                    <span class="badge bg-light text-dark border"><i class="bi bi-person-fill text-success me-1"></i>${item.postedBy}</span>
-                                    <span class="badge bg-light text-dark border"><i class="bi bi-calendar text-muted me-1"></i>${item.date}</span>
-                                    <button type="button" class="btn btn-sm btn-outline-success rounded-pill py-0 px-2 ms-auto" style="font-size:0.7rem;" onclick="openCompareModal('${targetReport.id}','${item.id}')">
-                                        <i class="bi bi-layout-split me-1"></i>Compare Attributes
-                                    </button>
-                                </div>
-                                <h4 class="fw-bold mb-1 text-dark" style="font-family:'Sora',sans-serif;">${item.itemName}</h4>
-                                <p class="small text-muted mb-2"><i class="bi bi-geo-alt text-success me-1"></i>${item.zone} &nbsp;·&nbsp; <i class="bi bi-tag text-success me-1"></i>${item.category} &nbsp;·&nbsp; Color: ${item.color}</p>
-                                <p class="card-text text-muted small mb-3">${item.description}</p>
-                            </div>
+                        <!-- Compact Holographic Score Ring -->
+                        <div class="match-score-badge-ring" title="Overall Vector Similarity: ${m.score}%">
+                            <div class="score-num">${m.score}%</div>
+                            <div class="score-lbl">Match</div>
+                        </div>
+                    </div>
 
-                            <!-- Neural Breakdown Chips -->
-                            <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
-                                <strong class="extra-small d-block mb-1 text-uppercase text-muted fw-bold" style="letter-spacing:0.04em;">
-                                    <i class="bi bi-cpu text-success me-1"></i>AI Similarity Signals:
-                                </strong>
+                    <!-- Card Body Details & Match Signals -->
+                    <div class="p-3 pt-2.5 flex-grow-1 d-flex flex-column justify-content-between">
+                        <div>
+                            <p class="card-text match-card-desc mb-2">${item.description || 'No additional details provided.'}</p>
+                            
+                            <div class="mb-2">
                                 <div class="d-flex flex-wrap">
                                     ${m.reasons.length > 0
-                                        ? m.reasons.map(r => `<span class="match-factor-chip"><i class="bi bi-check-circle-fill text-success"></i> ${r}</span>`).join('')
-                                        : '<span class="extra-small text-muted">Partial attribute correlation</span>'}
+                                        ? m.reasons.slice(0, 3).map(r => `<span class="match-factor-chip"><i class="bi bi-check-circle-fill text-success" style="font-size:0.65rem;"></i> ${r}</span>`).join('')
+                                        : '<span class="extra-small text-muted">Partial correlation</span>'}
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Score & Segmented Gauges Column -->
-                        <div class="col-md-4 p-4 border-start d-flex flex-column justify-content-between" style="background:#fafbfc;">
-                            <div>
-                                <!-- Holographic Score Header -->
-                                <div class="score-hud-box mb-3">
-                                    <div class="small fw-semibold text-light opacity-75 mb-1" style="font-size:0.75rem;letter-spacing:0.04em;">SIMILARITY PROBABILITY</div>
-                                    <div class="score-hud-number">${m.score}%</div>
-                                    <span class="score-hud-tier ${tierClass}">${tierText}</span>
-                                </div>
+                        <!-- Expandable 6-Factor Vector Breakdown Toggle -->
+                        <div class="pt-2 border-top">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <button type="button" class="match-breakdown-toggle-btn" data-bs-toggle="collapse" data-bs-target="#breakdown-${idx}" aria-expanded="false">
+                                    <i class="bi bi-sliders2 me-1"></i><span>Vector Weights (6 Factors)</span> <i class="bi bi-chevron-down ms-0.5" style="font-size:0.65rem;"></i>
+                                </button>
+                                <span class="score-hud-tier ${tierClass}" style="font-size:0.65rem;padding:0.18rem 0.5rem;">${tierText}</span>
+                            </div>
 
-                                <!-- Segmented 6-Attribute Gauges -->
-                                <div class="mb-3">
-                                    ${[
-                                        { label: 'Item Name & Brand (25%)', pts: b.name ? b.name.pts : 0,        max: 25 },
-                                        { label: 'Campus Zone (20%)',       pts: b.location ? b.location.pts : 0, max: 20 },
-                                        { label: 'Category (20%)',          pts: b.category ? b.category.pts : 0, max: 20 },
-                                        { label: 'Color Match (15%)',       pts: b.color ? b.color.pts : 0,       max: 15 },
-                                        { label: 'Date Interval (10%)',     pts: b.date ? b.date.pts : 0,         max: 10 },
-                                        { label: 'Description NLP (10%)',   pts: b.description ? b.description.pts : 0, max: 10 }
-                                    ].map(row => {
+                            <div class="collapse mt-2" id="breakdown-${idx}">
+                                <div class="p-2.5 rounded-3 bg-light border">
+                                    ${breakdownRows.map(row => {
                                         let pct = Math.round((row.pts / row.max) * 100);
                                         return `
                                             <div class="neon-progress-item">
@@ -1923,17 +2149,17 @@ function renderMatchCardsList(targetReport, reports) {
                                     }).join('')}
                                 </div>
                             </div>
-
-                            <!-- Action CTA -->
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-outline-secondary rounded-pill py-2 px-3 fs-6" onclick="openCompareModal('${targetReport.id}','${item.id}')" title="Compare Side-by-Side">
-                                    <i class="bi bi-layout-split"></i>
-                                </button>
-                                <button class="btn btn-emerald-pill btn-arrow-slide flex-grow-1 justify-content-center py-2 fs-6 shadow-sm" onclick="openClaimModal('${targetReport.id}','${item.id}')">
-                                    ${btnText}
-                                </button>
-                            </div>
                         </div>
+                    </div>
+
+                    <!-- Card Action Footer -->
+                    <div class="p-2.5 px-3 bg-light border-top d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1" style="font-size:0.78rem;" onclick="openCompareModal('${targetId}','${itemId}')" title="Compare Side-by-Side">
+                            <i class="bi bi-layout-split me-1"></i>Compare
+                        </button>
+                        <button type="button" class="btn btn-sm btn-emerald-pill btn-arrow-slide flex-grow-1 justify-content-center py-1.5 shadow-sm" style="font-size:0.8rem;" onclick="openClaimModal('${targetId}','${itemId}')">
+                            ${btnText}
+                        </button>
                     </div>
                 </div>
             </div>`;
@@ -1944,9 +2170,11 @@ function renderMatchCardsList(targetReport, reports) {
 }
 
 function openCompareModal(targetReportId, candidateItemId) {
-    let reports       = getReports();
-    let targetReport  = reports.find(r => r.id === targetReportId);
-    let candidateItem = reports.find(r => r.id === candidateItemId);
+    let reports = getReports();
+    let cleanTargetId = String(targetReportId || '').trim();
+    let cleanCandidateId = String(candidateItemId || '').trim();
+    let targetReport = reports.find(r => String(r.id || '').trim() === cleanTargetId || String(r._id || '').trim() === cleanTargetId);
+    let candidateItem = reports.find(r => String(r.id || '').trim() === cleanCandidateId || String(r._id || '').trim() === cleanCandidateId);
 
     if (!targetReport || !candidateItem) return;
 
@@ -2111,10 +2339,10 @@ function openClaimModal(targetReportId, candidateItemId) {
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold small">Notification Message for ${ownerName}</label>
-                        <textarea id="found-notice-message" rows="3" class="form-control form-control-sm" required>Hi ${ownerName}, I found an item matching your lost report "${lostReport.itemName}"! Please contact me to arrange return.</textarea>
+                        <textarea id="found-notice-message" rows="3" class="form-control form-control-sm" required>Hi ${ownerName}, I found an item matching your lost report "${lostReport.itemName}"! Please click "Provide Hidden Details" to prove ownership so we can schedule our handover meeting.</textarea>
                     </div>
                     <button type="submit" class="btn btn-found w-100 fw-bold btn-sm py-2">
-                        <i class="bi bi-bell-fill me-1"></i>Send Notification to Owner (${ownerName})
+                        <i class="bi bi-bell-fill me-1"></i>Notify Owner to Provide Hidden Details
                     </button>
                 </form>
                 <div id="unlocked-contact-info" class="mt-3"></div>`;
@@ -2247,7 +2475,7 @@ function handleNotifyOwnerSubmit(event, lostReportId, matchingFoundReportId) {
     outputArea.innerHTML = `
         <div class="alert alert-success border-0 shadow-sm mb-0">
             <h6 class="fw-bold mb-2"><i class="bi bi-check-circle-fill me-1"></i>Notification Sent!</h6>
-            <p class="small mb-3"><strong>${item.postedBy}</strong> (${item.postedByEmail}) has been notified you found their item.</p>
+            <p class="small mb-3"><strong>${item.postedBy}</strong> (${item.postedByEmail}) has been notified. They can now click <strong>"Provide Hidden Details"</strong> to verify ownership, after which you will schedule the campus handover meeting.</p>
             <div class="p-3 bg-white rounded border small text-dark mb-3">
                 <strong class="d-block mb-2" style="color:var(--primary-color);"><i class="bi bi-person-lines-fill me-1"></i>Owner Contact:</strong>
                 <div class="mb-1"><strong>Name:</strong> ${item.postedBy}</div>
@@ -2341,11 +2569,30 @@ function initDashboardPage() {
     markNotificationsAsRead(currentUser.useremail);
     updateNavBellBadge();
 
-    let lastTab = sessionStorage.getItem('dash_active_tab') || 'tab-alerts';
-    let tabEl = document.getElementById(lastTab + '-btn');
+    let urlParams = new URLSearchParams(window.location.search);
+    let actionParam = urlParams.get('action');
+    let targetTab = urlParams.get('tab') || sessionStorage.getItem('dash_active_tab') || (alertsCount > 0 ? 'tab-alerts' : 'tab-received');
+
+    if (actionParam === 'schedule') {
+        targetTab = 'tab-received';
+    } else if (actionParam === 'provide_hidden') {
+        targetTab = 'tab-alerts';
+    }
+
+    let tabEl = document.getElementById(targetTab + '-btn');
     if (tabEl) {
         let bsTab = new bootstrap.Tab(tabEl);
         bsTab.show();
+    }
+
+    if (actionParam === 'provide_hidden' && urlParams.get('notifId')) {
+        setTimeout(() => {
+            openProvideHiddenDetailsModal(urlParams.get('notifId'));
+        }, 350);
+    } else if (actionParam === 'schedule' && urlParams.get('claimId')) {
+        setTimeout(() => {
+            openScheduleModal(urlParams.get('claimId'));
+        }, 350);
     }
 
     document.querySelectorAll('#dashTabs .nav-link').forEach(btn => {
@@ -2458,8 +2705,8 @@ function renderFoundNotices(userEmail) {
                 </div>`;
             }
         } else {
-            actionHtml = `<button class="btn btn-sm btn-matching fw-bold ms-auto" onclick="openProvideHiddenDetailsModal('${n.id}')">
-                <i class="bi bi-shield-lock me-1"></i>Provide Hidden Details
+            actionHtml = `<button class="btn btn-sm btn-emerald-pill fw-bold ms-auto px-3.5 py-1.5 shadow-sm" onclick="openProvideHiddenDetailsModal('${n.id}')">
+                <i class="bi bi-shield-lock-fill me-1"></i>Provide Hidden Details
             </button>`;
         }
 
@@ -2486,10 +2733,71 @@ function renderFoundNotices(userEmail) {
     });
 }
 
+function ensureProvideHiddenDetailsModal() {
+    let modalEl = document.getElementById("provideHiddenDetailsModal");
+    if (!modalEl) {
+        const div = document.createElement("div");
+        div.className = "modal fade";
+        div.id = "provideHiddenDetailsModal";
+        div.tabIndex = -1;
+        div.setAttribute("aria-hidden", "true");
+        div.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="modal-header" style="background:#041512;color:#ffffff;">
+                        <h5 class="modal-title fw-bold" style="font-family:'Sora',sans-serif;">
+                            <i class="bi bi-shield-lock me-2" style="color:var(--emerald-primary);"></i>Provide Hidden Details to Finder
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4" style="background:#ffffff;">
+                        <div class="alert border-0 mb-3 small" style="background:rgba(0,230,118,0.1);color:#064e3b;border-left:4px solid var(--emerald-primary)!important;">
+                            <i class="bi bi-info-circle-fill me-1"></i>
+                            Finder <strong id="handover-finder-name">Founder</strong> reported finding your lost item <strong id="handover-item-name">Lost Item</strong>. Provide hidden identifying details to prove your ownership so the finder can schedule a handover meeting.
+                        </div>
+                        <form id="hidden-details-form" onsubmit="handleProvideHiddenDetailsSubmit(event)">
+                            <input type="hidden" id="handover-notif-id">
+                            <input type="hidden" id="handover-finder-email">
+                            <input type="hidden" id="handover-claimant-phone">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small text-dark">Hidden Details / Distinct Markings <span class="text-danger">*</span></label>
+                                <textarea id="handover-hidden-details" rows="3" class="form-control" placeholder="e.g. Serial number, scratch on back corner, lock screen photo, secret sticker, contents inside..." required></textarea>
+                                <small class="text-muted extra-small">These details are kept private and sent only to the finder for verification.</small>
+                            </div>
+                            <button type="submit" class="btn btn-emerald-pill btn-arrow-slide w-100 justify-content-center py-2 shadow-sm">
+                                <span>Submit Details & Request Meeting</span> <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(div);
+        modalEl = div;
+    }
+    return modalEl;
+}
+
 function openProvideHiddenDetailsModal(notifId) {
     let notifs = JSON.parse(localStorage.getItem("campus_notifications")) || [];
     let notif  = notifs.find(n => n.id === notifId);
-    if (!notif) return;
+    if (!notif) {
+        let reports = getReports();
+        let rep = reports.find(r => r.id === notifId);
+        if (rep) {
+            notif = {
+                id: "NOTIF-" + Date.now(),
+                itemId: rep.id,
+                itemName: rep.itemName,
+                senderName: rep.postedBy || "Founder",
+                senderEmail: rep.postedByEmail || ""
+            };
+        } else {
+            showToast("Notification details not found.", "warning");
+            return;
+        }
+    }
+
+    ensureProvideHiddenDetailsModal();
 
     let currentUser = getCurrentUser();
     let el = id => document.getElementById(id);
@@ -2547,7 +2855,7 @@ function handleProvideHiddenDetailsSubmit(event) {
         senderEmail: currentUser ? currentUser.useremail : "",
         senderPhone: claimantPhone,
         itemName,
-        message: `🔐 Hidden Details Submitted! ${currentUser ? currentUser.username : 'Owner'} submitted hidden details to claim "${itemName}": "${hiddenDetails}". Review on your Dashboard.`,
+        message: `🔐 Hidden Details Submitted! ${currentUser ? currentUser.username : 'Owner'} submitted hidden details to claim "${itemName}": "${hiddenDetails}". Please review and schedule the handover meeting.`,
         date: new Date().toLocaleString(),
         type: "claim_request",
         claimId
@@ -2561,7 +2869,13 @@ function handleProvideHiddenDetailsSubmit(event) {
         if (m) m.hide();
     }
 
-    setTimeout(() => window.location.reload(), 700);
+    setTimeout(() => {
+        if (window.location.pathname.includes("dashboard")) {
+            window.location.reload();
+        } else {
+            window.location.href = "dashboard.html?tab=tab-myclaims";
+        }
+    }, 700);
 }
 
 function renderSubmittedClaims(userEmail) {
@@ -2729,9 +3043,22 @@ function renderNotificationsFeed(userEmail) {
                     </div>
                 </div>
                 <p class="small mb-1 text-dark fw-medium"><i class="bi ${iconClass} me-1"></i>${n.message}</p>
-                ${n.claimId ? `
+                ${isOwnerAlert ? `
                     <div class="mt-2">
-                        <button class="btn btn-sm btn-outline-success rounded-pill py-0 px-2 extra-small" onclick="openMeetingChatModal('${n.claimId}')">
+                        <button class="btn btn-sm btn-emerald-pill rounded-pill py-1 px-3 extra-small fw-bold shadow-sm" onclick="openProvideHiddenDetailsModal('${n.id}')">
+                            <i class="bi bi-shield-lock-fill me-1"></i>Provide Hidden Details
+                        </button>
+                    </div>` : (n.type === "claim_request") ? `
+                    <div class="mt-2 d-flex align-items-center gap-1.5 flex-wrap">
+                        <button class="btn btn-sm btn-emerald-pill rounded-pill py-1 px-3 extra-small fw-bold shadow-sm" onclick="openScheduleModal('${n.claimId}')">
+                            <i class="bi bi-calendar-check-fill me-1"></i>Schedule Meeting
+                        </button>
+                        <button class="btn btn-sm btn-outline-success rounded-pill py-1 px-2.5 extra-small" onclick="openMeetingChatModal('${n.claimId}')">
+                            <i class="bi bi-chat-dots me-1"></i>Open Direct Conversation
+                        </button>
+                    </div>` : n.claimId ? `
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-success rounded-pill py-1 px-2.5 extra-small" onclick="openMeetingChatModal('${n.claimId}')">
                             <i class="bi bi-chat-dots me-1"></i>Open Direct Conversation
                         </button>
                     </div>` : ''}
@@ -2915,6 +3242,11 @@ function setQuickMeetingTime(timeStr) {
 }
 
 function openScheduleModal(claimId) {
+    let modalEl = document.getElementById("scheduleMeetingModal");
+    if (!modalEl) {
+        window.location.href = `dashboard.html?tab=tab-received&action=schedule&claimId=${encodeURIComponent(claimId)}`;
+        return;
+    }
     let claims = getClaims();
     let claim  = claims.find(c => c.claimId === claimId);
     if (!claim) return;
@@ -2946,8 +3278,7 @@ function openScheduleModal(claimId) {
         if (el('meeting-note')) el('meeting-note').value = claim.meetingDetails.note || '';
     }
 
-    let modalEl = document.getElementById("scheduleMeetingModal");
-    if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
 }
 
 function handleScheduleSubmit(event) {
@@ -3088,7 +3419,7 @@ function renderMeetingChatContent(claim, currentUser) {
 
             <!-- Claimant Action Bar: Confirm Time or Request Change -->
             ${isClaimant ? `
-                <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                <div class="d-flex flex-wrap align-items-center gap-2 pt-2 border-top">
                     ${!isConfirmed ? `
                         <button type="button" class="btn btn-sm btn-success rounded-pill px-3 fw-bold shadow-sm" onclick="handleConfirmMeetingTime('${claim.claimId}')">
                             <i class="bi bi-check2-circle me-1"></i>Confirm Time is Suitable
@@ -3557,43 +3888,24 @@ async function removeReport(id) {
 window.removeReport = removeReport;
 
 // =============================================================
-// 6. ADMIN LOGIC
+// 6. ADMIN LOGIC — handled by admin.html inline script
 // =============================================================
 function initAdminPage() {
-    let reports = getReports();
-    let tbody   = document.getElementById("admin-table-body");
-    if (!tbody) return;
-
-    tbody.innerHTML = "";
-    reports.forEach(r => {
-        tbody.innerHTML += `
-            <tr>
-                <td><strong>${r.id}</strong></td>
-                <td><span class="badge ${r.type === 'lost' ? 'badge-lost' : 'badge-found'}">${r.type.toUpperCase()}</span></td>
-                <td>${r.itemName}</td>
-                <td><span class="badge bg-light text-dark border">${r.postedBy}</span></td>
-                <td>${r.zone}</td>
-                <td>${r.date}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="removeReport('${r.id}')">
-                        <i class="bi bi-trash"></i> Delete
-                    </button>
-                </td>
-            </tr>`;
-    });
-
-    let resetBtn = document.getElementById("btn-reset-sample-data");
-    if (resetBtn) {
+    // The admin console is fully handled by admin.html's inline <script> block.
+    // This stub exists so that app.js doesn't throw an error when called.
+    let resetBtn = document.getElementById('btn-reset-sample-data');
+    if (resetBtn && !resetBtn._bound) {
+        resetBtn._bound = true;
         resetBtn.onclick = async () => {
             let confirmed = await showConfirm({
-                message: 'Reset dataset back to sample default items? All current reports will be lost.',
-                title: 'Reset Sample Data',
+                message: 'Reset local demo data? MongoDB data will NOT be affected.',
+                title: 'Reset Demo Data',
                 icon: 'warning',
                 confirmText: 'Yes, Reset'
             });
             if (confirmed) {
                 resetData();
-                showToast('Dataset reset to sample defaults.', 'success');
+                showToast('Local demo data reset.', 'success');
                 setTimeout(() => window.location.reload(), 600);
             }
         };
