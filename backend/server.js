@@ -13,8 +13,7 @@ const PORT = process.env.PORT || 5000;
 
 // ── Middleware ───────────────────────────────────────────────────────
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:5500', 'http://localhost:5500',
-           'http://127.0.0.1:3000', 'null'],   // allow file:// via VS Code Live Server / direct open
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -23,6 +22,32 @@ app.use(express.json({ limit: '10mb' }));          // large limit for base64 ima
 app.use(express.urlencoded({ extended: true }));
 
 const path = require('path');
+
+// ── MongoDB Connection (Cached for Serverless) ───────────────────────
+const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+  try {
+    const mongoUri = process.env.MONGO_URI;
+    if (!mongoUri) {
+      console.warn('⚠️ MONGO_URI is not set in environment variables.');
+      return;
+    }
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000,
+    });
+    console.log(`✅ MongoDB Atlas connected: ${conn.connection.host}`);
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
+  }
+};
+
+// Ensure database is connected before handling any API request
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // ── Static Files & Frontend Serving ──────────────────────────────────
 app.use(express.static(path.join(__dirname, '..'), { maxAge: '1h' }));
@@ -44,10 +69,14 @@ app.get('/', (req, res) => {
   });
 });
 
-// ── API Routes ────────────────────────────────────────────────────────
+// ── API Routes (Supports both /api/* and rewritten /* routes) ────────
 app.use('/api/auth',    authRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/claims',  claimRoutes);
+
+app.use('/auth',    authRoutes);
+app.use('/reports', reportRoutes);
+app.use('/claims',  claimRoutes);
 
 // ── 404 Handler ──────────────────────────────────────────────────────
 app.use((req, res) => {
@@ -60,23 +89,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: err.message || 'Internal Server Error' });
 });
 
-// ── MongoDB Connection & Server Start ────────────────────────────────
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 10000,
+// ── Server Start (When run standalone locally) ───────────────────────
+if (require.main === module) {
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 CampusFind server running on http://localhost:${PORT}`);
+      console.log(`📋 API docs available at http://localhost:${PORT}/`);
     });
-    console.log(`✅ MongoDB Atlas connected: ${conn.connection.host}`);
-  } catch (err) {
-    console.error('❌ MongoDB connection failed:', err.message);
-    console.error('   → Make sure MONGO_URI in .env is set correctly.');
-    process.exit(1);
-  }
-};
-
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 CampusFind server running on http://localhost:${PORT}`);
-    console.log(`📋 API docs available at http://localhost:${PORT}/`);
   });
-});
+}
+
+module.exports = app;

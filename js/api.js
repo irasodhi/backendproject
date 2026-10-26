@@ -3,8 +3,14 @@
  * Wraps all backend REST API calls. Used by the frontend pages.
  * Base URL: change to your deployed server URL when going to production.
  */
+const isLocalhost = Boolean(
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1' ||
+  window.location.hostname === '' ||
+  window.location.protocol === 'file:'
+);
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = isLocalhost ? 'http://localhost:5000/api' : '/api';
 
 // ─── Token helpers ────────────────────────────────────────────────────
 function getToken() {
