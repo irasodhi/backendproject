@@ -135,6 +135,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/validation.js"></script>
   <script src="js/ui.js"></script>
@@ -212,7 +213,7 @@
       } else { this.classList.remove('is-invalid'); errEl.style.display = 'none'; if(this.value.trim()) this.classList.add('is-valid'); }
     });
 
-    let handleSubmit = (event) => {
+    let handleSubmit = async (event) => {
       event.preventDefault();
       let name     = document.getElementById("name").value.trim();
       let email    = document.getElementById("email").value.trim();
@@ -235,18 +236,24 @@
         showToast("Passwords do not match. Please verify.", "error"); return;
       }
 
-      let users_array = getUsers();
-      if (users_array.some(u => u.useremail?.toLowerCase() === email.toLowerCase())) {
-        showToast(`Email <strong>${email}</strong> is already registered. <a href="login.html" class="text-white fw-bold">Sign in here</a>.`, "warning", 5000); return;
-      }
+      // Disable button
+      const submitBtn = document.querySelector('#signupForm [type=submit]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account…'; }
 
-      let user = { username: name, useremail: email, userpassword: password,
-                   contactPhone: "+91 98" + Math.floor(10000000 + Math.random() * 90000000) };
-      saveUser(user);
-      localStorage.setItem("current_user", JSON.stringify(user));
-      localStorage.setItem("isLoggedIn", "true");
-      showToast(`Account created for <strong>${name}</strong>! Redirecting…`, "success");
-      setTimeout(() => { window.location.href = "index.html"; }, 900);
+      try {
+        const data = await CampusFindAPI.auth.signup(name, email, password);
+        // Store user info for compatibility with app.js / getCurrentUser() and multi-account switcher
+        if (typeof saveUser === 'function') {
+          saveUser(data.user);
+        }
+        localStorage.setItem("current_user", JSON.stringify(data.user));
+        localStorage.setItem("isLoggedIn", "true");
+        showToast(`Account created for <strong>${name}</strong>! Redirecting…`, "success");
+        setTimeout(() => { window.location.href = "index.html"; }, 900);
+      } catch (err) {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'Register Account <i class="bi bi-arrow-right ms-1"></i>'; }
+        showToast(err.message || "Registration failed. Please try again.", "error");
+      }
     };
   </script>
 </body>
