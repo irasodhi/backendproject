@@ -28,25 +28,28 @@ const connectDB = async () => {
   if (mongoose.connection.readyState >= 1) {
     return;
   }
-  try {
-    const mongoUri = process.env.MONGO_URI;
-    if (!mongoUri) {
-      console.warn('⚠️ MONGO_URI is not set in environment variables.');
-      return;
-    }
-    const conn = await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 10000,
-    });
-    console.log(`✅ MongoDB Atlas connected: ${conn.connection.host}`);
-  } catch (err) {
-    console.error('❌ MongoDB connection error:', err.message);
+  const mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error('MONGO_URI environment variable is missing in Vercel settings');
   }
+  const conn = await mongoose.connect(mongoUri, {
+    serverSelectionTimeoutMS: 7000,
+  });
+  console.log(`✅ MongoDB Atlas connected: ${conn.connection.host}`);
 };
 
 // Ensure database is connected before handling any API request
 app.use(async (req, res, next) => {
-  await connectDB();
-  next();
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('❌ Database connection error:', err.message);
+    return res.status(500).json({
+      success: false,
+      message: `Database connection failed: ${err.message}. If using MongoDB Atlas, ensure Network Access allows 0.0.0.0/0.`
+    });
+  }
 });
 
 // ── Static Files & Frontend Serving ──────────────────────────────────
