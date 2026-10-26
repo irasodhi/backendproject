@@ -2589,10 +2589,16 @@ function initDashboardPage() {
         setTimeout(() => {
             openProvideHiddenDetailsModal(urlParams.get('notifId'));
         }, 350);
+        try {
+            window.history.replaceState({}, document.title, window.location.pathname + (targetTab ? '?tab=' + targetTab : ''));
+        } catch (_) {}
     } else if (actionParam === 'schedule' && urlParams.get('claimId')) {
         setTimeout(() => {
             openScheduleModal(urlParams.get('claimId'));
         }, 350);
+        try {
+            window.history.replaceState({}, document.title, window.location.pathname + (targetTab ? '?tab=' + targetTab : ''));
+        } catch (_) {}
     }
 
     document.querySelectorAll('#dashTabs .nav-link').forEach(btn => {
@@ -3250,6 +3256,22 @@ function openScheduleModal(claimId) {
     let claims = getClaims();
     let claim  = claims.find(c => c.claimId === claimId);
     if (!claim) return;
+
+    // Check if the current user is the owner who lost the item (claimant) vs the finder (reporter)
+    let currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+    if (claim && currentUser) {
+        let userEmail = (currentUser.useremail || '').toLowerCase().trim();
+        let reporterEmail = (claim.reporterEmail || '').toLowerCase().trim();
+        let claimantEmail = (claim.claimedByEmail || '').toLowerCase().trim();
+
+        if (claimantEmail && userEmail === claimantEmail && userEmail !== reporterEmail) {
+            // Claimant should see the meeting details and conversation modal, not the schedule modal
+            if (typeof openMeetingChatModal === 'function') {
+                openMeetingChatModal(claimId);
+            }
+            return;
+        }
+    }
 
     let el = id => document.getElementById(id);
     if (el('modal-claim-id')) el('modal-claim-id').value = claimId;
