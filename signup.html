@@ -62,7 +62,7 @@
                   <span class="input-group-text border-end-0 text-muted" style="background:var(--bg-elevated);"><i class="bi bi-envelope"></i></span>
                   <input type="email" id="email" class="form-control border-start-0 ps-0" placeholder="alex@example.com" required>
                 </div>
-                <div class="invalid-feedback d-block" id="email-error" style="display:none!important;"></div>
+                <div class="invalid-feedback d-none" id="email-error"></div>
               </div>
 
               <div class="mb-2">
@@ -75,7 +75,7 @@
                     <i class="bi bi-eye"></i>
                   </button>
                 </div>
-                <div class="invalid-feedback d-block" id="password-error" style="display:none!important;"></div>
+                <div class="invalid-feedback d-none" id="password-error"></div>
               </div>
 
               <div id="password-strength-box" class="p-3 rounded-3 border mb-3" style="background:var(--bg-elevated);">
@@ -106,8 +106,8 @@
                     <i class="bi bi-eye"></i>
                   </button>
                 </div>
-                <div class="invalid-feedback d-block" id="confirm-error" style="display:none!important;"></div>
-                <div class="valid-feedback d-block" id="confirm-ok" style="display:none!important;"><i class="bi bi-check-circle-fill me-1"></i>Passwords match</div>
+                <div class="invalid-feedback d-none" id="confirm-error"></div>
+                <div class="valid-feedback d-none" id="confirm-ok"><i class="bi bi-check-circle-fill me-1"></i>Passwords match</div>
               </div>
 
               <div class="form-check mb-4">
@@ -166,6 +166,28 @@
       updateReqItem('req-number',  hasNumber);
       updateReqItem('req-special', hasSpecial);
 
+      const passEl = document.getElementById('password');
+      const errEl  = document.getElementById('password-error');
+
+      if (password.length > 0 && password.length < 8) {
+        if (passEl) { passEl.classList.add('is-invalid'); passEl.classList.remove('is-valid'); }
+        if (errEl) {
+          errEl.textContent = 'Password must be at least 8 characters.';
+          errEl.classList.remove('d-none');
+          errEl.classList.add('d-block');
+        }
+      } else {
+        if (passEl) {
+          passEl.classList.remove('is-invalid');
+          if (password.length >= 8) passEl.classList.add('is-valid');
+        }
+        if (errEl) {
+          errEl.textContent = '';
+          errEl.classList.remove('d-block');
+          errEl.classList.add('d-none');
+        }
+      }
+
       let score = [hasMinLength, hasLetter, hasNumber, hasSpecial].filter(Boolean).length;
       const bar   = document.getElementById('strength-bar');
       const label = document.getElementById('strength-label');
@@ -189,13 +211,33 @@
       const errEl   = document.getElementById('confirm-error');
       const okEl    = document.getElementById('confirm-ok');
       const confEl  = document.getElementById('confirmPassword');
-      if (!confirm) { errEl.style.display = 'none'; okEl.style.display = 'none'; confEl.classList.remove('is-invalid','is-valid'); return; }
+
+      if (!confirm) {
+        if (errEl) { errEl.textContent = ''; errEl.classList.remove('d-block'); errEl.classList.add('d-none'); }
+        if (okEl)  { okEl.classList.remove('d-block'); okEl.classList.add('d-none'); }
+        if (confEl) confEl.classList.remove('is-invalid', 'is-valid');
+        return;
+      }
+
       if (pass !== confirm) {
-        confEl.classList.add('is-invalid'); confEl.classList.remove('is-valid');
-        errEl.textContent = "Passwords don't match."; errEl.style.display = 'block'; okEl.style.display = 'none';
+        if (confEl) { confEl.classList.add('is-invalid'); confEl.classList.remove('is-valid'); }
+        if (errEl) {
+          errEl.textContent = "Passwords don't match.";
+          errEl.classList.remove('d-none');
+          errEl.classList.add('d-block');
+        }
+        if (okEl) { okEl.classList.remove('d-block'); okEl.classList.add('d-none'); }
       } else {
-        confEl.classList.remove('is-invalid'); confEl.classList.add('is-valid');
-        errEl.style.display = 'none'; okEl.style.display = 'block';
+        if (confEl) { confEl.classList.remove('is-invalid'); confEl.classList.add('is-valid'); }
+        if (errEl) {
+          errEl.textContent = '';
+          errEl.classList.remove('d-block');
+          errEl.classList.add('d-none');
+        }
+        if (okEl) {
+          okEl.classList.remove('d-none');
+          okEl.classList.add('d-block');
+        }
       }
     }
 
@@ -206,11 +248,21 @@
     });
 
     // Live email validation
-    document.getElementById('email').addEventListener('blur', function() {
+    document.getElementById('email').addEventListener('input', function() {
       const errEl = document.getElementById('email-error');
       if (this.value.trim() && !ValidationModule.isValidEmail(this.value.trim())) {
-        this.classList.add('is-invalid'); errEl.textContent = 'Invalid email format.'; errEl.style.display = 'block';
-      } else { this.classList.remove('is-invalid'); errEl.style.display = 'none'; if(this.value.trim()) this.classList.add('is-valid'); }
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        errEl.textContent = 'Invalid email format.';
+        errEl.classList.remove('d-none');
+        errEl.classList.add('d-block');
+      } else {
+        this.classList.remove('is-invalid');
+        errEl.textContent = '';
+        errEl.classList.remove('d-block');
+        errEl.classList.add('d-none');
+        if (this.value.trim()) this.classList.add('is-valid');
+      }
     });
 
     let handleSubmit = async (event) => {
